@@ -3,195 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinCore - Smart Tracker</title>
+    <title>FinTrack - Financial Overview</title>
+    <script src="https://jsdelivr.net"></script>
     <style>
-        :root { --primary: #4f46e5; --bg: #f8fafc; --card: #ffffff; --text-main: #1e293b; --text-sub: #64748b; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); margin: 0; display: flex; color: var(--text-main); min-height: 100vh; }
+        :root { --sidebar-bg: #1a1c2e; --main-bg: #f8fafc; --primary: #6366f1; --text-light: #94a3b8; }
+        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--main-bg); }
 
-        /* Sidebar */
-        aside { width: 240px; background: white; border-right: 1px solid #e2e8f0; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 0.8rem 1rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
-        .nav-active { background: var(--primary); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
-        .nav-idle { color: var(--text-sub); }
-        .nav-idle:hover { background: #f1f5f9; }
+        /* Sidebar Style */
+        aside { width: 260px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 2rem 1.5rem; transition: 0.3s; }
+        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 1rem; border-radius: 12px; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; transition: 0.3s; text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { border-left: 4px solid var(--primary); border-radius: 4px 12px 12px 4px; }
 
-        /* Main Content */
-        main { flex: 1; padding: 2.5rem; max-width: 1200px; }
-        header h1 { font-size: 1.8rem; margin: 0 0 2rem 0; }
+        /* Main Area */
+        main { flex: 1; padding: 2.5rem; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Stats Cards */
+        /* Dashboard Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-        .card { background: var(--card); padding: 1.5rem; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .card p { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.025em; }
-        .card h2 { margin: 0.5rem 0 0 0; font-size: 1.75rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card small { color: var(--text-light); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .card h2 { margin: 0.5rem 0; font-size: 1.8rem; }
 
-        /* Layout Grid */
-        .content-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
-        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; display: block; }
+        /* Chart & Categories */
+        .grid-middle { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .chart-box { background: white; padding: 2rem; border-radius: 24px; min-height: 300px; }
 
-        /* Form */
-        .form-box { background: white; padding: 2rem; border-radius: 24px; border: 1px solid #f1f5f9; }
-        .input-group { margin-bottom: 1.2rem; }
-        label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.5rem; margin-left: 0.5rem; }
-        input, select { width: 100%; padding: 1rem; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 1rem; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-        .btn-submit { width: 100%; padding: 1rem; border-radius: 16px; border: none; background: var(--primary); color: white; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 1rem; transition: 0.3s; }
-        .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+        /* Transaction List */
+        .recent-box { background: white; padding: 2rem; border-radius: 24px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; color: var(--text-light); font-size: 0.8rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 1rem 0; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; }
+        .amt-pos { color: #10b981; font-weight: 700; }
+        .amt-neg { color: #ef4444; font-weight: 700; }
 
-        /* List */
-        .history-box { background: white; padding: 1.5rem; border-radius: 24px; border: 1px solid #f1f5f9; min-height: 400px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-radius: 16px; transition: 0.2s; margin-bottom: 0.5rem; }
-        .item:hover { background: #f8fafc; }
-        .item-info b { display: block; font-size: 0.95rem; }
-        .item-info small { color: var(--text-sub); font-size: 0.75rem; }
-        .amt { font-weight: 700; font-size: 1rem; }
-        .text-up { color: #10b981; }
-        .text-down { color: #ef4444; }
+        /* Form Inputs */
+        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+        input, select { width: 100%; padding: 1.2rem; margin-bottom: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 1rem; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-save:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-        @media (max-width: 900px) {
-            body { flex-direction: column; }
-            aside { width: 100%; border-right: none; border-bottom: 1px solid #eee; padding: 1rem; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .content-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1024px) { .stats-grid, .grid-middle { grid-template-columns: 1fr; } aside { width: 80px; padding: 1.5rem 0.5rem; } aside span { display: none; } }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo"><span>🟦</span> FinCore</div>
-        <div class="nav-item nav-active">📊 Dashboard</div>
-        <div class="nav-item nav-idle">💸 Transaksi</div>
+        <div class="logo">👑 <span>FinTrack</span></div>
+        <div class="nav-item active" onclick="switchPage('dashboard', this)">📊 <span>Dashboard</span></div>
+        <div class="nav-item" onclick="switchPage('transactions', this)">💸 <span>Transactions</span></div>
+        <div class="nav-item" style="margin-top:auto">⚙️ <span>Settings</span></div>
     </aside>
 
     <main>
-        <header><h1>Main Dashboard</h1></header>
-        
-        <div class="stats-grid">
-            <div class="card">
-                <p>Total Balance</p>
-                <h2 id="totalSaldo" style="color: var(--primary)">Rp 0</h2>
+        <!-- PAGE: DASHBOARD -->
+        <section id="dashboard" class="page active">
+            <h1>Financial Overview</h1>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">Welcome back, here is your daily breakdown.</p>
+            
+            <div class="stats-grid">
+                <div class="card"><small>Total Balance</small><h2 id="bal">Rp 0</h2></div>
+                <div class="card"><small style="color:#10b981">Total Income</small><h2 id="inc">Rp 0</h2></div>
+                <div class="card"><small style="color:#ef4444">Total Expenses</small><h2 id="exp">Rp 0</h2></div>
             </div>
-            <div class="card">
-                <p style="color: #10b981">↑ Total Income</p>
-                <h2 id="totalMasuk">Rp 0</h2>
-            </div>
-            <div class="card">
-                <p style="color: #ef4444">↓ Total Expenses</p>
-                <h2 id="totalKeluar">Rp 0</h2>
-            </div>
-        </div>
 
-        <div class="content-grid">
-            <div>
-                <span class="section-title">Tambah Transaksi</span>
-                <div class="form-box">
-                    <div class="input-group">
-                        <label>NOMINAL (RP)</label>
-                        <!-- Input nominal dengan format otomatis -->
-                        <input type="text" id="nominalDisplay" placeholder="0" oninput="formatRupiah(this)">
-                        <input type="hidden" id="nominalReal">
-                    </div>
-                    <div class="input-group">
-                        <label>KETERANGAN</label>
-                        <input type="text" id="ket" placeholder="Misal: Gaji Bulanan, Makan Siang...">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="input-group">
-                            <label>JENIS</label>
-                            <select id="tipe">
-                                <option value="Pemasukan">Pemasukan (+)</option>
-                                <option value="Pengeluaran">Pengeluaran (-)</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>TANGGAL</label>
-                            <input type="date" id="tgl">
-                        </div>
-                    </div>
-                    <button onclick="simpan()" class="btn-submit">Simpan Transaksi</button>
+            <div class="grid-middle">
+                <div class="chart-box">
+                    <h4 style="margin:0 0 1.5rem 0">Spending Analysis</h4>
+                    <canvas id="mainChart"></canvas>
+                </div>
+                <div class="chart-box" style="text-align: center;">
+                    <h4 style="margin:0 0 1.5rem 0">Expense by Category</h4>
+                    <canvas id="pieChart"></canvas>
                 </div>
             </div>
 
-            <div>
-                <span class="section-title">Riwayat Terakhir</span>
-                <div class="history-box" id="daftar">
-                    <!-- Data List -->
-                </div>
+            <div class="recent-box">
+                <h4 style="margin:0">Recent Transactions</h4>
+                <table>
+                    <thead><tr><th>TRANSACTION</th><th>DATE</th><th>CATEGORY</th><th>AMOUNT</th></tr></thead>
+                    <tbody id="historyTable"></tbody>
+                </table>
             </div>
-        </div>
+        </section>
+
+        <!-- PAGE: INPUT TRANSAKSI -->
+        <section id="transactions" class="page">
+            <h1 style="text-align: center; margin-bottom: 3rem;">New Transaction</h1>
+            <div class="form-container">
+                <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">NOMINAL (IDR)</label>
+                <input type="text" id="displayNominal" placeholder="0" oninput="formatRp(this)">
+                <input type="hidden" id="realNominal">
+                
+                <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">KETERANGAN / CATEGORY</label>
+                <input type="text" id="ket" placeholder="e.g. Salary, Rent, Coffee...">
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem">
+                    <div>
+                        <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">TYPE</label>
+                        <select id="tipe">
+                            <option value="Pemasukan">Income (+)</option>
+                            <option value="Pengeluaran">Expense (-)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">DATE</label>
+                        <input type="date" id="tgl">
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveData()">Add Record</button>
+            </div>
+        </section>
     </main>
 
     <script>
-        let data = JSON.parse(localStorage.getItem('fincore_vfinal')) || [];
+        let db = JSON.parse(localStorage.getItem('fintrack_v1')) || [];
+        let mChart, pChart;
 
-        // FUNGSI FORMAT RUPIAH OTOMATIS SAAT KETIK
-        function formatRupiah(input) {
-            let value = input.value.replace(/[^,\d]/g, '').toString();
-            let split = value.split(',');
-            let sisa = split[0].length % 3;
-            let rupiah = split[0].substr(0, sisa);
-            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-            if (ribuan) {
-                let separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            input.value = rupiah;
-            // Simpan angka asli ke hidden input untuk kalkulasi
-            document.getElementById('nominalReal').value = value;
+        // Navigasi SPA
+        function switchPage(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            if(pageId === 'dashboard') renderDashboard();
         }
 
-        function simpan() {
-            const nom = document.getElementById('nominalReal').value;
+        // Auto Format Rupiah
+        function formatRp(el) {
+            let val = el.value.replace(/[^0-9]/g, '');
+            document.getElementById('realNominal').value = val;
+            el.value = new Intl.NumberFormat('id-ID').format(val);
+        }
+
+        function saveData() {
+            const nom = document.getElementById('realNominal').value;
             const ket = document.getElementById('ket').value;
             const tgl = document.getElementById('tgl').value;
             const tipe = document.getElementById('tipe').value;
+            if(!nom || !ket || !tgl) return alert("Please complete all fields!");
 
-            if(!nom || !ket || !tgl) return alert("Lengkapi semua kolom!");
-
-            data.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe });
-            localStorage.setItem('fincore_vfinal', JSON.stringify(data));
-            render();
-            
-            // Reset
-            document.getElementById('nominalDisplay').value = '';
-            document.getElementById('nominalReal').value = '';
-            document.getElementById('ket').value = '';
+            db.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe });
+            localStorage.setItem('fintrack_v1', JSON.stringify(db));
+            alert("Success!");
+            switchPage('dashboard', document.querySelectorAll('.nav-item')[0]);
         }
 
-        function render() {
-            const list = document.getElementById('daftar');
-            list.innerHTML = '';
+        function renderDashboard() {
             let masuk = 0, keluar = 0;
+            const list = document.getElementById('historyTable');
+            list.innerHTML = '';
+            
+            const chartData = { l: [], v: [] };
 
-            [...data].reverse().forEach(item => {
-                if(item.tipe === 'Pemasukan') masuk += item.nom;
-                else keluar += item.nom;
-
-                list.innerHTML += `
-                    <div class="item">
-                        <div class="item-info">
-                            <b>${item.ket}</b>
-                            <small>${item.tgl}</small>
-                        </div>
-                        <div class="amt ${item.tipe === 'Pemasukan' ? 'text-up' : 'text-down'}">
-                            ${item.tipe === 'Pemasukan' ? '+' : '-'} ${item.nom.toLocaleString('id-ID')}
-                        </div>
-                    </div>
-                `;
+            [...db].sort((a,b) => new Date(a.tgl) - new Date(b.tgl)).forEach(item => {
+                if(item.tipe === 'Pemasukan') masuk += item.nom; else keluar += item.nom;
+                chartData.l.push(item.tgl);
+                chartData.v.push(masuk - keluar);
             });
 
-            document.getElementById('totalMasuk').innerText = `Rp ${masuk.toLocaleString('id-ID')}`;
-            document.getElementById('totalKeluar').innerText = `Rp ${keluar.toLocaleString('id-ID')}`;
-            document.getElementById('totalSaldo').innerText = `Rp ${(masuk - keluar).toLocaleString('id-ID')}`;
+            document.getElementById('bal').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(masuk - keluar)}`;
+            document.getElementById('inc').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(masuk)}`;
+            document.getElementById('exp').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(keluar)}`;
+
+            db.slice().reverse().slice(0, 5).forEach(item => {
+                list.innerHTML += `<tr>
+                    <td><b>${item.ket}</b></td>
+                    <td>${item.tgl}</td>
+                    <td><span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:10px">${item.tipe}</span></td>
+                    <td class="${item.tipe === 'Pemasukan' ? 'amt-pos' : 'amt-neg'}">
+                        ${item.tipe === 'Pemasukan' ? '+' : '-'} Rp ${new Intl.NumberFormat('id-ID').format(item.nom)}
+                    </td>
+                </tr>`;
+            });
+
+            updateCharts(chartData, masuk, keluar);
+        }
+
+        function updateCharts(cd, inV, outV) {
+            if(mChart) mChart.destroy(); if(pChart) pChart.destroy();
+            mChart = new Chart(document.getElementById('mainChart'), {
+                type: 'line',
+                data: { labels: cd.l, datasets: [{ label: 'Balance', data: cd.v, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+            pChart = new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: { labels: ['Income', 'Expense'], datasets: [{ data: [inV, outV], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+                options: { cutout: '80%', plugins: { legend: { position: 'bottom' } } }
+            });
         }
 
         document.getElementById('tgl').valueAsDate = new Date();
-        render();
+        renderDashboard();
     </script>
 </body>
 </html>
