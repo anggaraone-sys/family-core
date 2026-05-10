@@ -297,6 +297,58 @@
             cursor: pointer;
         }
 
+        #fabButton {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg,#6366f1,#818cf8);
+            color: white;
+            font-size: 34px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+            transition: 0.3s;
+        }
+
+        #fabButton:hover {
+            transform: scale(1.08);
+        }
+
+        #modalBackdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        #modalBackdrop.active {
+            display: flex;
+        }
+
+        #transaction .form-card {
+            animation: popup 0.25s ease;
+        }
+
+        @keyframes popup {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @media(max-width: 900px) {
             body {
                 flex-direction: column;
@@ -330,7 +382,21 @@
         <div class="nav" onclick="goPage('transaction', this)">
             💸 Transactions
         </div>
+
+        <div class="nav" onclick="goPage('monthly', this)">
+            📅 Monthly Report
+        </div>
     </aside>
+
+    <!-- ================= FLOAT ACTION BUTTON ================= -->
+
+    <button id="fabButton" onclick="openModal()">
+        +
+    </button>
+
+    <!-- ================= MODAL BACKDROP ================= -->
+
+    <div id="modalBackdrop"></div>
 
     <main>
 
@@ -409,6 +475,8 @@
 
         <section id="transaction" class="page">
 
+            <div style="display:flex;justify-content:center;align-items:center;min-height:80vh;">
+
             <div class="form-card">
                 <h3>Add New Transaction</h3>
 
@@ -435,6 +503,47 @@
                 <button onclick="saveTransaction()">
                     Save Transaction
                 </button>
+
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    style="margin-top:10px;background:#e2e8f0;color:#111827;">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+
+        </section>
+
+        <!-- ================= MONTHLY REPORT ================= -->
+
+        <section id="monthly" class="page">
+
+            <div class="table-card">
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <div>
+                        <h2 style="margin-bottom:5px;">Monthly Report</h2>
+                        <small style="color:#94a3b8;">
+                            Automatic report by month
+                        </small>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Income</th>
+                            <th>Total Expense</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="monthlyTable"></tbody>
+                </table>
+
             </div>
 
         </section>
@@ -453,6 +562,28 @@
             let value = input.value.replace(/\D/g, '');
             document.getElementById('realNominal').value = value;
             input.value = new Intl.NumberFormat('id-ID').format(value);
+        }
+
+        function openModal() {
+
+            document.getElementById('modalBackdrop').classList.add('active');
+
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            document.getElementById('transaction').classList.add('active');
+        }
+
+        function closeModal() {
+
+            document.getElementById('modalBackdrop').classList.remove('active');
+
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            document.getElementById('dashboard').classList.add('active');
         }
 
         function goPage(id, el) {
@@ -495,7 +626,10 @@
 
             alert('Transaction saved');
 
-            location.reload();
+            closeModal();
+
+            renderDashboard();
+            renderMonthlyReport();
         }
 
         function renderDashboard() {
@@ -504,38 +638,50 @@
             let expense = 0;
 
             const table = document.getElementById('tableData');
-            const chart = document.getElementById('barChart');
-
             table.innerHTML = '';
-            chart.innerHTML = '';
 
-            db.sort((a,b) => new Date(a.date) - new Date(b.date));
+            // ================= FILTER MONTHLY =================
 
-            db.forEach(item => {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
 
+            const monthlyData = db.filter(item => {
+                const d = new Date(item.date);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            });
+
+            // ================= HITUNG TOTAL =================
+
+            monthlyData.forEach(item => {
                 if(item.type === 'income') {
                     income += item.nominal;
                 } else {
                     expense += item.nominal;
                 }
-
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-
-                const total = income + expense || 1;
-
-                let percent = ((item.nominal / total) * 100);
-
-                bar.style.height = Math.max(percent, 10) + '%';
-
-                bar.setAttribute('data-label', rupiah(item.nominal));
-
-                chart.appendChild(bar);
             });
+
+            // ================= UPDATE CARD =================
 
             document.getElementById('balance').innerText = rupiah(income - expense);
             document.getElementById('income').innerText = rupiah(income);
             document.getElementById('expense').innerText = rupiah(expense);
+
+            // ================= LINE CHART =================
+
+            const chart = document.getElementById('barChart');
+            chart.innerHTML = `
+                <svg width="100%" height="220" viewBox="0 0 600 220">
+                    <polyline
+                        fill="none"
+                        stroke="#6366f1"
+                        stroke-width="4"
+                        points="${generateLinePoints(monthlyData)}"
+                    />
+                </svg>
+            `;
+
+            // ================= RATIO =================
 
             const totalMoney = income + expense || 1;
 
@@ -545,22 +691,122 @@
             document.getElementById('expenseBar').style.width =
                 (expense / totalMoney * 100) + '%';
 
-            db.slice().reverse().slice(0, 8).forEach(item => {
+            // ================= SEARCH =================
 
-                table.innerHTML += `
-                    <tr>
-                        <td>${item.description}</td>
-                        <td>${item.date}</td>
-                        <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
-                            ${item.type}
-                        </td>
-                        <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
-                            ${rupiah(item.nominal)}
-                        </td>
-                    </tr>
-                `;
-            });
+            const keyword = document.querySelector('.search').value.toLowerCase();
+
+            monthlyData
+                .slice()
+                .reverse()
+                .filter(item =>
+                    item.description.toLowerCase().includes(keyword)
+                )
+                .forEach(item => {
+
+                    table.innerHTML += `
+                        <tr>
+                            <td>${item.description}</td>
+                            <td>${item.date}</td>
+                            <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
+                                ${item.type}
+                            </td>
+                            <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
+                                ${rupiah(item.nominal)}
+                            </td>
+                        </tr>
+                    `;
+                });
         }
+
+        // ================= GENERATE LINE CHART =================
+
+        function generateLinePoints(data) {
+
+            if(data.length === 0) {
+                return '0,200 600,200';
+            }
+
+            let total = 0;
+            let points = [];
+
+            data.forEach((item, index) => {
+
+                if(item.type === 'income') {
+                    total += item.nominal;
+                } else {
+                    total -= item.nominal;
+                }
+
+                const x = (index / (data.length - 1 || 1)) * 580 + 10;
+
+                const y = 200 - Math.min(total / 10000, 180);
+
+                points.push(`${x},${y}`);
+            });
+
+            return points.join(' ');
+        }
+
+        // ================= SEARCH EVENT =================
+
+        document.querySelector('.search').addEventListener('input', renderDashboard);
+
+        // ================= MONTHLY REPORT =================
+
+        function renderMonthlyReport() {
+
+            const table = document.getElementById('monthlyTable');
+            table.innerHTML = '';
+
+            let grouped = {};
+
+            db.forEach(item => {
+
+                const d = new Date(item.date);
+
+                const key = `${d.getFullYear()}-${d.getMonth()+1}`;
+
+                if(!grouped[key]) {
+                    grouped[key] = {
+                        income: 0,
+                        expense: 0
+                    };
+                }
+
+                if(item.type === 'income') {
+                    grouped[key].income += item.nominal;
+                } else {
+                    grouped[key].expense += item.nominal;
+                }
+            });
+
+            Object.keys(grouped)
+                .sort()
+                .reverse()
+                .forEach(key => {
+
+                    const data = grouped[key];
+
+                    const balance = data.income - data.expense;
+
+                    table.innerHTML += `
+                        <tr>
+                            <td>${key}</td>
+                            <td style="color:#10b981;">
+                                ${rupiah(data.income)}
+                            </td>
+                            <td style="color:#ef4444;">
+                                ${rupiah(data.expense)}
+                            </td>
+                            <td>
+                                ${rupiah(balance)}
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+
+        renderMonthlyReport();
 
         document.getElementById('date').valueAsDate = new Date();
 
