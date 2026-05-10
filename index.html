@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuanganku</title>
+    <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">💰 Catatan Keuangan</h1>
+
+        <!-- Form Input -->
+        <div class="space-y-4 mb-8">
+            <input type="date" id="tgl" class="w-full p-2 border rounded">
+            <select id="tipe" class="w-full p-2 border rounded">
+                <option value="Pemasukan">Pemasukan (Gaji/Tambahan)</option>
+                <option value="Pengeluaran">Pengeluaran</option>
+            </select>
+            <input type="number" id="nominal" placeholder="Nominal (Contoh: 50000)" class="w-full p-2 border rounded">
+            <input type="text" id="ket" placeholder="Keterangan (Makan, Gaji, dll)" class="w-full p-2 border rounded">
+            <button onclick="simpanTransaksi()" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 font-bold">Simpan Transaksi</button>
+        </div>
+
+        <!-- Ringkasan Singkat -->
+        <div class="grid grid-cols-2 gap-4 mb-6 text-center text-sm">
+            <div class="bg-green-100 p-2 rounded">
+                <p class="text-gray-600">Total Masuk</p>
+                <p id="totalMasuk" class="font-bold text-green-700">Rp 0</p>
+            </div>
+            <div class="bg-red-100 p-2 rounded">
+                <p class="text-gray-600">Total Keluar</p>
+                <p id="totalKeluar" class="font-bold text-red-700">Rp 0</p>
+            </div>
+        </div>
+
+        <!-- Daftar Transaksi -->
+        <h2 class="font-bold mb-2 border-b">Riwayat Terakhir</h2>
+        <ul id="daftar" class="divide-y text-sm"></ul>
+    </div>
+
+    <script>
+        let data = JSON.parse(localStorage.getItem('keuangan')) || [];
+
+        function simpanTransaksi() {
+            const transaksi = {
+                tgl: document.getElementById('tgl').value,
+                tipe: document.getElementById('tipe').value,
+                nominal: parseInt(document.getElementById('nominal').value),
+                ket: document.getElementById('ket').value
+            };
+            
+            if(!transaksi.tgl || !transaksi.nominal) return alert("Isi tanggal dan nominal!");
+
+            data.push(transaksi);
+            localStorage.setItem('keuangan', JSON.stringify(data));
+            tampilkanData();
+            // Reset input
+            document.getElementById('nominal').value = '';
+            document.getElementById('ket').value = '';
+        }
+
+        function tampilkanData() {
+            const list = document.getElementById('daftar');
+            list.innerHTML = '';
+            let masuk = 0, keluar = 0;
+
+            data.reverse().forEach((item) => {
+                const li = document.createElement('li');
+                li.className = 'py-2 flex justify-between';
+                const warna = item.tipe === 'Pemasukan' ? 'text-green-600' : 'text-red-600';
+                li.innerHTML = `<span>${item.ket} <br><small class="text-gray-400">${item.tgl}</small></span> 
+                                <span class="${warna} font-bold">${item.tipe === 'Pemasukan' ? '+' : '-'} ${item.nominal.toLocaleString()}</span>`;
+                list.appendChild(li);
+
+                if(item.tipe === 'Pemasukan') masuk += item.nominal;
+                else keluar += item.nominal;
+            });
+
+            document.getElementById('totalMasuk').innerText = `Rp ${masuk.toLocaleString()}`;
+            document.getElementById('totalKeluar').innerText = `Rp ${keluar.toLocaleString()}`;
+        }
+        tampilkanData();
+    </script>
+</body>
+</html>
