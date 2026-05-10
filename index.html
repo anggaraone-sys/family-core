@@ -3,153 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinTrack - Overview</title>
-    <!-- Ganti script Chart.js ke CDN yang lebih stabil -->
-    <script src="https://cloudflare.com"></script>
+    <title>FinTrack - Ultra Lite</title>
     <style>
-        :root { --sidebar-bg: #1a1c2e; --main-bg: #f8fafc; --primary: #6366f1; --text-light: #94a3b8; }
-        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--main-bg); }
-        aside { width: 260px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 2rem 1.5rem; }
-        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 1rem; border-radius: 12px; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; transition: 0.3s; }
-        .nav-item.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--primary); }
-        main { flex: 1; padding: 2.5rem; overflow-y: auto; }
+        /* CSS MURNI - Tanpa download file luar sama sekali */
+        :root { --side: #1a1c2e; --bg: #f8fafc; --prim: #6366f1; --txt: #94a3b8; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
+
+        /* Sidebar */
+        aside { width: 240px; background: var(--side); color: white; padding: 2rem 1rem; display: flex; flex-direction: column; }
+        .logo { font-size: 1.4rem; font-weight: 800; margin-bottom: 2.5rem; color: #fff; padding-left: 10px; }
+        .nav { padding: 12px; border-radius: 10px; color: var(--txt); cursor: pointer; margin-bottom: 5px; font-weight: 600; display: flex; gap: 10px; }
+        .nav:hover, .nav.active { background: rgba(255,255,255,0.05); color: white; }
+        .nav.active { border-left: 4px solid var(--prim); }
+
+        /* Main */
+        main { flex: 1; padding: 2rem; overflow-y: auto; }
         .page { display: none; }
         .page.active { display: block; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .card h2 { margin: 0.5rem 0; font-size: 1.8rem; }
-        .grid-middle { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        .chart-box { background: white; padding: 1.5rem; border-radius: 24px; min-height: 320px; position: relative; }
-        .form-container { max-width: 500px; margin: 4rem auto; background: white; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 25px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; }
-        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 16px; font-weight: 800; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; color: var(--text-light); font-size: 0.75rem; padding-bottom: 1rem; }
-        td { padding: 0.8rem 0; border-bottom: 1px solid #f8fafc; font-size: 0.85rem; }
+
+        /* Cards */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        .card small { font-size: 10px; font-weight: 800; color: var(--txt); }
+        .card h2 { margin: 5px 0 0; font-size: 1.5rem; color: #1e293b; }
+
+        /* Grafik Manual (CSS) */
+        .chart-box { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #f1f5f9; min-height: 250px; }
+        .bar-container { display: flex; align-items: flex-end; gap: 10px; height: 150px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
+        .bar { flex: 1; background: var(--prim); border-radius: 5px 5px 0 0; min-height: 2px; transition: 0.5s; position: relative; }
+        .bar:hover::after { content: attr(data-val); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; background: #333; color: #fff; padding: 2px 5px; border-radius: 4px; }
+
+        /* Pie Manual */
+        .pie-wrap { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .pie-bar-bg { width: 100%; height: 20px; background: #f1f5f9; border-radius: 10px; overflow: hidden; display: flex; }
+        .p-in { height: 100%; background: #10b981; transition: 0.5s; }
+        .p-out { height: 100%; background: #ef4444; transition: 0.5s; }
+
+        /* Form & Table */
+        .form-card { max-width: 500px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 25px; border: 1px solid #f1f5f9; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        button { background: var(--prim); color: white; border: none; font-weight: 800; cursor: pointer; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 13px; }
+        th { text-align: left; color: var(--txt); padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 12px 0; border-bottom: 1px solid #f8fafc; }
+
+        @media (max-width: 800px) { body { flex-direction: column; } aside { width: 100%; min-height: auto; } .grid-3 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo">👑 <span>FinTrack</span></div>
-        <div class="nav-item active" onclick="switchPage('dashboard', this)">📊 <span>Dashboard</span></div>
-        <div class="nav-item" onclick="switchPage('transactions', this)">💸 <span>Transactions</span></div>
+        <div class="logo">👑 FinTrack</div>
+        <div class="nav active" onclick="go('dash', this)">📊 Dashboard</div>
+        <div class="nav" onclick="go('tx', this)">💸 Transactions</div>
     </aside>
 
     <main>
-        <section id="dashboard" class="page active">
-            <h1>Financial Overview</h1>
-            <div class="stats-grid">
-                <div class="card"><small>TOTAL BALANCE</small><h2 id="bal">Rp 0</h2></div>
-                <div class="card"><small style="color:#10b981">TOTAL INCOME</small><h2 id="inc">Rp 0</h2></div>
-                <div class="card"><small style="color:#ef4444">TOTAL EXPENSES</small><h2 id="exp">Rp 0</h2></div>
+        <section id="dash" class="page active">
+            <h3 style="margin-top:0">Financial Overview</h3>
+            <div class="grid-3">
+                <div class="card"><small>BALANCE</small><h2 id="b">Rp 0</h2></div>
+                <div class="card"><small style="color:#10b981">INCOME</small><h2 id="i">Rp 0</h2></div>
+                <div class="card"><small style="color:#ef4444">EXPENSE</small><h2 id="e">Rp 0</h2></div>
             </div>
-            <div class="grid-middle">
+
+            <div class="grid-3" style="grid-template-columns: 2fr 1fr;">
                 <div class="chart-box">
-                    <h4 style="margin-top:0">Spending Analysis</h4>
-                    <canvas id="mainChart"></canvas>
+                    <small>SPENDING ANALYSIS (NET)</small>
+                    <div class="bar-container" id="barChart"></div>
                 </div>
-                <div class="chart-box">
-                    <h4 style="margin-top:0">Expense Category</h4>
-                    <canvas id="pieChart"></canvas>
+                <div class="chart-box pie-wrap">
+                    <small>RATIO IN vs OUT</small>
+                    <div class="pie-bar-bg"><div id="pi" class="p-in"></div><div id="po" class="p-out"></div></div>
+                    <div style="font-size:11px; display:flex; gap:10px">
+                        <span style="color:#10b981">● Income</span> <span style="color:#ef4444">● Expense</span>
+                    </div>
                 </div>
             </div>
+
             <div class="card">
-                <h4>Recent Transactions</h4>
-                <table id="historyTable"></table>
+                <small>RECENT TRANSACTIONS</small>
+                <table>
+                    <thead><tr><th>TX</th><th>DATE</th><th>AMT</th></tr></thead>
+                    <tbody id="tab"></tbody>
+                </table>
             </div>
         </section>
 
-        <section id="transactions" class="page">
-            <div class="form-container">
-                <h3>New Transaction</h3>
-                <input type="text" id="displayNom" placeholder="Nominal Rp" oninput="formatRp(this)">
-                <input type="hidden" id="realNom">
+        <section id="tx" class="page">
+            <div class="form-card">
+                <h4 style="margin:0 0 20px 0">Add Transaction</h4>
+                <input type="text" id="disp" placeholder="Nominal Rp" oninput="fmt(this)">
+                <input type="hidden" id="real">
                 <input type="text" id="ket" placeholder="Keterangan">
-                <select id="tipe"><option value="Pemasukan">Income (+)</option><option value="Pengeluaran">Expense (-)</option></select>
+                <select id="tip"><option value="P">Income (+)</option><option value="K">Expense (-)</option></select>
                 <input type="date" id="tgl">
-                <button class="btn-save" onclick="saveData()">Add Record</button>
+                <button onclick="save()">Save Transaction</button>
             </div>
         </section>
     </main>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('fintrack_v1')) || [];
-        let mChart = null; let pChart = null;
+        let db = JSON.parse(localStorage.getItem('ft_v_lite')) || [];
 
-        function switchPage(pageId, el) {
+        function go(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            if(pageId === 'dashboard') renderDashboard();
+            if(id === 'dash') render();
         }
 
-        function formatRp(el) {
-            let val = el.value.replace(/[^0-9]/g, '');
-            document.getElementById('realNom').value = val;
-            el.value = new Intl.NumberFormat('id-ID').format(val);
+        function fmt(el) {
+            let v = el.value.replace(/\D/g, '');
+            document.getElementById('real').value = v;
+            el.value = new Intl.NumberFormat('id-ID').format(v);
         }
 
-        function saveData() {
-            const nom = document.getElementById('realNom').value;
-            const ket = document.getElementById('ket').value;
-            const tgl = document.getElementById('tgl').value;
-            if(!nom || !ket || !tgl) return alert("Lengkapi data!");
-
-            db.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe: document.getElementById('tipe').value });
-            localStorage.setItem('fintrack_v1', JSON.stringify(db));
-            alert("Data tersimpan!");
-            location.reload(); // Refresh agar grafik render ulang dengan data baru
+        function save() {
+            const n = document.getElementById('real').value;
+            const k = document.getElementById('ket').value;
+            const t = document.getElementById('tgl').value;
+            if(!n || !k || !t) return alert("Isi lengkap!");
+            db.push({ n: parseInt(n), k, t, p: document.getElementById('tip').value });
+            localStorage.setItem('ft_v_lite', JSON.stringify(db));
+            alert("Tersimpan!");
+            location.reload();
         }
 
-        function renderDashboard() {
-            let inV = 0, outV = 0;
-            const table = document.getElementById('historyTable');
-            table.innerHTML = '<thead><tr><th>TX</th><th>DATE</th><th>AMT</th></tr></thead>';
+        function render() {
+            let mi = 0, mo = 0;
+            const tab = document.getElementById('tab');
+            const bar = document.getElementById('barChart');
+            tab.innerHTML = ''; bar.innerHTML = '';
             
-            const cL = []; const cV = [];
+            // Urutkan data berdasarkan tanggal
+            db.sort((a,b) => new Date(a.t) - new Date(b.t));
 
-            [...db].sort((a,b) => new Date(a.tgl) - new Date(b.tgl)).forEach(item => {
-                if(item.tipe === 'Pemasukan') inV += item.nom; else outV += item.nom;
-                cL.push(item.tgl);
-                cV.push(inV - outV);
+            db.forEach(d => {
+                if(d.p === 'P') mi += d.n; else mo += d.n;
+                // Buat Bar Chart CSS
+                const b = document.createElement('div');
+                b.className = 'bar';
+                let h = ((mi-mo) / (mi || 1)) * 100;
+                b.style.height = Math.max(h, 5) + '%';
+                b.setAttribute('data-val', (mi-mo).toLocaleString());
+                bar.appendChild(b);
             });
 
-            document.getElementById('bal').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(inV-outV)}`;
-            document.getElementById('inc').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(inV)}`;
-            document.getElementById('exp').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(outV)}`;
+            document.getElementById('b').innerText = 'Rp ' + (mi-mo).toLocaleString('id-ID');
+            document.getElementById('i').innerText = 'Rp ' + mi.toLocaleString('id-ID');
+            document.getElementById('e').innerText = 'Rp ' + mo.toLocaleString('id-ID');
 
-            db.slice().reverse().slice(0, 5).forEach(item => {
-                table.innerHTML += `<tr><td>${item.ket}</td><td>${item.tgl}</td><td style="color:${item.tipe === 'Pemasukan' ? '#10b981':'#ef4444'}">${item.nom.toLocaleString()}</td></tr>`;
-            });
+            // Update Ratio Bar
+            let total = mi + mo;
+            document.getElementById('pi').style.width = (mi / total * 100) + '%';
+            document.getElementById('po').style.width = (mo / total * 100) + '%';
 
-            // Jalankan grafik setelah sedikit delay agar canvas siap
-            setTimeout(() => { initCharts(cL, cV, inV, outV); }, 200);
-        }
-
-        function initCharts(labels, values, inVal, outVal) {
-            if(mChart) mChart.destroy(); if(pChart) pChart.destroy();
-            
-            const ctx1 = document.getElementById('mainChart').getContext('2d');
-            mChart = new Chart(ctx1, {
-                type: 'line',
-                data: { labels: labels, datasets: [{ data: values, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.05)' }] },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            const ctx2 = document.getElementById('pieChart').getContext('2d');
-            pChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: { labels: ['In', 'Out'], datasets: [{ data: [inVal, outVal], backgroundColor: ['#10b981', '#ef4444'] }] },
-                options: { maintainAspectRatio: false, cutout: '75%' }
+            db.slice().reverse().slice(0, 5).forEach(d => {
+                tab.innerHTML += `<tr><td>${d.k}</td><td>${d.t}</td><td style="color:${d.p === 'P' ? '#10b981':'#ef4444'}">${d.n.toLocaleString()}</td></tr>`;
             });
         }
 
         document.getElementById('tgl').valueAsDate = new Date();
-        window.onload = renderDashboard;
+        render();
     </script>
 </body>
 </html>
