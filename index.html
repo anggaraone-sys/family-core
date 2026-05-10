@@ -3,52 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinTrack - Financial Overview</title>
-    <script src="https://jsdelivr.net"></script>
+    <title>FinTrack - Overview</title>
+    <!-- Ganti script Chart.js ke CDN yang lebih stabil -->
+    <script src="https://cloudflare.com"></script>
     <style>
         :root { --sidebar-bg: #1a1c2e; --main-bg: #f8fafc; --primary: #6366f1; --text-light: #94a3b8; }
         * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
         body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--main-bg); }
-
-        /* Sidebar Style */
-        aside { width: 260px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 2rem 1.5rem; transition: 0.3s; }
+        aside { width: 260px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; padding: 2rem 1.5rem; }
         .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 3rem; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 1rem; border-radius: 12px; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; transition: 0.3s; text-decoration: none; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { border-left: 4px solid var(--primary); border-radius: 4px 12px 12px 4px; }
-
-        /* Main Area */
+        .nav-item { padding: 1rem; border-radius: 12px; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 15px; margin-bottom: 0.5rem; transition: 0.3s; }
+        .nav-item.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--primary); }
         main { flex: 1; padding: 2.5rem; overflow-y: auto; }
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Dashboard Cards */
+        .page.active { display: block; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .card small { color: var(--text-light); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .card h2 { margin: 0.5rem 0; font-size: 1.8rem; }
-
-        /* Chart & Categories */
         .grid-middle { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        .chart-box { background: white; padding: 2rem; border-radius: 24px; min-height: 300px; }
-
-        /* Transaction List */
-        .recent-box { background: white; padding: 2rem; border-radius: 24px; }
+        .chart-box { background: white; padding: 1.5rem; border-radius: 24px; min-height: 320px; position: relative; }
+        .form-container { max-width: 500px; margin: 4rem auto; background: white; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 25px rgba(0,0,0,0.05); }
+        input, select { width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; }
+        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 16px; font-weight: 800; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th { text-align: left; color: var(--text-light); font-size: 0.8rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
-        td { padding: 1rem 0; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; }
-        .amt-pos { color: #10b981; font-weight: 700; }
-        .amt-neg { color: #ef4444; font-weight: 700; }
-
-        /* Form Inputs */
-        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 1.2rem; margin-bottom: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 1rem; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-save:hover { filter: brightness(1.1); transform: translateY(-2px); }
-
-        @media (max-width: 1024px) { .stats-grid, .grid-middle { grid-template-columns: 1fr; } aside { width: 80px; padding: 1.5rem 0.5rem; } aside span { display: none; } }
+        th { text-align: left; color: var(--text-light); font-size: 0.75rem; padding-bottom: 1rem; }
+        td { padding: 0.8rem 0; border-bottom: 1px solid #f8fafc; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -57,65 +36,40 @@
         <div class="logo">👑 <span>FinTrack</span></div>
         <div class="nav-item active" onclick="switchPage('dashboard', this)">📊 <span>Dashboard</span></div>
         <div class="nav-item" onclick="switchPage('transactions', this)">💸 <span>Transactions</span></div>
-        <div class="nav-item" style="margin-top:auto">⚙️ <span>Settings</span></div>
     </aside>
 
     <main>
-        <!-- PAGE: DASHBOARD -->
         <section id="dashboard" class="page active">
             <h1>Financial Overview</h1>
-            <p style="color: var(--text-light); margin-bottom: 2rem;">Welcome back, here is your daily breakdown.</p>
-            
             <div class="stats-grid">
-                <div class="card"><small>Total Balance</small><h2 id="bal">Rp 0</h2></div>
-                <div class="card"><small style="color:#10b981">Total Income</small><h2 id="inc">Rp 0</h2></div>
-                <div class="card"><small style="color:#ef4444">Total Expenses</small><h2 id="exp">Rp 0</h2></div>
+                <div class="card"><small>TOTAL BALANCE</small><h2 id="bal">Rp 0</h2></div>
+                <div class="card"><small style="color:#10b981">TOTAL INCOME</small><h2 id="inc">Rp 0</h2></div>
+                <div class="card"><small style="color:#ef4444">TOTAL EXPENSES</small><h2 id="exp">Rp 0</h2></div>
             </div>
-
             <div class="grid-middle">
                 <div class="chart-box">
-                    <h4 style="margin:0 0 1.5rem 0">Spending Analysis</h4>
+                    <h4 style="margin-top:0">Spending Analysis</h4>
                     <canvas id="mainChart"></canvas>
                 </div>
-                <div class="chart-box" style="text-align: center;">
-                    <h4 style="margin:0 0 1.5rem 0">Expense by Category</h4>
+                <div class="chart-box">
+                    <h4 style="margin-top:0">Expense Category</h4>
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
-
-            <div class="recent-box">
-                <h4 style="margin:0">Recent Transactions</h4>
-                <table>
-                    <thead><tr><th>TRANSACTION</th><th>DATE</th><th>CATEGORY</th><th>AMOUNT</th></tr></thead>
-                    <tbody id="historyTable"></tbody>
-                </table>
+            <div class="card">
+                <h4>Recent Transactions</h4>
+                <table id="historyTable"></table>
             </div>
         </section>
 
-        <!-- PAGE: INPUT TRANSAKSI -->
         <section id="transactions" class="page">
-            <h1 style="text-align: center; margin-bottom: 3rem;">New Transaction</h1>
             <div class="form-container">
-                <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">NOMINAL (IDR)</label>
-                <input type="text" id="displayNominal" placeholder="0" oninput="formatRp(this)">
-                <input type="hidden" id="realNominal">
-                
-                <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">KETERANGAN / CATEGORY</label>
-                <input type="text" id="ket" placeholder="e.g. Salary, Rent, Coffee...">
-                
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem">
-                    <div>
-                        <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">TYPE</label>
-                        <select id="tipe">
-                            <option value="Pemasukan">Income (+)</option>
-                            <option value="Pengeluaran">Expense (-)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; color:var(--text-light); font-size:0.7rem; margin-left:10px">DATE</label>
-                        <input type="date" id="tgl">
-                    </div>
-                </div>
+                <h3>New Transaction</h3>
+                <input type="text" id="displayNom" placeholder="Nominal Rp" oninput="formatRp(this)">
+                <input type="hidden" id="realNom">
+                <input type="text" id="ket" placeholder="Keterangan">
+                <select id="tipe"><option value="Pemasukan">Income (+)</option><option value="Pengeluaran">Expense (-)</option></select>
+                <input type="date" id="tgl">
                 <button class="btn-save" onclick="saveData()">Add Record</button>
             </div>
         </section>
@@ -123,9 +77,8 @@
 
     <script>
         let db = JSON.parse(localStorage.getItem('fintrack_v1')) || [];
-        let mChart, pChart;
+        let mChart = null; let pChart = null;
 
-        // Navigasi SPA
         function switchPage(pageId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -134,73 +87,69 @@
             if(pageId === 'dashboard') renderDashboard();
         }
 
-        // Auto Format Rupiah
         function formatRp(el) {
             let val = el.value.replace(/[^0-9]/g, '');
-            document.getElementById('realNominal').value = val;
+            document.getElementById('realNom').value = val;
             el.value = new Intl.NumberFormat('id-ID').format(val);
         }
 
         function saveData() {
-            const nom = document.getElementById('realNominal').value;
+            const nom = document.getElementById('realNom').value;
             const ket = document.getElementById('ket').value;
             const tgl = document.getElementById('tgl').value;
-            const tipe = document.getElementById('tipe').value;
-            if(!nom || !ket || !tgl) return alert("Please complete all fields!");
+            if(!nom || !ket || !tgl) return alert("Lengkapi data!");
 
-            db.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe });
+            db.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe: document.getElementById('tipe').value });
             localStorage.setItem('fintrack_v1', JSON.stringify(db));
-            alert("Success!");
-            switchPage('dashboard', document.querySelectorAll('.nav-item')[0]);
+            alert("Data tersimpan!");
+            location.reload(); // Refresh agar grafik render ulang dengan data baru
         }
 
         function renderDashboard() {
-            let masuk = 0, keluar = 0;
-            const list = document.getElementById('historyTable');
-            list.innerHTML = '';
+            let inV = 0, outV = 0;
+            const table = document.getElementById('historyTable');
+            table.innerHTML = '<thead><tr><th>TX</th><th>DATE</th><th>AMT</th></tr></thead>';
             
-            const chartData = { l: [], v: [] };
+            const cL = []; const cV = [];
 
             [...db].sort((a,b) => new Date(a.tgl) - new Date(b.tgl)).forEach(item => {
-                if(item.tipe === 'Pemasukan') masuk += item.nom; else keluar += item.nom;
-                chartData.l.push(item.tgl);
-                chartData.v.push(masuk - keluar);
+                if(item.tipe === 'Pemasukan') inV += item.nom; else outV += item.nom;
+                cL.push(item.tgl);
+                cV.push(inV - outV);
             });
 
-            document.getElementById('bal').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(masuk - keluar)}`;
-            document.getElementById('inc').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(masuk)}`;
-            document.getElementById('exp').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(keluar)}`;
+            document.getElementById('bal').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(inV-outV)}`;
+            document.getElementById('inc').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(inV)}`;
+            document.getElementById('exp').innerText = `Rp ${new Intl.NumberFormat('id-ID').format(outV)}`;
 
             db.slice().reverse().slice(0, 5).forEach(item => {
-                list.innerHTML += `<tr>
-                    <td><b>${item.ket}</b></td>
-                    <td>${item.tgl}</td>
-                    <td><span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:10px">${item.tipe}</span></td>
-                    <td class="${item.tipe === 'Pemasukan' ? 'amt-pos' : 'amt-neg'}">
-                        ${item.tipe === 'Pemasukan' ? '+' : '-'} Rp ${new Intl.NumberFormat('id-ID').format(item.nom)}
-                    </td>
-                </tr>`;
+                table.innerHTML += `<tr><td>${item.ket}</td><td>${item.tgl}</td><td style="color:${item.tipe === 'Pemasukan' ? '#10b981':'#ef4444'}">${item.nom.toLocaleString()}</td></tr>`;
             });
 
-            updateCharts(chartData, masuk, keluar);
+            // Jalankan grafik setelah sedikit delay agar canvas siap
+            setTimeout(() => { initCharts(cL, cV, inV, outV); }, 200);
         }
 
-        function updateCharts(cd, inV, outV) {
+        function initCharts(labels, values, inVal, outVal) {
             if(mChart) mChart.destroy(); if(pChart) pChart.destroy();
-            mChart = new Chart(document.getElementById('mainChart'), {
+            
+            const ctx1 = document.getElementById('mainChart').getContext('2d');
+            mChart = new Chart(ctx1, {
                 type: 'line',
-                data: { labels: cd.l, datasets: [{ label: 'Balance', data: cd.v, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }] },
-                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+                data: { labels: labels, datasets: [{ data: values, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.05)' }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
-            pChart = new Chart(document.getElementById('pieChart'), {
+
+            const ctx2 = document.getElementById('pieChart').getContext('2d');
+            pChart = new Chart(ctx2, {
                 type: 'doughnut',
-                data: { labels: ['Income', 'Expense'], datasets: [{ data: [inV, outV], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
-                options: { cutout: '80%', plugins: { legend: { position: 'bottom' } } }
+                data: { labels: ['In', 'Out'], datasets: [{ data: [inVal, outVal], backgroundColor: ['#10b981', '#ef4444'] }] },
+                options: { maintainAspectRatio: false, cutout: '75%' }
             });
         }
 
         document.getElementById('tgl').valueAsDate = new Date();
-        renderDashboard();
+        window.onload = renderDashboard;
     </script>
 </body>
 </html>
