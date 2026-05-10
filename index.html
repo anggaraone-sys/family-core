@@ -3,113 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinCore - Dashboard</title>
-    <!-- Script CSS & Chart -->
-    <script src="https://tailwindcss.com"></script>
-    <script src="https://jsdelivr.net"></script>
+    <title>FinCore Dashboard</title>
     <style>
-        @import url('https://googleapis.com');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .card { background: white; border-radius: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
-        .sidebar-active { background: #4f46e5; color: white; }
+        /* CSS INTERNAL - Agar loading instan & tampilan langsung rapi */
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; min-height: 100 screen; }
+        
+        /* Layout Sidebar & Main */
+        .container { display: flex; flex-wrap: wrap; }
+        aside { width: 250px; background: #fff; padding: 20px; border-right: 1px solid #ddd; min-height: 100vh; }
+        main { flex: 1; padding: 30px; background: #f8fafc; }
+        
+        .logo { font-size: 24px; font-weight: bold; color: #4f46e5; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 12px; border-radius: 10px; background: #4f46e5; color: white; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
+
+        /* Dashboard Cards */
+        .grid-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 20px; shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .card p { margin: 0; font-size: 14px; color: #64748b; font-weight: 600; }
+        .card h2 { margin: 10px 0 0; font-size: 24px; color: #1e293b; }
+        
+        /* Form & History */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .form-section, .history-section { background: white; padding: 25px; border-radius: 25px; border: 1px solid #eee; }
+        
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; background: #f9fafb; outline: none; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #4f46e5; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #4338ca; }
+
+        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .text-green { color: #10b981; font-weight: bold; }
+        .text-red { color: #ef4444; font-weight: bold; }
+
+        @media (max-width: 768px) { aside { width: 100%; min-height: auto; } .content-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-    <div class="flex flex-col md:flex-row">
-        <!-- Sidebar -->
-        <aside class="w-full md:w-64 bg-white md:h-screen p-6 border-r border-slate-100">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-indigo-600 p-2 rounded-xl text-white font-bold text-xl">FC</div>
-                <span class="text-xl font-bold text-slate-800">FinCore</span>
-            </div>
-            <nav class="space-y-2">
-                <div class="sidebar-active p-3 rounded-xl flex items-center gap-3 cursor-pointer">
-                    <span>🏠</span> <span class="font-semibold">Dashboard</span>
-                </div>
-                <div class="text-slate-400 p-3 rounded-xl flex items-center gap-3 hover:bg-slate-50 cursor-pointer transition">
-                    <span>💸</span> <span class="font-semibold">Transaksi</span>
-                </div>
-            </nav>
+    <div class="container">
+        <aside>
+            <div class="logo"><span>🟦</span> FinCore</div>
+            <div class="nav-item">🏠 Dashboard</div>
+            <div style="color:#94a3b8; padding:12px;">💸 Transaksi</div>
         </aside>
 
-        <!-- Main -->
-        <main class="flex-1 p-4 md:p-10">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold text-slate-800">Main Dashboard</h1>
-                <div class="w-10 h-10 bg-indigo-100 rounded-full border-2 border-white shadow-sm"></div>
-            </header>
-
-            <!-- Grid Atas -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center md:text-left">
-                <div class="card p-6 border border-slate-100">
-                    <p class="text-slate-400 text-sm font-semibold mb-1">Total Balance</p>
-                    <h2 id="totalSaldo" class="text-2xl font-bold text-indigo-600">Rp 0</h2>
+        <main>
+            <h1 style="margin-top:0; color:#1e293b;">Main Dashboard</h1>
+            
+            <div class="grid-top">
+                <div class="card">
+                    <p>Total Balance</p>
+                    <h2 id="totalSaldo" style="color:#4f46e5">Rp 0</h2>
                 </div>
-                <div class="card p-6 border border-slate-100">
-                    <p class="text-slate-400 text-sm font-semibold mb-1">Total Income</p>
-                    <h2 id="totalMasuk" class="text-2xl font-bold text-emerald-500">Rp 0</h2>
+                <div class="card">
+                    <p>Total Income</p>
+                    <h2 id="totalMasuk" style="color:#10b981">Rp 0</h2>
                 </div>
-                <div class="card p-6 border border-slate-100">
-                    <p class="text-slate-400 text-sm font-semibold mb-1">Total Expenses</p>
-                    <h2 id="totalKeluar" class="text-2xl font-bold text-rose-500">Rp 0</h2>
+                <div class="card">
+                    <p>Total Expenses</p>
+                    <h2 id="totalKeluar" style="color:#ef4444">Rp 0</h2>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Kiri: Chart & Form -->
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="card p-6">
-                        <h3 class="font-bold text-slate-800 mb-4">Cash Flow</h3>
-                        <canvas id="cashFlowChart" height="150"></canvas>
-                    </div>
-
-                    <div class="card p-8">
-                        <h3 class="font-bold text-slate-800 mb-6 text-center text-lg">Input Transaksi Baru</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="number" id="nominal" placeholder="Nominal Rp" class="bg-slate-50 p-4 rounded-xl outline-none focus:ring-2 ring-indigo-500 transition font-bold">
-                            <input type="text" id="ket" placeholder="Keterangan..." class="bg-slate-50 p-4 rounded-xl outline-none focus:ring-2 ring-indigo-500 transition">
-                            <select id="tipe" class="bg-slate-50 p-4 rounded-xl outline-none">
-                                <option value="Pemasukan">Pemasukan (+)</option>
-                                <option value="Pengeluaran">Pengeluaran (-)</option>
-                            </select>
-                            <input type="date" id="tgl" class="bg-slate-50 p-4 rounded-xl outline-none">
-                        </div>
-                        <button onclick="simpan()" class="w-full mt-6 bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition-all">Add Transaction</button>
-                    </div>
+            <div class="content-grid">
+                <div class="form-section">
+                    <h3 style="margin-top:0">Tambah Transaksi</h3>
+                    <input type="number" id="nominal" placeholder="Nominal (Rp)">
+                    <input type="text" id="ket" placeholder="Keterangan (Gaji, Makan, dll)">
+                    <select id="tipe">
+                        <option value="Pemasukan">Pemasukan (+)</option>
+                        <option value="Pengeluaran">Pengeluaran (-)</option>
+                    </select>
+                    <input type="date" id="tgl">
+                    <button onclick="simpan()">Simpan Transaksi</button>
                 </div>
 
-                <!-- Kanan: Riwayat -->
-                <div class="card p-6 h-fit">
-                    <h3 class="font-bold text-slate-800 mb-6">Recent Activity</h3>
-                    <div id="daftar" class="space-y-5 text-sm">
-                        <!-- Data Muncul Disini -->
-                    </div>
+                <div class="history-section">
+                    <h3 style="margin-top:0">Riwayat Terakhir</h3>
+                    <div id="daftar"></div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        let data = JSON.parse(localStorage.getItem('fincore_db')) || [];
-        let chart;
+        let data = JSON.parse(localStorage.getItem('fincore_v3')) || [];
 
         function simpan() {
             const nom = document.getElementById('nominal').value;
-            const tgl = document.getElementById('tgl').value;
             const ket = document.getElementById('ket').value;
-            if(!nom || !tgl || !ket) return alert("Lengkapi input!");
+            const tgl = document.getElementById('tgl').value;
+            const tipe = document.getElementById('tipe').value;
 
-            data.push({
-                id: Date.now(),
-                tgl: tgl,
-                tipe: document.getElementById('tipe').value,
-                nominal: parseInt(nom),
-                ket: ket
-            });
+            if(!nom || !ket || !tgl) return alert("Mohon isi semua data!");
 
-            localStorage.setItem('fincore_db', JSON.stringify(data));
+            data.push({ id: Date.now(), nom: parseInt(nom), ket, tgl, tipe });
+            localStorage.setItem('fincore_v3', JSON.stringify(data));
             render();
+            
             document.getElementById('nominal').value = '';
             document.getElementById('ket').value = '';
         }
@@ -118,55 +109,29 @@
             const list = document.getElementById('daftar');
             list.innerHTML = '';
             let masuk = 0, keluar = 0;
-            const cLabels = []; const cValues = [];
 
-            [...data].sort((a,b) => new Date(a.tgl) - new Date(b.tgl)).forEach(item => {
-                if(item.tipe === 'Pemasukan') masuk += item.nominal;
-                else keluar += item.nominal;
-                cLabels.push(item.tgl.slice(5));
-                cValues.push(masuk - keluar);
+            [...data].reverse().forEach(item => {
+                if(item.tipe === 'Pemasukan') masuk += item.nom;
+                else keluar += item.nom;
+
+                list.innerHTML += `
+                    <div class="history-item">
+                        <div>
+                            <div style="font-weight:bold; color:#334155">${item.ket}</div>
+                            <div style="font-size:11px; color:#94a3b8">${item.tgl}</div>
+                        </div>
+                        <div class="${item.tipe === 'Pemasukan' ? 'text-green' : 'text-red'}">
+                            ${item.tipe === 'Pemasukan' ? '+' : '-'} ${item.nom.toLocaleString()}
+                        </div>
+                    </div>
+                `;
             });
 
             document.getElementById('totalMasuk').innerText = `Rp ${masuk.toLocaleString()}`;
             document.getElementById('totalKeluar').innerText = `Rp ${keluar.toLocaleString()}`;
             document.getElementById('totalSaldo').innerText = `Rp ${(masuk - keluar).toLocaleString()}`;
-
-            [...data].reverse().slice(0, 5).forEach(item => {
-                list.innerHTML += `
-                    <div class="flex justify-between items-center border-b border-slate-50 pb-3">
-                        <div>
-                            <p class="font-bold text-slate-700">${item.ket}</p>
-                            <p class="text-[10px] text-slate-400">${item.tgl}</p>
-                        </div>
-                        <p class="font-bold ${item.tipe === 'Pemasukan' ? 'text-emerald-500' : 'text-rose-500'}">
-                            ${item.tipe === 'Pemasukan' ? '+' : '-'} ${item.nominal.toLocaleString()}
-                        </p>
-                    </div>
-                `;
-            });
-            updateChart(cLabels, cValues);
         }
 
-        function updateChart(labels, values) {
-            const ctx = document.getElementById('cashFlowChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Saldo',
-                        data: values,
-                        borderColor: '#4f46e5',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
-                        pointRadius: 2
-                    }]
-                },
-                options: { plugins: { legend: { display: false } } }
-            });
-        }
         document.getElementById('tgl').valueAsDate = new Date();
         render();
     </script>
