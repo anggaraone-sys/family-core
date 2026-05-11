@@ -11,7 +11,7 @@
 :root{
     --sidebar:#081028;
     --primary:#6366f1;
-    --bg:#f5f7fb;
+    --bg:#f1f5f9;
     --card:#ffffff;
     --text:#0f172a;
     --muted:#94a3b8;
@@ -27,38 +27,113 @@
 }
 
 body{
-    display:flex;
     background:var(--bg);
-    min-height:100vh;
+    color:var(--text);
+}
+
+/* LOGIN */
+
+#loginPage{
+    width:100%;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+}
+
+.login-box{
+    width:90%;
+    max-width:400px;
+    background:white;
+    padding:40px;
+    border-radius:30px;
+    box-shadow:0 20px 40px rgba(0,0,0,.2);
+    text-align:center;
+}
+
+.logo-icon{
+    width:80px;
+    height:80px;
+    border-radius:24px;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    margin:auto;
+    margin-bottom:20px;
+    color:white;
+}
+
+.login-box h1{
+    margin-bottom:10px;
+}
+
+.login-box p{
+    color:var(--muted);
+    margin-bottom:25px;
+}
+
+.login-box input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    background:#f1f5f9;
+    margin-bottom:20px;
+    outline:none;
+    font-size:16px;
+}
+
+.login-box button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    background:var(--primary);
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+/* APP */
+
+#app{
+    display:none;
 }
 
 /* SIDEBAR */
 
 aside{
     width:260px;
-    background:#06122d;
+    background:#081028;
     color:white;
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
     padding:30px 18px;
+    overflow:auto;
 }
 
-.logo-wrap{
+.brand{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:15px;
     margin-bottom:50px;
 }
 
-.logo-img{
-    width:52px;
-    height:52px;
-    border-radius:16px;
-    object-fit:cover;
-    background:white;
-    padding:6px;
+.brand .logo-icon{
+    width:55px;
+    height:55px;
+    margin:0;
+    font-size:28px;
 }
 
-.logo{
-    font-size:28px;
+.brand-text{
+    font-size:26px;
     font-weight:800;
     line-height:1.1;
 }
@@ -69,12 +144,11 @@ aside{
     margin-bottom:12px;
     cursor:pointer;
     transition:.3s;
-    font-size:18px;
     font-weight:700;
 }
 
 .nav:hover{
-    background:rgba(255,255,255,.06);
+    background:rgba(255,255,255,.05);
 }
 
 .nav.active{
@@ -85,7 +159,7 @@ aside{
 /* MAIN */
 
 main{
-    flex:1;
+    margin-left:260px;
     padding:30px;
 }
 
@@ -99,23 +173,23 @@ main{
     display:block;
 }
 
-/* TOP */
+/* TOPBAR */
 
 .topbar{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:30px;
+    margin-bottom:25px;
+    gap:15px;
 }
 
 .search{
-    width:260px;
+    width:280px;
     padding:14px;
     border:none;
     border-radius:14px;
     background:white;
     outline:none;
-    box-shadow:0 2px 10px rgba(0,0,0,.04);
 }
 
 /* CARDS */
@@ -129,9 +203,9 @@ main{
 
 .card{
     background:white;
-    padding:25px;
     border-radius:24px;
-    box-shadow:0 5px 15px rgba(0,0,0,.03);
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.03);
 }
 
 .card small{
@@ -140,11 +214,11 @@ main{
 }
 
 .card h1{
-    margin-top:12px;
+    margin-top:10px;
     font-size:32px;
 }
 
-/* ANALYTICS */
+/* CHART */
 
 .analytics{
     display:grid;
@@ -157,20 +231,20 @@ main{
     background:white;
     border-radius:24px;
     padding:25px;
-    box-shadow:0 5px 15px rgba(0,0,0,.03);
 }
 
 .line-chart{
     width:100%;
     height:220px;
-    margin-top:20px;
 }
+
+/* BAR */
 
 .ratio-bar{
     width:100%;
-    height:25px;
-    background:#edf2f7;
-    border-radius:50px;
+    height:24px;
+    background:#e2e8f0;
+    border-radius:40px;
     overflow:hidden;
     display:flex;
     margin-top:40px;
@@ -178,21 +252,19 @@ main{
 
 .income-bar{
     background:var(--green);
-    width:50%;
 }
 
 .expense-bar{
     background:var(--red);
-    width:50%;
 }
 
 /* TABLE */
 
 .table-card{
     background:white;
-    padding:25px;
     border-radius:24px;
-    box-shadow:0 5px 15px rgba(0,0,0,.03);
+    padding:25px;
+    overflow:auto;
 }
 
 table{
@@ -205,42 +277,40 @@ th{
     text-align:left;
     padding-bottom:10px;
     color:var(--muted);
-    border-bottom:1px solid #f1f5f9;
+    border-bottom:1px solid #e2e8f0;
 }
 
 td{
     padding:15px 0;
-    border-bottom:1px solid #f8fafc;
+    border-bottom:1px solid #f1f5f9;
 }
 
 /* BUTTON */
 
 .edit-btn{
-    background:#6366f1;
-    color:white;
     border:none;
-    padding:8px 14px;
-    border-radius:10px;
+    padding:10px 15px;
+    border-radius:12px;
+    background:var(--primary);
+    color:white;
     cursor:pointer;
-    font-weight:600;
 }
 
-/* FLOAT BUTTON */
+/* FLOAT */
 
 #fab{
     position:fixed;
-    right:30px;
-    bottom:30px;
+    right:25px;
+    bottom:25px;
     width:70px;
     height:70px;
     border:none;
     border-radius:50%;
-    background:linear-gradient(135deg,#6366f1,#818cf8);
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
     color:white;
-    font-size:40px;
+    font-size:38px;
     cursor:pointer;
-    box-shadow:0 15px 30px rgba(99,102,241,.4);
-    z-index:1000;
+    box-shadow:0 15px 35px rgba(99,102,241,.35);
 }
 
 /* MODAL */
@@ -261,18 +331,19 @@ td{
 }
 
 .modal{
-    width:450px;
+    width:90%;
+    max-width:450px;
     background:white;
     border-radius:28px;
     padding:30px;
 }
 
 .modal h2{
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
-input,
-select{
+.modal input,
+.modal select{
     width:100%;
     padding:15px;
     border-radius:14px;
@@ -300,43 +371,19 @@ select{
     background:#e2e8f0;
 }
 
-/* REPORT MODAL */
-
-.report-modal{
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,.5);
-    backdrop-filter:blur(4px);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:2000;
-}
-
-.report-modal.active{
-    display:flex;
-}
-
-.report-content{
-    width:90%;
-    max-width:900px;
-    max-height:85vh;
-    overflow:auto;
-    background:white;
-    border-radius:28px;
-    padding:30px;
-}
-
 /* MOBILE */
 
 @media(max-width:900px){
 
-    body{
-        flex-direction:column;
-    }
-
     aside{
         width:100%;
+        position:relative;
+        height:auto;
+    }
+
+    main{
+        margin-left:0;
+        padding:20px;
     }
 
     .grid,
@@ -347,11 +394,14 @@ select{
     .topbar{
         flex-direction:column;
         align-items:flex-start;
-        gap:15px;
     }
 
     .search{
         width:100%;
+    }
+
+    .brand{
+        margin-bottom:25px;
     }
 
 }
@@ -361,37 +411,64 @@ select{
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- LOGIN -->
+
+<div id="loginPage">
+
+    <div class="login-box">
+
+        <div class="logo-icon">
+            💰
+        </div>
+
+        <h1>Home Finance</h1>
+
+        <p>Personal Finance Tracker</p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter username">
+
+        <button onclick="login()">
+            Login
+        </button>
+
+    </div>
+
+</div>
+
+<!-- APP -->
+
+<div id="app">
 
 <aside>
 
-    <div class="logo-wrap">
+    <div class="brand">
 
-        <img
-        class="logo-img"
-        src="https://png.pngtree.com/png-vector/20240830/ourmid/pngtree-real-estate-investment-icon-with-house-and-money-vector-png-image_13673353.png">
+        <div class="logo-icon">
+            💰
+        </div>
 
-        <div class="logo">
+        <div class="brand-text">
             Home<br>Finance
         </div>
 
     </div>
 
-    <div class="nav active" onclick="showPage('dashboard', this)">
+    <div class="nav active" onclick="showPage('dashboard',this)">
         📊 Dashboard
     </div>
 
-    <div class="nav" onclick="showPage('transactions', this)">
+    <div class="nav" onclick="showPage('transactions',this)">
         💸 Transactions
     </div>
 
-    <div class="nav" onclick="showPage('monthly', this)">
+    <div class="nav" onclick="showPage('monthly',this)">
         📅 Monthly Report
     </div>
 
 </aside>
-
-<!-- MAIN -->
 
 <main>
 
@@ -402,30 +479,23 @@ select{
     <div class="topbar">
 
         <div>
-            <h2>Financial Overview</h2>
-            <small style="color:#94a3b8">
-                Welcome back
-            </small>
+            <h2 id="welcomeText">
+                Welcome
+            </h2>
         </div>
-
-        <input
-            type="text"
-            class="search"
-            placeholder="Search transaction..."
-            oninput="renderDashboard()">
 
     </div>
 
     <div class="grid">
 
         <div class="card">
-            <small>TOTAL BALANCE</small>
+            <small>BALANCE</small>
             <h1 id="balance">Rp 0</h1>
         </div>
 
         <div class="card">
             <small style="color:#10b981">
-                TOTAL INCOME
+                INCOME
             </small>
 
             <h1 id="income">Rp 0</h1>
@@ -433,7 +503,7 @@ select{
 
         <div class="card">
             <small style="color:#ef4444">
-                TOTAL EXPENSE
+                EXPENSE
             </small>
 
             <h1 id="expense">Rp 0</h1>
@@ -445,9 +515,7 @@ select{
 
         <div class="chart-box">
 
-            <small style="color:#94a3b8">
-                SPENDING ANALYSIS
-            </small>
+            <small>FINANCE GRAPH</small>
 
             <svg class="line-chart" viewBox="0 0 600 220">
 
@@ -455,8 +523,7 @@ select{
                     id="lineChart"
                     fill="none"
                     stroke="#6366f1"
-                    stroke-width="4"
-                    points="">
+                    stroke-width="4">
                 </polyline>
 
             </svg>
@@ -465,9 +532,7 @@ select{
 
         <div class="chart-box">
 
-            <small style="color:#94a3b8">
-                INCOME vs EXPENSE
-            </small>
+            <small>INCOME vs EXPENSE</small>
 
             <div class="ratio-bar">
 
@@ -483,9 +548,7 @@ select{
 
     <div class="table-card">
 
-        <small style="color:#94a3b8;font-weight:700;">
-            RECENT TRANSACTIONS
-        </small>
+        <h3>Recent Transactions</h3>
 
         <table>
 
@@ -506,7 +569,7 @@ select{
 
 </section>
 
-<!-- TRANSACTION -->
+<!-- TRANSACTIONS -->
 
 <section id="transactions" class="page">
 
@@ -517,10 +580,10 @@ select{
         <input
             type="text"
             id="historySearch"
-            placeholder="Search history..."
+            placeholder="Search transaction..."
             class="search"
             oninput="renderHistory()"
-            style="margin:20px 0;">
+            style="margin-top:20px;">
 
         <table>
 
@@ -571,11 +634,11 @@ select{
 
 </main>
 
-<!-- FLOAT -->
-
 <button id="fab" onclick="openModal()">
 +
 </button>
+
+</div>
 
 <!-- MODAL -->
 
@@ -599,8 +662,13 @@ select{
             placeholder="Description">
 
         <select id="type">
-            <option value="income">Income (+)</option>
-            <option value="expense">Expense (-)</option>
+            <option value="income">
+                Income (+)
+            </option>
+
+            <option value="expense">
+                Expense (-)
+            </option>
         </select>
 
         <input type="date" id="date">
@@ -654,21 +722,63 @@ const firebaseConfig = {
 
   messagingSenderId: "774004827415",
 
-  appId: "1:774004827415:web:d771bff53b2d38827c0352",
-
-  measurementId: "G-1C4GW33CGT"
+  appId: "1:774004827415:web:d771bff53b2d38827c0352"
 
 };
 
-const app =
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const dbFirestore =
-getFirestore(app);
+const dbFirestore = getFirestore(app);
 
 let db = [];
 
 let editIndex = null;
+
+/* LOGIN */
+
+window.login = function(){
+
+    const user =
+    document.getElementById('username').value;
+
+    if(!user){
+        alert('Masukkan username');
+        return;
+    }
+
+    localStorage.setItem(
+        'hf_user',
+        user
+    );
+
+    startApp();
+}
+
+function startApp(){
+
+    const user =
+    localStorage.getItem('hf_user');
+
+    if(user){
+
+        document
+        .getElementById('loginPage')
+        .style.display = 'none';
+
+        document
+        .getElementById('app')
+        .style.display = 'block';
+
+        document
+        .getElementById('welcomeText')
+        .innerText =
+        'Welcome, ' + user;
+
+        loadDatabase();
+    }
+}
+
+startApp();
 
 /* LOAD DATABASE */
 
@@ -697,8 +807,6 @@ async function loadDatabase(){
     renderHistory();
     renderMonthly();
 }
-
-loadDatabase();
 
 /* FORMAT */
 
@@ -764,6 +872,7 @@ window.saveTransaction = async function(){
         description,
         type,
         date
+
     };
 
     if(editIndex !== null){
@@ -799,13 +908,10 @@ window.saveTransaction = async function(){
     loadDatabase();
 
     document.getElementById('displayNominal')
-    .value = '';
-
-    document.getElementById('realNominal')
-    .value = '';
+    .value='';
 
     document.getElementById('description')
-    .value = '';
+    .value='';
 }
 
 /* EDIT */
@@ -869,11 +975,11 @@ function renderDashboard(){
     const recent =
     document.getElementById('recentTable');
 
-    recent.innerHTML = '';
+    recent.innerHTML='';
 
-    db.forEach(item => {
+    db.forEach(item=>{
 
-        if(item.type === 'income'){
+        if(item.type==='income'){
             income += item.nominal;
         }else{
             expense += item.nominal;
@@ -882,7 +988,7 @@ function renderDashboard(){
     });
 
     document.getElementById('balance')
-    .innerText = rupiah(income - expense);
+    .innerText = rupiah(income-expense);
 
     document.getElementById('income')
     .innerText = rupiah(income);
@@ -890,35 +996,30 @@ function renderDashboard(){
     document.getElementById('expense')
     .innerText = rupiah(expense);
 
-    const total =
-    income + expense || 1;
+    const total = income+expense || 1;
 
     document.getElementById('incomeBar')
     .style.width =
-    (income / total * 100) + '%';
+    (income/total*100)+'%';
 
     document.getElementById('expenseBar')
     .style.width =
-    (expense / total * 100) + '%';
+    (expense/total*100)+'%';
 
-    db.slice().reverse().forEach(item => {
+    db.slice().reverse().forEach(item=>{
 
         recent.innerHTML += `
-            <tr>
+        <tr>
 
-                <td>${item.description}</td>
+            <td>${item.description}</td>
 
-                <td>${item.date}</td>
+            <td>${item.date}</td>
 
-                <td>${item.type}</td>
+            <td>${item.type}</td>
 
-                <td>
+            <td>${rupiah(item.nominal)}</td>
 
-                ${rupiah(item.nominal)}
-
-                </td>
-
-            </tr>
+        </tr>
         `;
     });
 
@@ -932,53 +1033,49 @@ function renderHistory(){
     const table =
     document.getElementById('historyTable');
 
-    table.innerHTML = '';
+    table.innerHTML='';
 
     const keyword =
     document.getElementById('historySearch')
     .value
     .toLowerCase();
 
-    db
-    .slice()
-    .reverse()
+    db.slice().reverse()
 
-    .filter(item =>
+    .filter(item=>
+
         item.description
         .toLowerCase()
         .includes(keyword)
+
     )
 
-    .forEach((item,index) => {
+    .forEach(item=>{
 
         table.innerHTML += `
-            <tr>
+        <tr>
 
-                <td>${item.description}</td>
+            <td>${item.description}</td>
 
-                <td>${item.date}</td>
+            <td>${item.date}</td>
 
-                <td>${item.type}</td>
+            <td>${item.type}</td>
 
-                <td>
+            <td>${rupiah(item.nominal)}</td>
 
-                ${rupiah(item.nominal)}
+            <td>
 
-                </td>
+                <button
+                    class="edit-btn"
+                    onclick="editTransaction(${db.indexOf(item)})">
 
-                <td>
+                    Edit
 
-                    <button
-                        onclick="editTransaction(${db.indexOf(item)})"
-                        class="edit-btn">
+                </button>
 
-                        Edit
+            </td>
 
-                    </button>
-
-                </td>
-
-            </tr>
+        </tr>
         `;
     });
 }
@@ -990,11 +1087,11 @@ function renderMonthly(){
     const table =
     document.getElementById('monthlyTable');
 
-    table.innerHTML = '';
+    table.innerHTML='';
 
     let grouped = {};
 
-    db.forEach(item => {
+    db.forEach(item=>{
 
         const d = new Date(item.date);
 
@@ -1009,42 +1106,49 @@ function renderMonthly(){
             };
         }
 
-        if(item.type === 'income'){
+        if(item.type==='income'){
             grouped[key].income += item.nominal;
         }else{
             grouped[key].expense += item.nominal;
         }
+
     });
 
     Object.keys(grouped)
     .sort()
     .reverse()
 
-    .forEach(key => {
+    .forEach(key=>{
 
         const data = grouped[key];
 
-        const balance =
-        data.income - data.expense;
-
         table.innerHTML += `
-            <tr>
+        <tr>
 
-                <td>${key}</td>
+            <td>${key}</td>
 
-                <td style="color:#10b981">
-                    ${rupiah(data.income)}
-                </td>
+            <td style="color:#10b981">
 
-                <td style="color:#ef4444">
-                    ${rupiah(data.expense)}
-                </td>
+                ${rupiah(data.income)}
 
-                <td>
-                    ${rupiah(balance)}
-                </td>
+            </td>
 
-            </tr>
+            <td style="color:#ef4444">
+
+                ${rupiah(data.expense)}
+
+            </td>
+
+            <td>
+
+                ${rupiah(
+                    data.income -
+                    data.expense
+                )}
+
+            </td>
+
+        </tr>
         `;
     });
 }
@@ -1053,38 +1157,28 @@ function renderMonthly(){
 
 function generateChart(data){
 
-    if(data.length === 0){
+    if(data.length===0)return;
 
-        document
-        .getElementById('lineChart')
-        .setAttribute(
-            'points',
-            '0,200 600,200'
-        );
+    let total=0;
 
-        return;
-    }
-
-    let total = 0;
-
-    let points = [];
+    let points=[];
 
     data.forEach((item,index)=>{
 
-        if(item.type === 'income'){
+        if(item.type==='income'){
             total += item.nominal;
         }else{
             total -= item.nominal;
         }
 
         const x =
-        (index / (data.length-1 || 1))
-        * 580 + 10;
+        (index/(data.length-1||1))*580+10;
 
         const y =
-        200 - Math.min(total / 10000,180);
+        200 - Math.min(total/10000,180);
 
         points.push(`${x},${y}`);
+
     });
 
     document
