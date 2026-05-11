@@ -268,6 +268,33 @@ select{
     background:#e2e8f0;
 }
 
+/* REPORT MODAL */
+
+.report-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.5);
+    backdrop-filter:blur(4px);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:2000;
+}
+
+.report-modal.active{
+    display:flex;
+}
+
+.report-content{
+    width:90%;
+    max-width:900px;
+    max-height:85vh;
+    overflow:auto;
+    background:white;
+    border-radius:28px;
+    padding:30px;
+}
+
 /* MOBILE */
 
 @media(max-width:900px){
@@ -350,8 +377,6 @@ select{
 
     </div>
 
-    <!-- CARDS -->
-
     <div class="grid">
 
         <div class="card">
@@ -376,8 +401,6 @@ select{
         </div>
 
     </div>
-
-    <!-- ANALYTICS -->
 
     <div class="analytics">
 
@@ -421,8 +444,6 @@ select{
 
     </div>
 
-    <!-- RECENT -->
-
     <div class="table-card">
 
         <small style="color:#94a3b8;font-weight:700;">
@@ -448,13 +469,21 @@ select{
 
 </section>
 
-<!-- TRANSACTIONS -->
+<!-- TRANSACTION -->
 
 <section id="transactions" class="page">
 
     <div class="table-card">
 
         <h2>Transaction History</h2>
+
+        <input
+            type="text"
+            id="historySearch"
+            placeholder="Search history..."
+            class="search"
+            oninput="renderHistory()"
+            style="margin:20px 0;">
 
         <table>
 
@@ -464,6 +493,7 @@ select{
                     <th>Date</th>
                     <th>Type</th>
                     <th>Amount</th>
+                    <th>Action</th>
                 </tr>
             </thead>
 
@@ -504,7 +534,7 @@ select{
 
 </main>
 
-<!-- FLOAT BUTTON -->
+<!-- FLOAT -->
 
 <button id="fab" onclick="openModal()">
 +
@@ -524,9 +554,7 @@ select{
             placeholder="Nominal"
             oninput="formatNominal(this)">
 
-        <input
-            type="hidden"
-            id="realNominal">
+        <input type="hidden" id="realNominal">
 
         <input
             type="text"
@@ -534,13 +562,8 @@ select{
             placeholder="Description">
 
         <select id="type">
-            <option value="income">
-                Income (+)
-            </option>
-
-            <option value="expense">
-                Expense (-)
-            </option>
+            <option value="income">Income (+)</option>
+            <option value="expense">Expense (-)</option>
         </select>
 
         <input type="date" id="date">
@@ -565,11 +588,71 @@ select{
 
 </div>
 
+<!-- REPORT DETAIL -->
+
+<div id="reportModal" class="report-modal">
+
+    <div class="report-content">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:20px;
+        ">
+
+            <h2 id="reportTitle">
+                Monthly Detail
+            </h2>
+
+            <button
+                onclick="closeReport()"
+                class="btn cancel"
+                style="width:auto;padding:10px 20px">
+
+                Close
+
+            </button>
+
+        </div>
+
+        <button
+            class="btn save"
+            onclick="exportCSV()"
+            style="margin-bottom:20px">
+
+            Export Excel (.csv)
+
+        </button>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody id="reportTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 <script>
 
 let db =
 JSON.parse(localStorage.getItem('fintrack_lite'))
 || [];
+
+let editIndex = null;
+
+let currentReportData = [];
 
 /* FORMAT */
 
@@ -609,6 +692,34 @@ function closeModal(){
     .classList.remove('active');
 }
 
+/* EDIT */
+
+function editTransaction(index){
+
+    const item = db[index];
+
+    editIndex = index;
+
+    openModal();
+
+    document.getElementById('realNominal')
+    .value = item.nominal;
+
+    document.getElementById('displayNominal')
+    .value =
+    new Intl.NumberFormat('id-ID')
+    .format(item.nominal);
+
+    document.getElementById('description')
+    .value = item.description;
+
+    document.getElementById('type')
+    .value = item.type;
+
+    document.getElementById('date')
+    .value = item.date;
+}
+
 /* SAVE */
 
 function saveTransaction(){
@@ -631,12 +742,23 @@ function saveTransaction(){
         return;
     }
 
-    db.push({
+    const payload = {
         nominal:parseInt(nominal),
         description,
         type,
         date
-    });
+    };
+
+    if(editIndex !== null){
+
+        db[editIndex] = payload;
+
+        editIndex = null;
+
+    }else{
+
+        db.push(payload);
+    }
 
     localStorage.setItem(
         'fintrack_lite',
@@ -648,9 +770,18 @@ function saveTransaction(){
     renderDashboard();
     renderHistory();
     renderMonthly();
+
+    document.getElementById('displayNominal')
+    .value = '';
+
+    document.getElementById('realNominal')
+    .value = '';
+
+    document.getElementById('description')
+    .value = '';
 }
 
-/* NAVIGATION */
+/* NAV */
 
 function showPage(id,el){
 
@@ -788,11 +919,22 @@ function renderHistory(){
 
     table.innerHTML = '';
 
+    const keyword =
+    document.getElementById('historySearch')
+    .value
+    .toLowerCase();
+
     db
     .slice()
     .reverse()
 
-    .forEach(item => {
+    .filter(item =>
+        item.description
+        .toLowerCase()
+        .includes(keyword)
+    )
+
+    .forEach((item,index) => {
 
         table.innerHTML += `
             <tr>
@@ -819,6 +961,25 @@ function renderHistory(){
 
                 </td>
 
+                <td>
+
+                    <button
+                        onclick="editTransaction(${db.indexOf(item)})"
+                        style="
+                            background:#6366f1;
+                            color:white;
+                            border:none;
+                            padding:8px 14px;
+                            border-radius:10px;
+                            cursor:pointer;
+                        ">
+
+                        Edit
+
+                    </button>
+
+                </td>
+
             </tr>
         `;
     });
@@ -837,8 +998,7 @@ function renderMonthly(){
 
     db.forEach(item => {
 
-        const d =
-        new Date(item.date);
+        const d = new Date(item.date);
 
         const key =
         `${d.getFullYear()}-${d.getMonth()+1}`;
@@ -847,9 +1007,12 @@ function renderMonthly(){
 
             grouped[key] = {
                 income:0,
-                expense:0
+                expense:0,
+                items:[]
             };
         }
+
+        grouped[key].items.push(item);
 
         if(item.type === 'income'){
             grouped[key].income += item.nominal;
@@ -864,14 +1027,15 @@ function renderMonthly(){
 
     .forEach(key => {
 
-        const data =
-        grouped[key];
+        const data = grouped[key];
 
         const balance =
         data.income - data.expense;
 
         table.innerHTML += `
-            <tr>
+            <tr
+                style="cursor:pointer"
+                onclick="openMonthlyDetail('${key}')">
 
                 <td>${key}</td>
 
@@ -890,6 +1054,103 @@ function renderMonthly(){
             </tr>
         `;
     });
+}
+
+/* REPORT DETAIL */
+
+function openMonthlyDetail(key){
+
+    const modal =
+    document.getElementById('reportModal');
+
+    const table =
+    document.getElementById('reportTable');
+
+    table.innerHTML = '';
+
+    currentReportData = [];
+
+    document.getElementById('reportTitle')
+    .innerText = `Report ${key}`;
+
+    db.forEach(item => {
+
+        const d =
+        new Date(item.date);
+
+        const itemKey =
+        `${d.getFullYear()}-${d.getMonth()+1}`;
+
+        if(itemKey === key){
+
+            currentReportData.push(item);
+
+            table.innerHTML += `
+                <tr>
+
+                    <td>${item.description}</td>
+
+                    <td>${item.date}</td>
+
+                    <td style="
+                    color:${item.type === 'income'
+                    ? '#10b981'
+                    : '#ef4444'}">
+
+                    ${item.type}
+
+                    </td>
+
+                    <td>
+                        ${rupiah(item.nominal)}
+                    </td>
+
+                </tr>
+            `;
+        }
+    });
+
+    modal.classList.add('active');
+}
+
+function closeReport(){
+
+    document
+    .getElementById('reportModal')
+    .classList.remove('active');
+}
+
+/* EXPORT CSV */
+
+function exportCSV(){
+
+    let csv =
+    'Description,Date,Type,Amount\n';
+
+    currentReportData.forEach(item => {
+
+        csv +=
+        `${item.description},${item.date},${item.type},${item.nominal}\n`;
+    });
+
+    const blob =
+    new Blob([csv], {
+        type:'text/csv'
+    });
+
+    const url =
+    URL.createObjectURL(blob);
+
+    const a =
+    document.createElement('a');
+
+    a.href = url;
+
+    a.download = 'monthly-report.csv';
+
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
 
 /* CHART */
