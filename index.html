@@ -1,817 +1,951 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinTrack Lite</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        :root {
-            --sidebar: #111827;
-            --primary: #6366f1;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #94a3b8;
-            --green: #10b981;
-            --red: #ef4444;
-            --border: #e2e8f0;
-        }
+<title>FinTrack Lite</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-        }
+<style>
 
-        body {
-            display: flex;
-            background: var(--bg);
-            height: 100vh;
-            overflow: hidden;
-        }
+:root{
+    --sidebar:#081028;
+    --primary:#6366f1;
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#94a3b8;
+    --green:#10b981;
+    --red:#ef4444;
+}
 
-        aside {
-            width: 250px;
-            background: var(--sidebar);
-            color: white;
-            padding: 25px 15px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.08);
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
 
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 40px;
-            padding-left: 10px;
-        }
+body{
+    display:flex;
+    background:var(--bg);
+    min-height:100vh;
+}
 
-        .nav {
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            color: #cbd5e1;
-            transition: 0.3s;
-            font-weight: 600;
-        }
+/* SIDEBAR */
 
-        .nav:hover {
-            background: rgba(255,255,255,0.06);
-            color: white;
-        }
+aside{
+    width:260px;
+    background:#06122d;
+    color:white;
+    padding:30px 18px;
+}
 
-        .nav.active {
-            background: rgba(255,255,255,0.08);
-            border-left: 4px solid var(--primary);
-            color: white;
-        }
+.logo{
+    font-size:38px;
+    font-weight:800;
+    margin-bottom:50px;
+}
 
-        main {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
+.nav{
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.3s;
+    font-size:20px;
+    font-weight:700;
+}
 
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+.nav:hover{
+    background:rgba(255,255,255,.06);
+}
 
-        .topbar h2 {
-            color: var(--text);
-            margin-bottom: 5px;
-        }
+.nav.active{
+    background:rgba(255,255,255,.08);
+    border-left:5px solid var(--primary);
+}
 
-        .topbar small {
-            color: var(--muted);
-        }
+/* MAIN */
 
-        .search {
-            width: 250px;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            outline: none;
-        }
+main{
+    flex:1;
+    padding:30px;
+}
 
-        .page {
-            display: none;
-        }
+/* PAGE */
 
-        .page.active {
-            display: block;
-        }
+.page{
+    display:none;
+}
 
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 25px;
-        }
+.page.active{
+    display:block;
+}
 
-        .card {
-            background: white;
-            border-radius: 22px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-            transition: 0.3s ease;
-        }
+/* TOP */
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
-        }
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
 
-        .card small {
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 700;
-        }
+.search{
+    width:260px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:white;
+    outline:none;
+}
 
-        .card h1 {
-            margin-top: 10px;
-            color: var(--text);
-            font-size: 30px;
-        }
+/* CARDS */
 
-        .analytics {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-bottom:25px;
+}
 
-        .chart-box {
-            background: white;
-            border-radius: 22px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-            min-height: 300px;
-            transition: 0.3s;
-        }
+.card{
+    background:white;
+    padding:25px;
+    border-radius:24px;
+}
 
-        .chart-box:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
-        }
+.card small{
+    color:var(--muted);
+    font-weight:700;
+}
 
-        .chart-box small {
-            color: var(--muted);
-            font-weight: 700;
-        }
+.card h1{
+    margin-top:12px;
+    font-size:32px;
+}
 
-        .bar-container {
-            height: 220px;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            margin-top: 30px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 10px;
-        }
+/* ANALYTICS */
 
-        .bar {
-            flex: 1;
-            background: linear-gradient(to top, #6366f1, #818cf8);
-            border-radius: 10px 10px 0 0;
-            position: relative;
-            transition: 0.3s;
-            min-height: 10px;
-        }
+.analytics{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    margin-bottom:25px;
+}
 
-        .bar:hover::after {
-            content: attr(data-label);
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #111827;
-            color: white;
-            font-size: 11px;
-            padding: 5px 8px;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
+.chart-box{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+}
 
-        .ratio-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
+.line-chart{
+    width:100%;
+    height:220px;
+    margin-top:20px;
+}
 
-        .ratio-bar {
-            width: 100%;
-            height: 24px;
-            background: #f1f5f9;
-            border-radius: 30px;
-            overflow: hidden;
-            display: flex;
-            margin-top: 30px;
-        }
+.ratio-bar{
+    width:100%;
+    height:25px;
+    background:#edf2f7;
+    border-radius:50px;
+    overflow:hidden;
+    display:flex;
+    margin-top:40px;
+}
 
-        .income-bar {
-            background: var(--green);
-            height: 100%;
-            width: 50%;
-        }
+.income-bar{
+    background:var(--green);
+    width:50%;
+}
 
-        .expense-bar {
-            background: var(--red);
-            height: 100%;
-            width: 50%;
-        }
+.expense-bar{
+    background:var(--red);
+    width:50%;
+}
 
-        .legend {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            font-size: 13px;
-        }
+/* TABLE */
 
-        .table-card {
-            background: white;
-            border-radius: 22px;
-            padding: 24px;
-            border: 1px solid #f1f5f9;
-        }
+.table-card{
+    background:white;
+    padding:25px;
+    border-radius:24px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
 
-        th {
-            text-align: left;
-            color: var(--muted);
-            font-size: 13px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f1f5f9;
-        }
+th{
+    text-align:left;
+    padding-bottom:10px;
+    color:var(--muted);
+    border-bottom:1px solid #f1f5f9;
+}
 
-        td {
-            padding: 15px 0;
-            border-bottom: 1px solid #f8fafc;
-            font-size: 14px;
-        }
+td{
+    padding:15px 0;
+    border-bottom:1px solid #f8fafc;
+}
 
-        .form-card {
-            max-width: 500px;
-            background: white;
-            border-radius: 24px;
-            padding: 30px;
-            border: 1px solid #f1f5f9;
-        }
+/* FLOAT BUTTON */
 
-        .form-card h3 {
-            margin-bottom: 20px;
-            color: var(--text);
-        }
+#fab{
+    position:fixed;
+    right:30px;
+    bottom:30px;
+    width:70px;
+    height:70px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,#6366f1,#818cf8);
+    color:white;
+    font-size:40px;
+    cursor:pointer;
+    box-shadow:0 15px 30px rgba(99,102,241,.4);
+    z-index:1000;
+}
 
-        input,
-        select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-            outline: none;
-        }
+/* MODAL */
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-        }
+#modalBg{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.45);
+    backdrop-filter:blur(4px);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
 
-        #fabButton {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg,#6366f1,#818cf8);
-            color: white;
-            font-size: 34px;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
-            transition: 0.3s;
-        }
+#modalBg.active{
+    display:flex;
+}
 
-        #fabButton:hover {
-            transform: scale(1.08);
-        }
+.modal{
+    width:450px;
+    background:white;
+    border-radius:28px;
+    padding:30px;
+}
 
-        #modalBackdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,0.45);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
+.modal h2{
+    margin-bottom:25px;
+}
 
-        #modalBackdrop.active {
-            display: flex;
-        }
+input,
+select{
+    width:100%;
+    padding:15px;
+    border-radius:14px;
+    border:1px solid #e2e8f0;
+    margin-bottom:15px;
+    outline:none;
+}
 
-        #transaction .form-card {
-            animation: popup 0.25s ease;
-        }
+.btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:700;
+}
 
-        @keyframes popup {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
+.save{
+    background:var(--primary);
+    color:white;
+}
 
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.cancel{
+    margin-top:10px;
+    background:#e2e8f0;
+}
 
-        @media(max-width: 900px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-            }
+/* MOBILE */
 
-            aside {
-                width: 100%;
-                flex-direction: row;
-                align-items: center;
-                overflow-x: auto;
-                gap: 10px;
-            }
+@media(max-width:900px){
 
-            .grid-3,
-            .analytics {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    body{
+        flex-direction:column;
+    }
+
+    aside{
+        width:100%;
+    }
+
+    .grid,
+    .analytics{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .search{
+        width:100%;
+    }
+
+}
+
+</style>
 </head>
+
 <body>
 
-    <aside>
-        <div class="logo">👑 FinTrack</div>
+<!-- SIDEBAR -->
 
-        <div class="nav active" onclick="goPage('dashboard', this)">
-            📊 Dashboard
+<aside>
+
+    <div class="logo">
+        👑 FinTrack
+    </div>
+
+    <div class="nav active" onclick="showPage('dashboard', this)">
+        📊 Dashboard
+    </div>
+
+    <div class="nav" onclick="showPage('transactions', this)">
+        💸 Transactions
+    </div>
+
+    <div class="nav" onclick="showPage('monthly', this)">
+        📅 Monthly Report
+    </div>
+
+</aside>
+
+<!-- MAIN -->
+
+<main>
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="page active">
+
+    <div class="topbar">
+
+        <div>
+            <h2>Financial Overview</h2>
+
+            <small style="color:#94a3b8">
+                Welcome back
+            </small>
         </div>
 
-        <div class="nav" onclick="goPage('transaction', this)">
-            💸 Transactions
+        <input
+            type="text"
+            class="search"
+            placeholder="Search transaction..."
+            oninput="renderDashboard()">
+
+    </div>
+
+    <!-- CARDS -->
+
+    <div class="grid">
+
+        <div class="card">
+            <small>TOTAL BALANCE</small>
+            <h1 id="balance">Rp 0</h1>
         </div>
 
-        <div class="nav" onclick="goPage('monthly', this)">
-            📅 Monthly Report
+        <div class="card">
+            <small style="color:#10b981">
+                TOTAL INCOME
+            </small>
+
+            <h1 id="income">Rp 0</h1>
         </div>
-    </aside>
 
-    <!-- ================= FLOAT ACTION BUTTON ================= -->
+        <div class="card">
+            <small style="color:#ef4444">
+                TOTAL EXPENSE
+            </small>
 
-    <button id="fabButton" onclick="openModal()">
-        +
-    </button>
+            <h1 id="expense">Rp 0</h1>
+        </div>
 
-    <!-- ================= MODAL BACKDROP ================= -->
+    </div>
 
-    <div id="modalBackdrop"></div>
+    <!-- ANALYTICS -->
 
-    <main>
+    <div class="analytics">
 
-        <section id="dashboard" class="page active">
+        <div class="chart-box">
 
-            <div class="topbar">
-                <div>
-                    <h2>Financial Overview</h2>
-                    <small>Welcome back, your finance summary today.</small>
-                </div>
+            <small style="color:#94a3b8">
+                SPENDING ANALYSIS
+            </small>
 
-                <input type="text" class="search" placeholder="Search transaction...">
-            </div>
+            <svg
+                class="line-chart"
+                viewBox="0 0 600 220">
 
-            <div class="grid-3">
-                <div class="card">
-                    <small>TOTAL BALANCE</small>
-                    <h1 id="balance">Rp 0</h1>
-                </div>
+                <polyline
+                    id="lineChart"
+                    fill="none"
+                    stroke="#6366f1"
+                    stroke-width="4"
+                    points="">
+                </polyline>
 
-                <div class="card">
-                    <small style="color:#10b981">TOTAL INCOME</small>
-                    <h1 id="income">Rp 0</h1>
-                </div>
+            </svg>
 
-                <div class="card">
-                    <small style="color:#ef4444">TOTAL EXPENSE</small>
-                    <h1 id="expense">Rp 0</h1>
-                </div>
-            </div>
+        </div>
 
-            <div class="analytics">
+        <div class="chart-box">
 
-                <div class="chart-box">
-                    <small>SPENDING ANALYSIS</small>
-                    <div class="bar-container" id="barChart"></div>
-                </div>
+            <small style="color:#94a3b8">
+                INCOME vs EXPENSE
+            </small>
 
-                <div class="chart-box">
-                    <div class="ratio-wrap">
-                        <small>INCOME vs EXPENSE</small>
+            <div class="ratio-bar">
 
-                        <div class="ratio-bar">
-                            <div id="incomeBar" class="income-bar"></div>
-                            <div id="expenseBar" class="expense-bar"></div>
-                        </div>
+                <div id="incomeBar" class="income-bar"></div>
 
-                        <div class="legend">
-                            <span style="color:#10b981">● Income</span>
-                            <span style="color:#ef4444">● Expense</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div id="expenseBar" class="expense-bar"></div>
 
-            <div class="table-card">
-                <small style="color:#94a3b8;font-weight:700;">
-                    RECENT TRANSACTIONS
-                </small>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="tableData"></tbody>
-                </table>
-            </div>
-
-        </section>
-
-        <section id="transaction" class="page">
-
-            <div style="display:flex;justify-content:center;align-items:center;min-height:80vh;">
-
-            <div class="form-card">
-                <h3>Add New Transaction</h3>
-
-                <input
-                    type="text"
-                    id="displayNominal"
-                    placeholder="Nominal"
-                    oninput="formatNominal(this)">
-
-                <input type="hidden" id="realNominal">
-
-                <input
-                    type="text"
-                    id="description"
-                    placeholder="Description">
-
-                <select id="type">
-                    <option value="income">Income (+)</option>
-                    <option value="expense">Expense (-)</option>
-                </select>
-
-                <input type="date" id="date">
-
-                <button onclick="saveTransaction()">
-                    Save Transaction
-                </button>
-
-                <button
-                    type="button"
-                    onclick="closeModal()"
-                    style="margin-top:10px;background:#e2e8f0;color:#111827;">
-                    Cancel
-                </button>
             </div>
 
         </div>
 
-        </section>
+    </div>
 
-        <!-- ================= MONTHLY REPORT ================= -->
+    <!-- RECENT -->
 
-        <section id="monthly" class="page">
+    <div class="table-card">
 
-            <div class="table-card">
+        <small style="color:#94a3b8;font-weight:700;">
+            RECENT TRANSACTIONS
+        </small>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <div>
-                        <h2 style="margin-bottom:5px;">Monthly Report</h2>
-                        <small style="color:#94a3b8;">
-                            Automatic report by month
-                        </small>
-                    </div>
-                </div>
+        <table>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Total Income</th>
-                            <th>Total Expense</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
 
-                    <tbody id="monthlyTable"></tbody>
-                </table>
+            <tbody id="recentTable"></tbody>
 
-            </div>
+        </table>
 
-        </section>
+    </div>
 
-    </main>
+</section>
 
-    <script>
+<!-- TRANSACTIONS -->
 
-        let db = JSON.parse(localStorage.getItem('fintrack_lite')) || [];
+<section id="transactions" class="page">
 
-        function rupiah(number) {
-            return 'Rp ' + number.toLocaleString('id-ID');
+    <div class="table-card">
+
+        <h2>Transaction History</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody id="historyTable"></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+<!-- MONTHLY -->
+
+<section id="monthly" class="page">
+
+    <div class="table-card">
+
+        <h2>Monthly Report</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Income</th>
+                    <th>Expense</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+
+            <tbody id="monthlyTable"></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</main>
+
+<!-- FLOAT BUTTON -->
+
+<button id="fab" onclick="openModal()">
++
+</button>
+
+<!-- MODAL -->
+
+<div id="modalBg">
+
+    <div class="modal">
+
+        <h2>Add Transaction</h2>
+
+        <input
+            type="text"
+            id="displayNominal"
+            placeholder="Nominal"
+            oninput="formatNominal(this)">
+
+        <input
+            type="hidden"
+            id="realNominal">
+
+        <input
+            type="text"
+            id="description"
+            placeholder="Description">
+
+        <select id="type">
+            <option value="income">
+                Income (+)
+            </option>
+
+            <option value="expense">
+                Expense (-)
+            </option>
+        </select>
+
+        <input type="date" id="date">
+
+        <button
+            class="btn save"
+            onclick="saveTransaction()">
+
+            Save Transaction
+
+        </button>
+
+        <button
+            class="btn cancel"
+            onclick="closeModal()">
+
+            Cancel
+
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+let db =
+JSON.parse(localStorage.getItem('fintrack_lite'))
+|| [];
+
+/* FORMAT */
+
+function rupiah(v){
+    return 'Rp ' + v.toLocaleString('id-ID');
+}
+
+/* FORMAT INPUT */
+
+function formatNominal(el){
+
+    let value =
+    el.value.replace(/\D/g,'');
+
+    document
+    .getElementById('realNominal')
+    .value = value;
+
+    el.value =
+    new Intl.NumberFormat('id-ID')
+    .format(value);
+}
+
+/* MODAL */
+
+function openModal(){
+
+    document
+    .getElementById('modalBg')
+    .classList.add('active');
+}
+
+function closeModal(){
+
+    document
+    .getElementById('modalBg')
+    .classList.remove('active');
+}
+
+/* SAVE */
+
+function saveTransaction(){
+
+    const nominal =
+    document.getElementById('realNominal').value;
+
+    const description =
+    document.getElementById('description').value;
+
+    const type =
+    document.getElementById('type').value;
+
+    const date =
+    document.getElementById('date').value;
+
+    if(!nominal || !description || !date){
+
+        alert('Isi semua field');
+        return;
+    }
+
+    db.push({
+        nominal:parseInt(nominal),
+        description,
+        type,
+        date
+    });
+
+    localStorage.setItem(
+        'fintrack_lite',
+        JSON.stringify(db)
+    );
+
+    closeModal();
+
+    renderDashboard();
+    renderHistory();
+    renderMonthly();
+}
+
+/* NAVIGATION */
+
+function showPage(id,el){
+
+    document
+    .querySelectorAll('.page')
+    .forEach(page=>{
+        page.classList.remove('active');
+    });
+
+    document
+    .getElementById(id)
+    .classList.add('active');
+
+    document
+    .querySelectorAll('.nav')
+    .forEach(nav=>{
+        nav.classList.remove('active');
+    });
+
+    el.classList.add('active');
+}
+
+/* DASHBOARD */
+
+function renderDashboard(){
+
+    let income = 0;
+    let expense = 0;
+
+    const recent =
+    document.getElementById('recentTable');
+
+    recent.innerHTML = '';
+
+    const now = new Date();
+
+    const month =
+    now.getMonth();
+
+    const year =
+    now.getFullYear();
+
+    const monthly =
+    db.filter(item => {
+
+        const d =
+        new Date(item.date);
+
+        return d.getMonth() === month
+        && d.getFullYear() === year;
+    });
+
+    monthly.forEach(item => {
+
+        if(item.type === 'income'){
+            income += item.nominal;
+        }else{
+            expense += item.nominal;
         }
 
-        function formatNominal(input) {
-            let value = input.value.replace(/\D/g, '');
-            document.getElementById('realNominal').value = value;
-            input.value = new Intl.NumberFormat('id-ID').format(value);
+    });
+
+    document.getElementById('balance')
+    .innerText = rupiah(income - expense);
+
+    document.getElementById('income')
+    .innerText = rupiah(income);
+
+    document.getElementById('expense')
+    .innerText = rupiah(expense);
+
+    const total =
+    income + expense || 1;
+
+    document.getElementById('incomeBar')
+    .style.width =
+    (income / total * 100) + '%';
+
+    document.getElementById('expenseBar')
+    .style.width =
+    (expense / total * 100) + '%';
+
+    const keyword =
+    document.querySelector('.search')
+    .value
+    .toLowerCase();
+
+    monthly
+    .slice()
+    .reverse()
+    .filter(item =>
+        item.description
+        .toLowerCase()
+        .includes(keyword)
+    )
+
+    .forEach(item => {
+
+        recent.innerHTML += `
+            <tr>
+                <td>${item.description}</td>
+                <td>${item.date}</td>
+
+                <td style="
+                color:${item.type === 'income'
+                ? '#10b981'
+                : '#ef4444'}">
+
+                ${item.type}
+
+                </td>
+
+                <td style="
+                color:${item.type === 'income'
+                ? '#10b981'
+                : '#ef4444'}">
+
+                ${rupiah(item.nominal)}
+
+                </td>
+
+            </tr>
+        `;
+    });
+
+    generateChart(monthly);
+}
+
+/* HISTORY */
+
+function renderHistory(){
+
+    const table =
+    document.getElementById('historyTable');
+
+    table.innerHTML = '';
+
+    db
+    .slice()
+    .reverse()
+
+    .forEach(item => {
+
+        table.innerHTML += `
+            <tr>
+
+                <td>${item.description}</td>
+
+                <td>${item.date}</td>
+
+                <td style="
+                color:${item.type === 'income'
+                ? '#10b981'
+                : '#ef4444'}">
+
+                ${item.type}
+
+                </td>
+
+                <td style="
+                color:${item.type === 'income'
+                ? '#10b981'
+                : '#ef4444'}">
+
+                ${rupiah(item.nominal)}
+
+                </td>
+
+            </tr>
+        `;
+    });
+}
+
+/* MONTHLY */
+
+function renderMonthly(){
+
+    const table =
+    document.getElementById('monthlyTable');
+
+    table.innerHTML = '';
+
+    let grouped = {};
+
+    db.forEach(item => {
+
+        const d =
+        new Date(item.date);
+
+        const key =
+        `${d.getFullYear()}-${d.getMonth()+1}`;
+
+        if(!grouped[key]){
+
+            grouped[key] = {
+                income:0,
+                expense:0
+            };
         }
 
-        function openModal() {
+        if(item.type === 'income'){
+            grouped[key].income += item.nominal;
+        }else{
+            grouped[key].expense += item.nominal;
+        }
+    });
 
-            document.getElementById('modalBackdrop').classList.add('active');
+    Object.keys(grouped)
+    .sort()
+    .reverse()
 
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+    .forEach(key => {
 
-            document.getElementById('transaction').classList.add('active');
+        const data =
+        grouped[key];
+
+        const balance =
+        data.income - data.expense;
+
+        table.innerHTML += `
+            <tr>
+
+                <td>${key}</td>
+
+                <td style="color:#10b981">
+                    ${rupiah(data.income)}
+                </td>
+
+                <td style="color:#ef4444">
+                    ${rupiah(data.expense)}
+                </td>
+
+                <td>
+                    ${rupiah(balance)}
+                </td>
+
+            </tr>
+        `;
+    });
+}
+
+/* CHART */
+
+function generateChart(data){
+
+    if(data.length === 0){
+
+        document
+        .getElementById('lineChart')
+        .setAttribute(
+            'points',
+            '0,200 600,200'
+        );
+
+        return;
+    }
+
+    let total = 0;
+
+    let points = [];
+
+    data.forEach((item,index)=>{
+
+        if(item.type === 'income'){
+            total += item.nominal;
+        }else{
+            total -= item.nominal;
         }
 
-        function closeModal() {
+        const x =
+        (index / (data.length-1 || 1))
+        * 580 + 10;
 
-            document.getElementById('modalBackdrop').classList.remove('active');
+        const y =
+        200 - Math.min(total / 10000,180);
 
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+        points.push(`${x},${y}`);
+    });
 
-            document.getElementById('dashboard').classList.add('active');
-        }
+    document
+    .getElementById('lineChart')
+    .setAttribute(
+        'points',
+        points.join(' ')
+    );
+}
 
-        function goPage(id, el) {
+document.getElementById('date')
+.valueAsDate = new Date();
 
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+renderDashboard();
+renderHistory();
+renderMonthly();
 
-            document.getElementById(id).classList.add('active');
+</script>
 
-            document.querySelectorAll('.nav').forEach(nav => {
-                nav.classList.remove('active');
-            });
-
-            el.classList.add('active');
-
-            renderDashboard();
-        }
-
-        function saveTransaction() {
-
-            const nominal = document.getElementById('realNominal').value;
-            const description = document.getElementById('description').value;
-            const type = document.getElementById('type').value;
-            const date = document.getElementById('date').value;
-
-            if(!nominal || !description || !date) {
-                alert('Please fill all fields');
-                return;
-            }
-
-            db.push({
-                nominal: parseInt(nominal),
-                description,
-                type,
-                date
-            });
-
-            localStorage.setItem('fintrack_lite', JSON.stringify(db));
-
-            alert('Transaction saved');
-
-            closeModal();
-
-            renderDashboard();
-            renderMonthlyReport();
-        }
-
-        function renderDashboard() {
-
-            let income = 0;
-            let expense = 0;
-
-            const table = document.getElementById('tableData');
-            table.innerHTML = '';
-
-            // ================= FILTER MONTHLY =================
-
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            const monthlyData = db.filter(item => {
-                const d = new Date(item.date);
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            });
-
-            // ================= HITUNG TOTAL =================
-
-            monthlyData.forEach(item => {
-                if(item.type === 'income') {
-                    income += item.nominal;
-                } else {
-                    expense += item.nominal;
-                }
-            });
-
-            // ================= UPDATE CARD =================
-
-            document.getElementById('balance').innerText = rupiah(income - expense);
-            document.getElementById('income').innerText = rupiah(income);
-            document.getElementById('expense').innerText = rupiah(expense);
-
-            // ================= LINE CHART =================
-
-            const chart = document.getElementById('barChart');
-            chart.innerHTML = `
-                <svg width="100%" height="220" viewBox="0 0 600 220">
-                    <polyline
-                        fill="none"
-                        stroke="#6366f1"
-                        stroke-width="4"
-                        points="${generateLinePoints(monthlyData)}"
-                    />
-                </svg>
-            `;
-
-            // ================= RATIO =================
-
-            const totalMoney = income + expense || 1;
-
-            document.getElementById('incomeBar').style.width =
-                (income / totalMoney * 100) + '%';
-
-            document.getElementById('expenseBar').style.width =
-                (expense / totalMoney * 100) + '%';
-
-            // ================= SEARCH =================
-
-            const keyword = document.querySelector('.search').value.toLowerCase();
-
-            monthlyData
-                .slice()
-                .reverse()
-                .filter(item =>
-                    item.description.toLowerCase().includes(keyword)
-                )
-                .forEach(item => {
-
-                    table.innerHTML += `
-                        <tr>
-                            <td>${item.description}</td>
-                            <td>${item.date}</td>
-                            <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
-                                ${item.type}
-                            </td>
-                            <td style="color:${item.type === 'income' ? '#10b981' : '#ef4444'}">
-                                ${rupiah(item.nominal)}
-                            </td>
-                        </tr>
-                    `;
-                });
-        }
-
-        // ================= GENERATE LINE CHART =================
-
-        function generateLinePoints(data) {
-
-            if(data.length === 0) {
-                return '0,200 600,200';
-            }
-
-            let total = 0;
-            let points = [];
-
-            data.forEach((item, index) => {
-
-                if(item.type === 'income') {
-                    total += item.nominal;
-                } else {
-                    total -= item.nominal;
-                }
-
-                const x = (index / (data.length - 1 || 1)) * 580 + 10;
-
-                const y = 200 - Math.min(total / 10000, 180);
-
-                points.push(`${x},${y}`);
-            });
-
-            return points.join(' ');
-        }
-
-        // ================= SEARCH EVENT =================
-
-        document.querySelector('.search').addEventListener('input', renderDashboard);
-
-        // ================= MONTHLY REPORT =================
-
-        function renderMonthlyReport() {
-
-            const table = document.getElementById('monthlyTable');
-            table.innerHTML = '';
-
-            let grouped = {};
-
-            db.forEach(item => {
-
-                const d = new Date(item.date);
-
-                const key = `${d.getFullYear()}-${d.getMonth()+1}`;
-
-                if(!grouped[key]) {
-                    grouped[key] = {
-                        income: 0,
-                        expense: 0
-                    };
-                }
-
-                if(item.type === 'income') {
-                    grouped[key].income += item.nominal;
-                } else {
-                    grouped[key].expense += item.nominal;
-                }
-            });
-
-            Object.keys(grouped)
-                .sort()
-                .reverse()
-                .forEach(key => {
-
-                    const data = grouped[key];
-
-                    const balance = data.income - data.expense;
-
-                    table.innerHTML += `
-                        <tr>
-                            <td>${key}</td>
-                            <td style="color:#10b981;">
-                                ${rupiah(data.income)}
-                            </td>
-                            <td style="color:#ef4444;">
-                                ${rupiah(data.expense)}
-                            </td>
-                            <td>
-                                ${rupiah(balance)}
-                            </td>
-                        </tr>
-                    `;
-                });
-        }
-
-        renderMonthlyReport();
-
-        document.getElementById('date').valueAsDate = new Date();
-
-        renderDashboard();
-
-    </script>
 </body>
 </html>
