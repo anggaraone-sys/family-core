@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>FinTrack Lite</title>
+<title>Home Finance</title>
 
 <style>
 
@@ -41,10 +41,26 @@ aside{
     padding:30px 18px;
 }
 
-.logo{
-    font-size:38px;
-    font-weight:800;
+.logo-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
     margin-bottom:50px;
+}
+
+.logo-img{
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    object-fit:cover;
+    background:white;
+    padding:6px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:800;
+    line-height:1.1;
 }
 
 .nav{
@@ -53,7 +69,7 @@ aside{
     margin-bottom:12px;
     cursor:pointer;
     transition:.3s;
-    font-size:20px;
+    font-size:18px;
     font-weight:700;
 }
 
@@ -99,6 +115,7 @@ main{
     border-radius:14px;
     background:white;
     outline:none;
+    box-shadow:0 2px 10px rgba(0,0,0,.04);
 }
 
 /* CARDS */
@@ -114,6 +131,7 @@ main{
     background:white;
     padding:25px;
     border-radius:24px;
+    box-shadow:0 5px 15px rgba(0,0,0,.03);
 }
 
 .card small{
@@ -139,6 +157,7 @@ main{
     background:white;
     border-radius:24px;
     padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.03);
 }
 
 .line-chart{
@@ -173,6 +192,7 @@ main{
     background:white;
     padding:25px;
     border-radius:24px;
+    box-shadow:0 5px 15px rgba(0,0,0,.03);
 }
 
 table{
@@ -191,6 +211,18 @@ th{
 td{
     padding:15px 0;
     border-bottom:1px solid #f8fafc;
+}
+
+/* BUTTON */
+
+.edit-btn{
+    background:#6366f1;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
 }
 
 /* FLOAT BUTTON */
@@ -333,8 +365,16 @@ select{
 
 <aside>
 
-    <div class="logo">
-        👑 FinTrack
+    <div class="logo-wrap">
+
+        <img
+        class="logo-img"
+        src="https://png.pngtree.com/png-vector/20240830/ourmid/pngtree-real-estate-investment-icon-with-house-and-money-vector-png-image_13673353.png">
+
+        <div class="logo">
+            Home<br>Finance
+        </div>
+
     </div>
 
     <div class="nav active" onclick="showPage('dashboard', this)">
@@ -363,7 +403,6 @@ select{
 
         <div>
             <h2>Financial Overview</h2>
-
             <small style="color:#94a3b8">
                 Welcome back
             </small>
@@ -410,9 +449,7 @@ select{
                 SPENDING ANALYSIS
             </small>
 
-            <svg
-                class="line-chart"
-                viewBox="0 0 600 220">
+            <svg class="line-chart" viewBox="0 0 600 220">
 
                 <polyline
                     id="lineChart"
@@ -588,71 +625,80 @@ select{
 
 </div>
 
-<!-- REPORT DETAIL -->
+<script type="module">
 
-<div id="reportModal" class="report-modal">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-    <div class="report-content">
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    doc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:20px;
-        ">
+/* FIREBASE */
 
-            <h2 id="reportTitle">
-                Monthly Detail
-            </h2>
+const firebaseConfig = {
 
-            <button
-                onclick="closeReport()"
-                class="btn cancel"
-                style="width:auto;padding:10px 20px">
+  apiKey: "AIzaSyDyp9xh0IRzpahTg82BXsxXQLtgvdqJJwc",
 
-                Close
+  authDomain: "home-finance-9219a.firebaseapp.com",
 
-            </button>
+  projectId: "home-finance-9219a",
 
-        </div>
+  storageBucket: "home-finance-9219a.firebasestorage.app",
 
-        <button
-            class="btn save"
-            onclick="exportCSV()"
-            style="margin-bottom:20px">
+  messagingSenderId: "774004827415",
 
-            Export Excel (.csv)
+  appId: "1:774004827415:web:d771bff53b2d38827c0352",
 
-        </button>
+  measurementId: "G-1C4GW33CGT"
 
-        <table>
+};
 
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
+const app =
+initializeApp(firebaseConfig);
 
-            <tbody id="reportTable"></tbody>
+const dbFirestore =
+getFirestore(app);
 
-        </table>
-
-    </div>
-
-</div>
-
-<script>
-
-let db =
-JSON.parse(localStorage.getItem('fintrack_lite'))
-|| [];
+let db = [];
 
 let editIndex = null;
 
-let currentReportData = [];
+/* LOAD DATABASE */
+
+async function loadDatabase(){
+
+    db = [];
+
+    const querySnapshot =
+    await getDocs(
+        collection(
+            dbFirestore,
+            "transactions"
+        )
+    );
+
+    querySnapshot.forEach(docSnap => {
+
+        db.push({
+            id: docSnap.id,
+            ...docSnap.data()
+        });
+
+    });
+
+    renderDashboard();
+    renderHistory();
+    renderMonthly();
+}
+
+loadDatabase();
 
 /* FORMAT */
 
@@ -660,9 +706,7 @@ function rupiah(v){
     return 'Rp ' + v.toLocaleString('id-ID');
 }
 
-/* FORMAT INPUT */
-
-function formatNominal(el){
+window.formatNominal = function(el){
 
     let value =
     el.value.replace(/\D/g,'');
@@ -678,23 +722,95 @@ function formatNominal(el){
 
 /* MODAL */
 
-function openModal(){
+window.openModal = function(){
 
     document
     .getElementById('modalBg')
     .classList.add('active');
 }
 
-function closeModal(){
+window.closeModal = function(){
 
     document
     .getElementById('modalBg')
     .classList.remove('active');
 }
 
+/* SAVE */
+
+window.saveTransaction = async function(){
+
+    const nominal =
+    document.getElementById('realNominal').value;
+
+    const description =
+    document.getElementById('description').value;
+
+    const type =
+    document.getElementById('type').value;
+
+    const date =
+    document.getElementById('date').value;
+
+    if(!nominal || !description || !date){
+
+        alert('Isi semua field');
+        return;
+    }
+
+    const payload = {
+
+        nominal:parseInt(nominal),
+        description,
+        type,
+        date
+    };
+
+    if(editIndex !== null){
+
+        await updateDoc(
+
+            doc(
+                dbFirestore,
+                "transactions",
+                db[editIndex].id
+            ),
+
+            payload
+        );
+
+        editIndex = null;
+
+    }else{
+
+        await addDoc(
+
+            collection(
+                dbFirestore,
+                "transactions"
+            ),
+
+            payload
+        );
+    }
+
+    closeModal();
+
+    loadDatabase();
+
+    document.getElementById('displayNominal')
+    .value = '';
+
+    document.getElementById('realNominal')
+    .value = '';
+
+    document.getElementById('description')
+    .value = '';
+}
+
 /* EDIT */
 
-function editTransaction(index){
+window.editTransaction = function(index){
 
     const item = db[index];
 
@@ -720,70 +836,9 @@ function editTransaction(index){
     .value = item.date;
 }
 
-/* SAVE */
-
-function saveTransaction(){
-
-    const nominal =
-    document.getElementById('realNominal').value;
-
-    const description =
-    document.getElementById('description').value;
-
-    const type =
-    document.getElementById('type').value;
-
-    const date =
-    document.getElementById('date').value;
-
-    if(!nominal || !description || !date){
-
-        alert('Isi semua field');
-        return;
-    }
-
-    const payload = {
-        nominal:parseInt(nominal),
-        description,
-        type,
-        date
-    };
-
-    if(editIndex !== null){
-
-        db[editIndex] = payload;
-
-        editIndex = null;
-
-    }else{
-
-        db.push(payload);
-    }
-
-    localStorage.setItem(
-        'fintrack_lite',
-        JSON.stringify(db)
-    );
-
-    closeModal();
-
-    renderDashboard();
-    renderHistory();
-    renderMonthly();
-
-    document.getElementById('displayNominal')
-    .value = '';
-
-    document.getElementById('realNominal')
-    .value = '';
-
-    document.getElementById('description')
-    .value = '';
-}
-
 /* NAV */
 
-function showPage(id,el){
+window.showPage = function(id,el){
 
     document
     .querySelectorAll('.page')
@@ -816,25 +871,7 @@ function renderDashboard(){
 
     recent.innerHTML = '';
 
-    const now = new Date();
-
-    const month =
-    now.getMonth();
-
-    const year =
-    now.getFullYear();
-
-    const monthly =
-    db.filter(item => {
-
-        const d =
-        new Date(item.date);
-
-        return d.getMonth() === month
-        && d.getFullYear() === year;
-    });
-
-    monthly.forEach(item => {
+    db.forEach(item => {
 
         if(item.type === 'income'){
             income += item.nominal;
@@ -864,40 +901,18 @@ function renderDashboard(){
     .style.width =
     (expense / total * 100) + '%';
 
-    const keyword =
-    document.querySelector('.search')
-    .value
-    .toLowerCase();
-
-    monthly
-    .slice()
-    .reverse()
-    .filter(item =>
-        item.description
-        .toLowerCase()
-        .includes(keyword)
-    )
-
-    .forEach(item => {
+    db.slice().reverse().forEach(item => {
 
         recent.innerHTML += `
             <tr>
+
                 <td>${item.description}</td>
+
                 <td>${item.date}</td>
 
-                <td style="
-                color:${item.type === 'income'
-                ? '#10b981'
-                : '#ef4444'}">
+                <td>${item.type}</td>
 
-                ${item.type}
-
-                </td>
-
-                <td style="
-                color:${item.type === 'income'
-                ? '#10b981'
-                : '#ef4444'}">
+                <td>
 
                 ${rupiah(item.nominal)}
 
@@ -907,7 +922,7 @@ function renderDashboard(){
         `;
     });
 
-    generateChart(monthly);
+    generateChart(db);
 }
 
 /* HISTORY */
@@ -943,19 +958,9 @@ function renderHistory(){
 
                 <td>${item.date}</td>
 
-                <td style="
-                color:${item.type === 'income'
-                ? '#10b981'
-                : '#ef4444'}">
+                <td>${item.type}</td>
 
-                ${item.type}
-
-                </td>
-
-                <td style="
-                color:${item.type === 'income'
-                ? '#10b981'
-                : '#ef4444'}">
+                <td>
 
                 ${rupiah(item.nominal)}
 
@@ -965,14 +970,7 @@ function renderHistory(){
 
                     <button
                         onclick="editTransaction(${db.indexOf(item)})"
-                        style="
-                            background:#6366f1;
-                            color:white;
-                            border:none;
-                            padding:8px 14px;
-                            border-radius:10px;
-                            cursor:pointer;
-                        ">
+                        class="edit-btn">
 
                         Edit
 
@@ -1007,12 +1005,9 @@ function renderMonthly(){
 
             grouped[key] = {
                 income:0,
-                expense:0,
-                items:[]
+                expense:0
             };
         }
-
-        grouped[key].items.push(item);
 
         if(item.type === 'income'){
             grouped[key].income += item.nominal;
@@ -1033,9 +1028,7 @@ function renderMonthly(){
         data.income - data.expense;
 
         table.innerHTML += `
-            <tr
-                style="cursor:pointer"
-                onclick="openMonthlyDetail('${key}')">
+            <tr>
 
                 <td>${key}</td>
 
@@ -1054,103 +1047,6 @@ function renderMonthly(){
             </tr>
         `;
     });
-}
-
-/* REPORT DETAIL */
-
-function openMonthlyDetail(key){
-
-    const modal =
-    document.getElementById('reportModal');
-
-    const table =
-    document.getElementById('reportTable');
-
-    table.innerHTML = '';
-
-    currentReportData = [];
-
-    document.getElementById('reportTitle')
-    .innerText = `Report ${key}`;
-
-    db.forEach(item => {
-
-        const d =
-        new Date(item.date);
-
-        const itemKey =
-        `${d.getFullYear()}-${d.getMonth()+1}`;
-
-        if(itemKey === key){
-
-            currentReportData.push(item);
-
-            table.innerHTML += `
-                <tr>
-
-                    <td>${item.description}</td>
-
-                    <td>${item.date}</td>
-
-                    <td style="
-                    color:${item.type === 'income'
-                    ? '#10b981'
-                    : '#ef4444'}">
-
-                    ${item.type}
-
-                    </td>
-
-                    <td>
-                        ${rupiah(item.nominal)}
-                    </td>
-
-                </tr>
-            `;
-        }
-    });
-
-    modal.classList.add('active');
-}
-
-function closeReport(){
-
-    document
-    .getElementById('reportModal')
-    .classList.remove('active');
-}
-
-/* EXPORT CSV */
-
-function exportCSV(){
-
-    let csv =
-    'Description,Date,Type,Amount\n';
-
-    currentReportData.forEach(item => {
-
-        csv +=
-        `${item.description},${item.date},${item.type},${item.nominal}\n`;
-    });
-
-    const blob =
-    new Blob([csv], {
-        type:'text/csv'
-    });
-
-    const url =
-    URL.createObjectURL(blob);
-
-    const a =
-    document.createElement('a');
-
-    a.href = url;
-
-    a.download = 'monthly-report.csv';
-
-    a.click();
-
-    URL.revokeObjectURL(url);
 }
 
 /* CHART */
@@ -1201,10 +1097,6 @@ function generateChart(data){
 
 document.getElementById('date')
 .valueAsDate = new Date();
-
-renderDashboard();
-renderHistory();
-renderMonthly();
 
 </script>
 
