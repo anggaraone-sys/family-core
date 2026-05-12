@@ -6,16 +6,18 @@
 <title>Home Finance</title>
 
 <style>
+
 :root{
-    --bg:#0f1b33;
-    --card:#17365f;
-    --text:#ffffff;
-    --muted:#8fa6c9;
-    --blue:#28c5ff;
-    --purple:#a832ff;
-    --green:#35e58a;
-    --red:#ff5b7f;
-    --orange:#ff9f1c;
+    --blue:#2db7ff;
+    --blue2:#5d8dff;
+    --pink:#ff4fb8;
+    --pink2:#ff95d6;
+    --bg:#f4f8ff;
+    --white:#ffffff;
+    --text:#071b56;
+    --muted:#6d7db3;
+    --green:#17c36b;
+    --red:#ff5a8c;
 }
 
 *{
@@ -26,255 +28,287 @@
 }
 
 body{
-    background:#071025;
-    color:white;
+    background:
+    radial-gradient(circle at top left,#b8e8ff,transparent 35%),
+    radial-gradient(circle at top right,#ffd0ea,transparent 35%),
+    linear-gradient(180deg,#f4f8ff,#fff7fc);
+    min-height:100vh;
+    color:var(--text);
+}
+
+button,input,select{
+    font-family:inherit;
 }
 
 #loginPage{
     min-height:100vh;
-    padding:30px;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(160deg,#102a4d,#111a32);
+    padding:25px;
 }
 
 .login-card{
     width:100%;
-    max-width:430px;
-    text-align:center;
+    max-width:420px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(20px);
+    border-radius:35px;
+    padding:35px 25px;
+    box-shadow:0 20px 60px rgba(77,107,190,.15);
+    border:1px solid rgba(255,255,255,.9);
 }
 
-.logo-big{
-    width:145px;
-    height:145px;
-    margin:0 auto 28px;
-    border-radius:50%;
-    background:linear-gradient(135deg,var(--blue),var(--purple));
+.logo-wrap{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:35px;
+}
+
+.logo-icon{
+    width:70px;
+    height:70px;
+    border-radius:22px;
+    background:linear-gradient(135deg,var(--blue),var(--pink));
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:70px;
-}
-
-.login-card h1{
-    font-size:38px;
-    margin-bottom:10px;
-}
-
-.login-card p{
-    color:var(--muted);
-    margin-bottom:34px;
-}
-
-.login-label{
-    text-align:left;
-    color:var(--muted);
-    margin-bottom:10px;
-    padding-left:4px;
-}
-
-input,select{
-    width:100%;
-    padding:17px;
-    border:none;
-    border-radius:20px;
-    background:#1b3155;
+    font-size:32px;
     color:white;
+}
+
+.logo-wrap h1{
+    font-size:28px;
+}
+
+.logo-wrap p{
+    color:var(--muted);
+    margin-top:5px;
+}
+
+.login-title{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.login-sub{
+    color:var(--muted);
+    margin-bottom:30px;
+}
+
+.input-wrap{
+    background:white;
+    border-radius:22px;
+    padding:16px;
+    margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(67,98,170,.08);
+}
+
+.input-wrap input{
+    width:100%;
+    border:none;
     outline:none;
-    margin-bottom:14px;
-    font-size:15px;
+    font-size:16px;
+    background:transparent;
 }
 
-input::placeholder{
-    color:#7088ad;
-}
-
-button{
-    cursor:pointer;
-}
-
-.login-card button,
-.btn{
+.main-btn{
     width:100%;
-    padding:17px;
     border:none;
-    border-radius:28px;
+    padding:18px;
+    border-radius:24px;
+    background:linear-gradient(90deg,var(--blue),var(--pink));
     color:white;
+    font-size:16px;
     font-weight:800;
-    font-size:15px;
-    background:linear-gradient(90deg,var(--purple),var(--blue));
+    cursor:pointer;
+    box-shadow:0 12px 30px rgba(255,79,184,.2);
 }
 
 #app{
     display:none;
-    max-width:430px;
+    max-width:500px;
     margin:auto;
-    background:var(--bg);
     min-height:100vh;
-    padding-bottom:105px;
+    padding:20px 18px 120px;
 }
 
-.header{
-    padding:24px 22px 8px;
+.topbar{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    margin-bottom:18px;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:14px;
 }
 
 .avatar{
-    width:48px;
-    height:48px;
+    width:68px;
+    height:68px;
     border-radius:50%;
-    background:linear-gradient(135deg,var(--blue),var(--purple));
+    background:linear-gradient(135deg,var(--blue),var(--pink));
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:22px;
+    color:white;
+    font-size:32px;
+    border:4px solid white;
 }
 
-.user-chip{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.header small{
+.profile small{
     color:var(--muted);
 }
 
 .logout{
     border:none;
-    background:#1b3155;
-    color:white;
-    border-radius:14px;
-    padding:10px 12px;
+    background:white;
+    padding:12px 16px;
+    border-radius:18px;
+    color:var(--pink);
+    font-weight:700;
+    cursor:pointer;
 }
 
 .page{
     display:none;
-    padding:16px 22px;
 }
 
 .page.active{
     display:block;
 }
 
-.balance-card{
-    background:radial-gradient(circle at 90% 20%,rgba(168,50,255,.35),transparent 30%),linear-gradient(145deg,#17365f,#111b35);
-    border-radius:32px;
-    padding:26px;
-    margin-bottom:18px;
+.hero-card{
+    position:relative;
+    overflow:hidden;
+    min-height:280px;
+    border-radius:38px;
+    padding:28px;
+    color:white;
+    background:
+    linear-gradient(135deg,#31bcff,#ff79c8);
+    box-shadow:0 20px 50px rgba(92,110,210,.2);
+
+    background-image:
+    linear-gradient(135deg,rgba(45,183,255,.9),rgba(255,79,184,.8)),
+    url('plane.png');
+
+    background-repeat:no-repeat;
+    background-position:right bottom;
+    background-size:220px;
 }
 
-.balance-card small,
-.quick-card small,
-.chart-card small{
-    color:var(--muted);
-}
-
-.balance-card h1{
-    font-size:38px;
-    margin:10px 0 14px;
-}
-
-.pill{
-    display:inline-flex;
-    gap:12px;
-    padding:11px 18px;
-    border-radius:30px;
-    background:linear-gradient(90deg,var(--purple),#5967ff);
-    font-size:13px;
+.hero-card small{
+    font-size:16px;
     font-weight:700;
+}
+
+.hero-card h1{
+    font-size:48px;
+    margin:14px 0 25px;
+}
+
+.hero-actions{
+    display:flex;
+    gap:12px;
+}
+
+.hero-btn{
+    border:none;
+    background:rgba(255,255,255,.2);
+    backdrop-filter:blur(10px);
+    color:white;
+    padding:14px 18px;
+    border-radius:18px;
+    font-weight:700;
+    cursor:pointer;
 }
 
 .quick-grid{
     display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-    margin-bottom:18px;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin:18px 0;
 }
 
-.quick-card,
-.chart-card,
-.month-card,
-.insight-card,
-.target-card{
-    background:#183b67;
+.quick-card{
+    background:rgba(255,255,255,.8);
+    backdrop-filter:blur(12px);
     border-radius:24px;
+    padding:18px 14px;
+    box-shadow:0 12px 30px rgba(80,102,180,.08);
+}
+
+.quick-card small{
+    color:var(--muted);
+}
+
+.quick-card h3{
+    margin-top:10px;
+    font-size:20px;
+}
+
+.soft-card{
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(12px);
+    border-radius:28px;
     padding:20px;
-}
-
-.quick-card h2{
-    margin-top:8px;
-    font-size:22px;
-}
-
-.chart-card,
-.insight-card,
-.target-card{
     margin-bottom:18px;
+    box-shadow:0 12px 30px rgba(80,102,180,.08);
 }
 
-.line-chart{
-    width:100%;
-    height:170px;
+.progress{
+    height:12px;
+    background:#dfe8ff;
+    border-radius:20px;
+    overflow:hidden;
     margin-top:14px;
 }
 
-.ratio-bar{
-    height:12px;
-    border-radius:20px;
-    overflow:hidden;
-    background:#2b4268;
-    display:flex;
-}
-
-.income-bar{
-    background:linear-gradient(90deg,var(--blue),var(--green));
-}
-
-.expense-bar{
-    background:linear-gradient(90deg,var(--orange),var(--red));
-}
-
-.target-progress{
-    height:12px;
-    border-radius:20px;
-    background:#2b4268;
-    margin:12px 0;
-    overflow:hidden;
-}
-
-.target-fill{
+.progress-fill{
     height:100%;
-    background:linear-gradient(90deg,var(--purple),var(--blue));
     width:0%;
+    background:linear-gradient(90deg,var(--blue),var(--pink));
 }
 
 .section-title{
-    font-size:20px;
-    margin:16px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:20px 0 14px;
 }
 
-.search{
-    margin-bottom:16px;
+.section-title h3{
+    font-size:20px;
+}
+
+.section-title button{
+    border:none;
+    background:none;
+    color:var(--blue2);
+    font-weight:700;
+    cursor:pointer;
 }
 
 .list{
     display:flex;
     flex-direction:column;
-    gap:13px;
+    gap:12px;
 }
 
 .tx-card{
-    background:#183b67;
-    border-radius:22px;
+    background:rgba(255,255,255,.85);
+    border-radius:24px;
     padding:16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
+    box-shadow:0 10px 25px rgba(80,102,180,.07);
 }
 
 .tx-left{
@@ -284,18 +318,15 @@ button{
 }
 
 .tx-icon{
-    width:44px;
-    height:44px;
-    border-radius:15px;
+    width:54px;
+    height:54px;
+    border-radius:18px;
+    background:linear-gradient(135deg,var(--blue),var(--pink));
     display:flex;
     align-items:center;
     justify-content:center;
-    background:linear-gradient(135deg,var(--purple),var(--blue));
-    font-size:20px;
-}
-
-.tx-card h4{
-    font-size:15px;
+    color:white;
+    font-size:24px;
 }
 
 .tx-card small{
@@ -315,101 +346,126 @@ button{
 .action-row{
     display:flex;
     gap:6px;
-    justify-content:flex-end;
     margin-top:8px;
+    justify-content:flex-end;
 }
 
-.edit-btn,
-.delete-btn,
-.export-btn{
+.edit-btn,.delete-btn{
     border:none;
+    padding:8px 10px;
+    border-radius:10px;
     color:white;
-    border-radius:12px;
-    padding:8px 11px;
     font-size:12px;
+    cursor:pointer;
 }
 
 .edit-btn{
-    background:#244f83;
+    background:var(--blue2);
 }
 
 .delete-btn{
-    background:#a83255;
+    background:var(--red);
 }
 
-.export-btn{
-    background:linear-gradient(90deg,var(--purple),var(--blue));
-    margin-top:14px;
+.search{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:16px;
+    outline:none;
+    background:white;
+    box-shadow:0 10px 25px rgba(80,102,180,.07);
 }
 
 .month-card{
+    background:white;
+    border-radius:24px;
+    padding:18px;
     margin-bottom:14px;
+    box-shadow:0 10px 25px rgba(80,102,180,.07);
+    cursor:pointer;
 }
 
 .month-row{
     display:flex;
     justify-content:space-between;
-    margin:8px 0;
-    color:var(--muted);
+    margin-top:10px;
 }
 
-.month-row strong{
-    color:white;
+.profile-card{
+    background:white;
+    border-radius:28px;
+    padding:20px;
+    margin-bottom:18px;
+    box-shadow:0 10px 25px rgba(80,102,180,.07);
+}
+
+.form-field{
+    width:100%;
+    padding:16px;
+    border:none;
+    outline:none;
+    border-radius:18px;
+    background:#eef4ff;
+    margin-top:12px;
 }
 
 .bottom-nav{
     position:fixed;
     left:50%;
     transform:translateX(-50%);
-    bottom:18px;
-    width:calc(100% - 36px);
-    max-width:390px;
-    height:72px;
-    border-radius:28px;
-    background:linear-gradient(90deg,var(--blue),var(--purple));
-    display:flex;
-    justify-content:space-around;
+    bottom:14px;
+    width:calc(100% - 30px);
+    max-width:470px;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(14px);
+    border-radius:30px;
+    display:grid;
+    grid-template-columns:1fr 1fr 90px 1fr 1fr;
     align-items:center;
-    z-index:90;
+    min-height:82px;
+    box-shadow:0 18px 45px rgba(77,107,190,.15);
 }
 
-.nav-item{
+.nav-btn{
     border:none;
-    background:transparent;
-    color:white;
-    font-size:24px;
-    opacity:.75;
+    background:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
 }
 
-.nav-item.active{
-    opacity:1;
-    transform:scale(1.15);
+.nav-btn span{
+    font-size:22px;
 }
 
-#fab{
-    position:fixed;
-    left:50%;
-    bottom:58px;
-    transform:translateX(-50%);
-    width:68px;
-    height:68px;
+.nav-btn.active{
+    color:var(--blue2);
+}
+
+.add-btn{
+    width:76px;
+    height:76px;
     border-radius:50%;
-    border:6px solid var(--bg);
-    background:linear-gradient(135deg,var(--purple),var(--blue));
+    background:linear-gradient(135deg,var(--blue),var(--pink));
     color:white;
-    font-size:34px;
-    z-index:100;
-}
-
-#fab.hide{
-    display:none;
+    border:7px solid #f5f8ff;
+    font-size:36px;
+    margin-top:-38px;
+    cursor:pointer;
 }
 
 .modal-bg{
     position:fixed;
     inset:0;
-    background:rgba(5,10,20,.72);
-    backdrop-filter:blur(6px);
+    background:rgba(25,42,90,.25);
+    backdrop-filter:blur(12px);
     display:none;
     align-items:flex-end;
     z-index:200;
@@ -421,738 +477,142 @@ button{
 
 .modal{
     width:100%;
-    max-width:430px;
+    max-width:500px;
+    background:white;
+    border-radius:35px 35px 0 0;
+    padding:25px 20px 30px;
     margin:auto;
-    background:#132747;
-    border-radius:32px 32px 0 0;
-    padding:25px 22px 30px;
-    max-height:88vh;
-    overflow:auto;
 }
 
 .modal h2{
     margin-bottom:18px;
 }
 
-.cancel{
+.modal-btn{
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:18px;
     margin-top:10px;
-    background:#263b5f;
+    cursor:pointer;
+    font-weight:700;
 }
 
-.detail-list{
-    margin-top:14px;
+.save-btn{
+    background:linear-gradient(90deg,var(--blue),var(--pink));
+    color:white;
 }
+
+.cancel-btn{
+    background:#eef4ff;
+    color:var(--text);
+}
+
+@media(max-width:390px){
+
+    .quick-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero-card h1{
+        font-size:38px;
+    }
+
+}
+
 </style>
 </head>
 
 <body>
 
 <div id="loginPage">
+
     <div class="login-card">
-        <div class="logo-big">💰</div>
-        <h1>Home Finance</h1>
-        <p>Family Winata finance tracker</p>
 
-        <div class="login-label">Username</div>
-        <input type="text" id="username" placeholder="Masukkan username">
+        <div class="logo-wrap">
+            <div class="logo-icon">👨‍👩‍👧</div>
 
-        <button onclick="login()">Login</button>
+            <div>
+                <h1>Home Finance</h1>
+                <p>Family Finance Tracker</p>
+            </div>
+        </div>
+
+        <div class="login-title">
+            Welcome 👋
+        </div>
+
+        <div class="login-sub">
+            Kelola keuangan keluarga jadi lebih mudah
+        </div>
+
+        <div class="input-wrap">
+            <input type="text" id="username" placeholder="Username">
+        </div>
+
+        <button class="main-btn" onclick="login()">
+            Masuk Sekarang
+        </button>
+
     </div>
+
 </div>
 
 <div id="app">
 
-    <div class="header">
-        <div class="user-chip">
-            <div class="avatar">👨‍👩‍👧</div>
+    <div class="topbar">
+
+        <div class="profile">
+
+            <div class="avatar" id="familyIcon">
+                👨‍👩‍👧
+            </div>
+
             <div>
-                <h3 id="welcomeText">Hi, Family Winata</h3>
-                <small>Home Finance</small>
+                <h2 id="familyTitle">
+                    Hi Family Winata 👋
+                </h2>
+
+                <small>
+                    Home Finance
+                </small>
             </div>
+
         </div>
 
-        <button class="logout" onclick="logout()">Logout</button>
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
     </div>
 
-    <section id="dashboard" class="page active">
-        <div class="balance-card">
+    <section id="beranda" class="page active">
+
+        <div class="hero-card">
+
             <small>Total Balance</small>
-            <h1 id="balance">Rp 0</h1>
 
-            <div class="pill">
-                <span id="incomeMini">+ Rp 0</span>
-                <span>|</span>
-                <span id="expenseMini">- Rp 0</span>
-            </div>
-        </div>
+            <h1 id="balance">
+                Rp 0
+            </h1>
 
-        <div class="quick-grid">
-            <div class="quick-card">
-                <small>Income</small>
-                <h2 id="income">Rp 0</h2>
-            </div>
+            <div class="hero-actions">
 
-            <div class="quick-card">
-                <small>Expense</small>
-                <h2 id="expense">Rp 0</h2>
-            </div>
-        </div>
+                <button class="hero-btn" onclick="openModal('income')">
+                    ➕ Tambah
+                </button>
 
-        <div class="target-card">
-            <small>Target Tabungan</small>
-            <h2 id="targetText">Rp 0</h2>
+                <button class="hero-btn" onclick="openModal('expense')">
+                    ➖ Kurang
+                </button>
 
-            <div class="target-progress">
-                <div id="targetFill" class="target-fill"></div>
             </div>
 
-            <small id="targetInfo">Progress 0%</small>
-            <br><br>
-
-            <input id="targetInput" placeholder="Set target tabungan">
-            <button class="btn" onclick="saveTarget()">Simpan Target</button>
         </div>
 
-        <div class="insight-card">
-            <small>Finance Insight</small>
-            <h3 id="insightText" style="margin-top:10px;">Belum ada data transaksi.</h3>
-        </div>
-
-        <div class="chart-card">
-            <small>Finance Graph</small>
-
-            <svg class="line-chart" viewBox="0 0 600 220">
-                <polyline id="lineChart" fill="none" stroke="#28c5ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-            </svg>
-
-            <div class="ratio-bar">
-                <div id="incomeBar" class="income-bar"></div>
-                <div id="expenseBar" class="expense-bar"></div>
-            </div>
-        </div>
-
-        <h3 class="section-title">Recent Transactions</h3>
-        <div id="recentList" class="list"></div>
     </section>
 
-    <section id="transactions" class="page">
-        <h3 class="section-title">Transaction History</h3>
-
-        <input class="search" id="historySearch" placeholder="Search transaction..." oninput="renderHistory()">
-
-        <div id="historyList" class="list"></div>
-    </section>
-
-    <section id="monthly" class="page">
-        <h3 class="section-title">Monthly Report</h3>
-        <div id="monthlyList"></div>
-    </section>
-
-    <div class="bottom-nav">
-        <button class="nav-item active" onclick="showPage('dashboard',this)">🏠</button>
-        <button class="nav-item" onclick="showPage('transactions',this)">📋</button>
-        <button class="nav-item" onclick="showPage('monthly',this)">📊</button>
-    </div>
-
-    <button id="fab" onclick="openModal()">+</button>
 </div>
-
-<div id="modalBg" class="modal-bg">
-    <div class="modal">
-        <h2 id="modalTitle">Add Transaction</h2>
-
-        <input type="text" id="displayNominal" placeholder="Nominal" inputmode="numeric" oninput="formatNominal(this)">
-        <input type="hidden" id="realNominal">
-
-        <input type="text" id="description" placeholder="Description">
-
-        <select id="category">
-            <option value="🍔 Food">🍔 Food</option>
-            <option value="🚗 Transport">🚗 Transport</option>
-            <option value="🏠 Rumah">🏠 Rumah</option>
-            <option value="🎮 Hiburan">🎮 Hiburan</option>
-            <option value="💼 Gaji">💼 Gaji</option>
-            <option value="📦 Lainnya">📦 Lainnya</option>
-        </select>
-
-        <select id="type">
-            <option value="income">Income (+)</option>
-            <option value="expense">Expense (-)</option>
-        </select>
-
-        <input type="text" id="date" placeholder="YYYY-MM-DD" inputmode="numeric">
-
-        <button class="btn" onclick="saveTransaction()">Save Transaction</button>
-        <button class="btn cancel" onclick="closeModal()">Cancel</button>
-    </div>
-</div>
-
-<div id="detailModal" class="modal-bg">
-    <div class="modal">
-        <h2 id="detailTitle">Monthly Detail</h2>
-        <div id="detailSummary"></div>
-
-        <button class="export-btn" onclick="exportCSV()">Export CSV / Excel</button>
-
-        <div id="detailList" class="list detail-list"></div>
-
-        <button class="btn cancel" onclick="closeDetail()">Close</button>
-    </div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    updateDoc,
-    deleteDoc,
-    doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDyp9xh0IRzpahTg82BXsxXQLtgvdqJJwc",
-  authDomain: "home-finance-9219a.firebaseapp.com",
-  projectId: "home-finance-9219a",
-  storageBucket: "home-finance-9219a.firebasestorage.app",
-  messagingSenderId: "774004827415",
-  appId: "1:774004827415:web:d771bff53b2d38827c0352"
-};
-
-const app = initializeApp(firebaseConfig);
-const dbFirestore = getFirestore(app);
-
-let db = [];
-let editIndex = null;
-let currentReportData = [];
-let currentReportKey = '';
-
-window.login = function(){
-    const user = document.getElementById('username').value.trim().toLowerCase();
-
-    if(!user){
-        alert('Masukkan username');
-        return;
-    }
-
-    if(user !== 'angga' && user !== 'nanda'){
-        alert('Username tidak terdaftar');
-        return;
-    }
-
-    localStorage.setItem('hf_user', user);
-    startApp();
-}
-
-window.logout = function(){
-    localStorage.removeItem('hf_user');
-    location.reload();
-}
-
-function startApp(){
-    const user = localStorage.getItem('hf_user');
-
-    if(user){
-        document.getElementById('loginPage').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('welcomeText').innerText = 'Hi, Family Winata';
-
-        loadDatabase();
-        loadTarget();
-    }
-}
-
-startApp();
-
-async function loadDatabase(){
-    db = [];
-
-    try{
-        const querySnapshot = await getDocs(collection(dbFirestore, "transactions"));
-
-        querySnapshot.forEach(docSnap => {
-            db.push({
-                id: docSnap.id,
-                ...docSnap.data()
-            });
-        });
-
-        db.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-        renderDashboard();
-        renderHistory();
-        renderMonthly();
-
-    }catch(err){
-        console.error(err);
-        alert('Gagal load data Firebase');
-    }
-}
-
-function rupiah(v){
-    return 'Rp ' + Number(v || 0).toLocaleString('id-ID');
-}
-
-function todayString(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${day}`;
-}
-
-function normalizeDate(value){
-    value = String(value || '').trim();
-
-    if(/^\d{4}-\d{2}-\d{2}$/.test(value)){
-        return value;
-    }
-
-    if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){
-        const p = value.split('/');
-        return `${p[2]}-${p[1]}-${p[0]}`;
-    }
-
-    if(/^\d{2}-\d{2}-\d{4}$/.test(value)){
-        const p = value.split('-');
-        return `${p[2]}-${p[1]}-${p[0]}`;
-    }
-
-    return '';
-}
-
-function isValidDateString(value){
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(value)){
-        return false;
-    }
-
-    const d = new Date(value + 'T00:00:00');
-
-    return !isNaN(d.getTime());
-}
-
-window.formatNominal = function(el){
-    let value = el.value.replace(/\D/g,'');
-    document.getElementById('realNominal').value = value;
-    el.value = new Intl.NumberFormat('id-ID').format(value);
-}
-
-window.openModal = function(){
-    document.getElementById('modalTitle').innerText =
-    editIndex === null ? 'Add Transaction' : 'Edit Transaction';
-
-    if(!document.getElementById('date').value){
-        document.getElementById('date').value = todayString();
-    }
-
-    document.getElementById('modalBg').classList.add('active');
-}
-
-window.closeModal = function(){
-    document.getElementById('modalBg').classList.remove('active');
-
-    editIndex = null;
-
-    document.getElementById('displayNominal').value = '';
-    document.getElementById('realNominal').value = '';
-    document.getElementById('description').value = '';
-    document.getElementById('category').value = '🍔 Food';
-    document.getElementById('type').value = 'income';
-    document.getElementById('date').value = todayString();
-}
-
-window.saveTransaction = async function(){
-    const nominal = document.getElementById('realNominal').value;
-    const description = document.getElementById('description').value.trim();
-    const category = document.getElementById('category').value;
-    const type = document.getElementById('type').value;
-
-    let date = normalizeDate(document.getElementById('date').value);
-
-    if(!nominal || !description || !date){
-        alert('Isi semua field. Tanggal gunakan format YYYY-MM-DD');
-        return;
-    }
-
-    if(!isValidDateString(date)){
-        alert('Tanggal tidak valid. Contoh: 2026-12-05');
-        return;
-    }
-
-    const payload = {
-        nominal:parseInt(nominal),
-        description,
-        category,
-        type,
-        date
-    };
-
-    try{
-        if(editIndex !== null){
-            await updateDoc(
-                doc(dbFirestore, "transactions", db[editIndex].id),
-                payload
-            );
-        }else{
-            await addDoc(
-                collection(dbFirestore, "transactions"),
-                payload
-            );
-        }
-
-        closeModal();
-        await loadDatabase();
-
-    }catch(err){
-        console.error(err);
-        alert('Gagal save transaksi. Cek Firebase Rules atau koneksi internet.');
-    }
-}
-
-window.editTransaction = function(index){
-    const item = db[index];
-    editIndex = index;
-
-    document.getElementById('realNominal').value = item.nominal;
-    document.getElementById('displayNominal').value =
-    new Intl.NumberFormat('id-ID').format(item.nominal);
-
-    document.getElementById('description').value = item.description;
-    document.getElementById('category').value = item.category || '📦 Lainnya';
-    document.getElementById('type').value = item.type;
-    document.getElementById('date').value = normalizeDate(item.date) || todayString();
-
-    openModal();
-}
-
-window.deleteTransaction = async function(index){
-    const ok = confirm('Hapus transaksi ini?');
-
-    if(!ok) return;
-
-    try{
-        await deleteDoc(doc(dbFirestore, "transactions", db[index].id));
-        await loadDatabase();
-    }catch(err){
-        console.error(err);
-        alert('Gagal hapus transaksi');
-    }
-}
-
-window.showPage = function(id,el){
-    document.querySelectorAll('.page').forEach(page=>{
-        page.classList.remove('active');
-    });
-
-    document.getElementById(id).classList.add('active');
-
-    document.querySelectorAll('.nav-item').forEach(nav=>{
-        nav.classList.remove('active');
-    });
-
-    el.classList.add('active');
-
-    const fab = document.getElementById('fab');
-
-    if(id === 'monthly'){
-        fab.classList.add('hide');
-    }else{
-        fab.classList.remove('hide');
-    }
-}
-
-function renderDashboard(){
-    let income = 0;
-    let expense = 0;
-    let categoryExpense = {};
-
-    const recentList = document.getElementById('recentList');
-    recentList.innerHTML = '';
-
-    db.forEach(item => {
-        if(item.type === 'income'){
-            income += Number(item.nominal || 0);
-        }else{
-            expense += Number(item.nominal || 0);
-
-            const cat = item.category || '📦 Lainnya';
-            categoryExpense[cat] = (categoryExpense[cat] || 0) + Number(item.nominal || 0);
-        }
-    });
-
-    const balance = income - expense;
-
-    document.getElementById('balance').innerText = rupiah(balance);
-    document.getElementById('income').innerText = rupiah(income);
-    document.getElementById('expense').innerText = rupiah(expense);
-    document.getElementById('incomeMini').innerText = '+ ' + rupiah(income);
-    document.getElementById('expenseMini').innerText = '- ' + rupiah(expense);
-
-    const total = income + expense || 1;
-
-    document.getElementById('incomeBar').style.width = (income / total * 100) + '%';
-    document.getElementById('expenseBar').style.width = (expense / total * 100) + '%';
-
-    db.slice().reverse().slice(0,5).forEach(item => {
-        recentList.innerHTML += transactionCard(item, false);
-    });
-
-    renderInsight(income, expense, balance, categoryExpense);
-    renderTarget(balance);
-    generateChart(db);
-}
-
-function renderInsight(income, expense, balance, categoryExpense){
-    let text = '';
-
-    const topCategory = Object.keys(categoryExpense)
-        .sort((a,b) => categoryExpense[b] - categoryExpense[a])[0];
-
-    if(db.length === 0){
-        text = 'Belum ada data transaksi.';
-    }else if(balance > 0){
-        text = `Bagus! Keluarga masih surplus ${rupiah(balance)}.`;
-    }else if(balance < 0){
-        text = `Perhatian, pengeluaran lebih besar ${rupiah(Math.abs(balance))}.`;
-    }else{
-        text = 'Income dan expense sedang seimbang.';
-    }
-
-    if(topCategory){
-        text += ` Pengeluaran terbesar: ${topCategory} (${rupiah(categoryExpense[topCategory])}).`;
-    }
-
-    document.getElementById('insightText').innerText = text;
-}
-
-function renderHistory(){
-    const list = document.getElementById('historyList');
-    list.innerHTML = '';
-
-    const keyword = document.getElementById('historySearch').value.toLowerCase();
-
-    db.slice().reverse()
-    .filter(item =>
-        String(item.description || '').toLowerCase().includes(keyword) ||
-        String(item.category || '').toLowerCase().includes(keyword) ||
-        String(item.type || '').toLowerCase().includes(keyword)
-    )
-    .forEach(item => {
-        const index = db.indexOf(item);
-        list.innerHTML += transactionCard(item, true, index);
-    });
-}
-
-function transactionCard(item, showEdit, index){
-    const isIncome = item.type === 'income';
-    const category = item.category || '📦 Lainnya';
-
-    return `
-        <div class="tx-card">
-            <div class="tx-left">
-                <div class="tx-icon">${category.split(' ')[0]}</div>
-                <div>
-                    <h4>${item.description}</h4>
-                    <small>${item.date} • ${category}</small>
-                </div>
-            </div>
-
-            <div style="text-align:right">
-                <div class="${isIncome ? 'amount-income' : 'amount-expense'}">
-                    ${isIncome ? '+' : '-'} ${rupiah(item.nominal)}
-                </div>
-
-                ${showEdit ? `
-                    <div class="action-row">
-                        <button class="edit-btn" onclick="editTransaction(${index})">Edit</button>
-                        <button class="delete-btn" onclick="deleteTransaction(${index})">Delete</button>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}
-
-function renderMonthly(){
-    const list = document.getElementById('monthlyList');
-    list.innerHTML = '';
-
-    let grouped = {};
-
-    db.forEach(item => {
-        const d = new Date(item.date + 'T00:00:00');
-
-        if(isNaN(d.getTime())) return;
-
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-
-        if(!grouped[key]){
-            grouped[key] = {
-                income:0,
-                expense:0,
-                items:[]
-            };
-        }
-
-        grouped[key].items.push(item);
-
-        if(item.type === 'income'){
-            grouped[key].income += Number(item.nominal || 0);
-        }else{
-            grouped[key].expense += Number(item.nominal || 0);
-        }
-    });
-
-    Object.keys(grouped).sort().reverse().forEach(key => {
-        const data = grouped[key];
-        const balance = data.income - data.expense;
-
-        list.innerHTML += `
-            <div class="month-card" onclick="openMonthlyDetail('${key}')">
-                <h3>${key}</h3>
-
-                <div class="month-row">
-                    <span>Income</span>
-                    <strong style="color:#35e58a">${rupiah(data.income)}</strong>
-                </div>
-
-                <div class="month-row">
-                    <span>Expense</span>
-                    <strong style="color:#ff5b7f">${rupiah(data.expense)}</strong>
-                </div>
-
-                <div class="month-row">
-                    <span>Balance</span>
-                    <strong>${rupiah(balance)}</strong>
-                </div>
-
-                <small style="color:#8fa6c9">Tap untuk detail</small>
-            </div>
-        `;
-    });
-}
-
-window.openMonthlyDetail = function(key){
-    currentReportKey = key;
-
-    currentReportData = db.filter(item => {
-        const d = new Date(item.date + 'T00:00:00');
-
-        if(isNaN(d.getTime())) return false;
-
-        const itemKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-
-        return itemKey === key;
-    });
-
-    const income = currentReportData
-        .filter(i => i.type === 'income')
-        .reduce((a,b) => a + Number(b.nominal || 0), 0);
-
-    const expense = currentReportData
-        .filter(i => i.type === 'expense')
-        .reduce((a,b) => a + Number(b.nominal || 0), 0);
-
-    document.getElementById('detailTitle').innerText = `Report ${key}`;
-
-    document.getElementById('detailSummary').innerHTML = `
-        <div class="month-row"><span>Income</span><strong style="color:#35e58a">${rupiah(income)}</strong></div>
-        <div class="month-row"><span>Expense</span><strong style="color:#ff5b7f">${rupiah(expense)}</strong></div>
-        <div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>
-    `;
-
-    const detailList = document.getElementById('detailList');
-    detailList.innerHTML = '';
-
-    currentReportData.slice().reverse().forEach(item => {
-        detailList.innerHTML += transactionCard(item, false);
-    });
-
-    document.getElementById('detailModal').classList.add('active');
-}
-
-window.closeDetail = function(){
-    document.getElementById('detailModal').classList.remove('active');
-}
-
-window.exportCSV = function(){
-    let csv = 'Description,Category,Date,Type,Amount\n';
-
-    currentReportData.forEach(item => {
-        csv += `"${item.description}","${item.category || ''}","${item.date}","${item.type}","${item.nominal}"\n`;
-    });
-
-    const blob = new Blob([csv], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-
-    a.href = url;
-    a.download = `home-finance-${currentReportKey}.csv`;
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-
-window.saveTarget = function(){
-    const raw = document.getElementById('targetInput').value.replace(/\D/g,'');
-
-    if(!raw){
-        alert('Masukkan target tabungan');
-        return;
-    }
-
-    localStorage.setItem('hf_target', raw);
-    document.getElementById('targetInput').value = '';
-
-    renderDashboard();
-}
-
-function loadTarget(){
-    const target = localStorage.getItem('hf_target') || 0;
-    document.getElementById('targetText').innerText = rupiah(target);
-}
-
-function renderTarget(balance){
-    const target = Number(localStorage.getItem('hf_target') || 0);
-
-    document.getElementById('targetText').innerText = rupiah(target);
-
-    let progress = target > 0 ? Math.max(0, Math.min(balance / target * 100, 100)) : 0;
-
-    document.getElementById('targetFill').style.width = progress + '%';
-    document.getElementById('targetInfo').innerText = `Progress ${progress.toFixed(1)}% dari target`;
-}
-
-function generateChart(data){
-    if(data.length === 0){
-        document.getElementById('lineChart').setAttribute('points','10,190 590,190');
-        return;
-    }
-
-    let total = 0;
-    let points = [];
-
-    data.forEach((item,index) => {
-        if(item.type === 'income'){
-            total += Number(item.nominal || 0);
-        }else{
-            total -= Number(item.nominal || 0);
-        }
-
-        const x = (index / (data.length - 1 || 1)) * 560 + 20;
-        const y = 190 - Math.min(Math.max(total / 10000, -40), 160);
-
-        points.push(`${x},${y}`);
-    });
-
-    document.getElementById('lineChart').setAttribute('points', points.join(' '));
-}
-
-document.getElementById('date').value = todayString();
-</script>
 
 </body>
 </html>
