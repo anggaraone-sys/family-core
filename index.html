@@ -654,6 +654,20 @@ button{
     margin-top:10px;
 }
 
+@keyframes floaty{0%{transform:translateY(0px)}50%{transform:translateY(-6px)}100%{transform:translateY(0px)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:translateY(0)}}
+.page.active{animation:fadeUp .35s ease;}
+.hero-card{box-shadow:0 30px 70px rgba(92,110,210,.22), inset 0 1px 0 rgba(255,255,255,.2)!important;animation:floaty 5s ease-in-out infinite;transition:.35s ease;}
+.hero-card::before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.12);top:-90px;right:-70px;filter:blur(10px);}
+.hero-card h1{font-size:52px!important;font-weight:900!important;letter-spacing:-2px!important;text-shadow:0 10px 30px rgba(0,0,0,.12);}
+.hero-btn,.main-btn,.add-btn,.quick-card,.tx-card,.soft-card,.profile-card,.month-card,.goal-card,.search,.form-field,.nav-btn{transition:.25s ease;}
+.hero-btn:hover,.main-btn:hover,.quick-card:hover,.tx-card:hover,.soft-card:hover,.profile-card:hover,.month-card:hover,.goal-card:hover,.nav-btn:hover{transform:translateY(-3px);}
+.add-btn{box-shadow:0 18px 40px rgba(255,79,184,.32)!important;animation:floaty 4s ease-in-out infinite;}
+.bottom-nav{box-shadow:0 25px 55px rgba(77,107,190,.18)!important;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.82)!important;}
+.tx-icon{box-shadow:0 10px 25px rgba(93,141,255,.25);}
+.form-field:focus,.search:focus{background:white;box-shadow:0 0 0 4px rgba(93,141,255,.12);transform:translateY(-1px);}
+.login-card{animation:fadeUp .5s ease;}
+
 @media(max-width:390px){
     .hero-card h1{font-size:42px;}
     .stats-grid{grid-template-columns:1fr;}
