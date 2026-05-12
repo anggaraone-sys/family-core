@@ -708,7 +708,15 @@ button{
     <section id="beranda" class="page active">
         <div class="hero-card">
             <div class="hero-plane">✈️</div>
-            <small>Total Balance 👁️</small>
+            <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2;">
+                <small>Total Balance</small>
+                <button
+                    onclick="toggleBalance()"
+                    id="eyeBtn"
+                    style="background:rgba(255,255,255,.22);color:white;border-radius:999px;padding:8px 12px;font-weight:800;">
+                    👁️
+                </button>
+            </div>
             <h1 id="balance">Rp 0</h1>
             <button class="hero-mini-btn">💳 Saldo tersedia ›</button>
             <div class="hero-actions">
@@ -853,6 +861,7 @@ let goals = [];
 let editIndex = null;
 let currentReportData = [];
 let currentReportKey = '';
+let balanceVisible = true;
 
 function rupiah(v){ return 'Rp ' + Number(v || 0).toLocaleString('id-ID'); }
 function todayString(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -967,11 +976,23 @@ window.deleteTransaction = async function(index){ if(!confirm('Hapus transaksi i
 
 window.showPage = function(id,el){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active')); if(el && el.classList.contains('nav-btn')) el.classList.add('active'); }
 
+function displayBalance(value){
+    return balanceVisible ? rupiah(value) : '••••••';
+}
+
+window.toggleBalance = function(){
+    balanceVisible = !balanceVisible;
+
+    document.getElementById('eyeBtn').innerText = balanceVisible ? '👁️' : '🙈';
+
+    renderDashboard();
+}
+
 function renderDashboard(){
     let income=0, expense=0, catExp={};
     db.forEach(i=>{ if(i.type==='income') income+=Number(i.nominal||0); else {expense+=Number(i.nominal||0); const c=i.category||'📦 Lainnya'; catExp[c]=(catExp[c]||0)+Number(i.nominal||0);} });
     const balance=income-expense;
-    document.getElementById('balance').innerText=rupiah(balance); document.getElementById('balanceMini').innerText=rupiah(balance); document.getElementById('income').innerText=rupiah(income); document.getElementById('expense').innerText=rupiah(expense);
+    document.getElementById('balance').innerText=displayBalance(balance); document.getElementById('balanceMini').innerText=displayBalance(balance); document.getElementById('income').innerText=rupiah(income); document.getElementById('expense').innerText=rupiah(expense);
     const top=Object.keys(catExp).sort((a,b)=>catExp[b]-catExp[a])[0];
     document.getElementById('insightText').innerText = db.length===0?'Belum ada data transaksi.':`${balance>=0?'Bagus! Keluarga masih surplus '+rupiah(balance)+'.':'Perhatian, pengeluaran lebih besar '+rupiah(Math.abs(balance))+'.'}${top?' Pengeluaran terbesar: '+top+' ('+rupiah(catExp[top])+').':''}`;
     const r=document.getElementById('recentList'); r.innerHTML=''; db.slice().reverse().slice(0,4).forEach(i=>r.innerHTML+=transactionCard(i,false));
