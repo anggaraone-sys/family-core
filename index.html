@@ -115,7 +115,7 @@ transition:.35s;
 .modal-bg{opacity:0;transition:.22s}.modal-bg.active{opacity:1}.modal{border-radius:32px 32px 0 0;animation:slideUp .25s ease}
 #loadingOverlay{position:fixed;inset:0;background:rgba(244,248,255,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:500}.loader-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:18px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 45px rgba(77,107,190,.16)}.spinner{width:24px;height:24px;border-radius:50%;border:3px solid #dfe8ff;border-top-color:var(--pink);animation:spin .8s linear infinite}
 @keyframes slideUp{0%{transform:translateY(30px)}100%{transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}
-.remember-row{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin:0 4px 16px}.remember-row input{accent-color:#5d8dff;width:16px;height:16px}
+.login-note{color:var(--muted);font-size:12px;margin:-4px 4px 14px}.login-error{display:none;background:#fff0f5;color:var(--red);border-radius:14px;padding:10px 12px;margin:0 0 12px;font-size:13px;font-weight:600}
 @media(max-width:390px){.hero-card h1{font-size:34px}.quick-card h3{font-size:15px}.quick-card{padding:12px 9px}.chart-row{grid-template-columns:80px 1fr 68px}.tx-card h4{max-width:118px}}
 
 </style>
@@ -130,7 +130,8 @@ transition:.35s;
 <div class="login-title">Welcome 👋</div>
 <div class="login-sub">Kelola keuangan keluarga jadi lebih mudah</div>
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
-<label class="remember-row"><input type="checkbox" id="rememberLogin" checked> Ingat login selama 7 hari</label>
+<p class="login-note">Masukkan username yang sudah terdaftar di Firebase.</p>
+<div id="loginError" class="login-error"></div>
 <button class="main-btn" id="loginBtn" onclick="login()">Masuk Sekarang</button>
 </div>
 </div>
@@ -241,10 +242,29 @@ function todayString(){const d=new Date();return `${d.getFullYear()}-${String(d.
 function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value;if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){const p=value.split('/');return `${p[2]}-${p[1]}-${p[0]}`}if(/^\d{2}-\d{2}-\d{4}$/.test(value)){const p=value.split('-');return `${p[2]}-${p[1]}-${p[0]}`}return ''}
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
+function showLoginError(message){const box=document.getElementById('loginError');if(!box)return;box.innerText=message;box.style.display=message?'block':'none'}
 function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
 function getSavedUser(){const sessionUser=sessionStorage.getItem('hf_user');if(sessionUser)return sessionUser;const user=localStorage.getItem('hf_user');const until=Number(localStorage.getItem('hf_login_until')||0);if(user&&until>Date.now())return user;if(user&&until&&until<=Date.now()){localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}return ''}
-function saveSession(user,remember){sessionStorage.setItem('hf_user',user);if(remember){localStorage.setItem('hf_user',user);localStorage.setItem('hf_login_until',String(Date.now()+SESSION_DAYS*24*60*60*1000))}else{localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}}
-async function verifyUser(username){const q=query(collection(dbFirestore,'users'),where('username','==',username),where('active','==',true),limit(1));const snap=await getDocs(q);return !snap.empty}
+function saveSession(user){sessionStorage.setItem('hf_user',user);localStorage.setItem('hf_user',user);localStorage.setItem('hf_login_until',String(Date.now()+SESSION_DAYS*24*60*60*1000))}
+function clearSession(){sessionStorage.removeItem('hf_user');localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}
+async function verifyUser(username){
+const clean=String(username||'').trim().toLowerCase();
+if(!clean)return {ok:false,reason:'Masukkan username'};
+try{
+const q=query(collection(dbFirestore,'users'),where('username','==',clean),limit(1));
+const snap=await getDocs(q);
+if(snap.empty)return {ok:false,reason:'Username tidak ditemukan di Firebase users'};
+let active=false;
+snap.forEach(docSnap=>{active=docSnap.data().active===true});
+if(!active)return {ok:false,reason:'Username belum aktif. Pastikan field active bertipe boolean dan bernilai true'};
+return {ok:true};
+}catch(err){
+console.error(err);
+let reason='Gagal cek username ke Firebase';
+if(err.code==='permission-denied')reason='Firebase Rules belum mengizinkan membaca collection users';
+return {ok:false,reason};
+}
+}
 async function addActivityLog(action,data={}){try{await addDoc(collection(dbFirestore,'activity_logs'),{action,user:currentUser||'unknown',data,time:new Date().toISOString()})}catch(err){console.error('Gagal simpan log:',err)}}
 async function loadActivityLogs(){logs=[];try{const snap=await getDocs(collection(dbFirestore,'activity_logs'));snap.forEach(d=>logs.push({id:d.id,...d.data()}));logs.sort((a,b)=>new Date(b.time)-new Date(a.time));renderActivityLogs()}catch(err){console.error('Gagal load activity:',err)}}
 
@@ -252,36 +272,37 @@ window.toggleBalance=function(){balanceVisible=!balanceVisible;document.getEleme
 
 window.login=async function(){
 const user=document.getElementById('username').value.trim().toLowerCase();
-if(!user)return alert('Masukkan username');
+showLoginError('');
+if(!user){showLoginError('Masukkan username');return}
 const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerText='Mengecek...';setLoading(true,'Login...');
 try{
-const ok=await verifyUser(user);
-if(!ok)return alert('Username tidak valid / tidak aktif');
+const result=await verifyUser(user);
+if(!result.ok){showLoginError(result.reason);return}
 const savedPin=localStorage.getItem('hf_pin');
-if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin)return alert('PIN salah')}
+if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin){showLoginError('PIN salah');return}}
 currentUser=user;
-saveSession(user,document.getElementById('rememberLogin').checked);
+saveSession(user);
 await addActivityLog('login',{});
 await startApp()
-}catch(err){console.error(err);alert('Gagal login')}finally{btn.disabled=false;btn.innerText='Masuk Sekarang';setLoading(false)}
+}catch(err){console.error(err);showLoginError('Gagal login. Cek koneksi atau Firebase Rules.')}finally{btn.disabled=false;btn.innerText='Masuk Sekarang';setLoading(false)}
 };
 
-window.logout=function(){sessionStorage.removeItem('hf_user');localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until');location.reload()}
+window.logout=function(){clearSession();location.reload()}
 
 async function startApp(){
 const user=getSavedUser();
 if(!user)return;
 setLoading(true,'Memuat data...');
 try{
-const ok=await verifyUser(user);
-if(!ok){logout();return}
+const result=await verifyUser(user);
+if(!result.ok){clearSession();showLoginError(result.reason);return}
 currentUser=user;
 document.getElementById('loginPage').style.display='none';
 document.getElementById('app').style.display='block';
 loadLocalSettings();
 await loadDatabase();
 await loadActivityLogs()
-}catch(e){console.error(e);alert('Gagal membuka aplikasi')}finally{setLoading(false)}
+}catch(e){console.error(e);clearSession();showLoginError('Gagal membuka aplikasi. Cek koneksi atau Firebase Rules.')}finally{setLoading(false)}
 }
 startApp();
 
@@ -348,6 +369,7 @@ list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div>
 if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
 }
 
+document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.getElementById('date').value=todayString();
 document.getElementById('transactionModal').classList.add('active')
 }
@@ -631,6 +653,7 @@ list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div>
 if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
 }
 
+document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.getElementById('date').value=todayString();
 </script>
 </body>
