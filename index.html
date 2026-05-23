@@ -82,8 +82,12 @@ button{cursor:pointer;border:none}
 .modal{width:100%;max-width:500px;background:white;border-radius:32px 32px 0 0;padding:22px 17px 27px;margin:auto;max-height:88vh;overflow:auto;animation:slideUp .22s ease}
 .modal h2{margin-bottom:15px;font-size:21px;font-weight:700}.floating-close{position:sticky;top:0;float:right;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;font-size:20px;font-weight:700;box-shadow:0 10px 25px rgba(80,102,180,.22);z-index:5}
 .modal-btn{width:100%;padding:14px;border-radius:16px;margin-top:10px;font-weight:700}.save-btn{background:linear-gradient(90deg,var(--blue),var(--pink));color:white}.cancel-btn{background:#eef4ff;color:var(--text)}
-.chart-row{display:flex;align-items:flex-end;gap:8px;height:92px;margin-top:12px}
-.chart-bar{flex:1;background:linear-gradient(180deg,var(--pink),var(--blue));border-radius:12px 12px 6px 6px;min-height:8px;opacity:.85}
+.category-chart{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.cat-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px}
+.cat-icon{width:34px;height:34px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white;font-size:17px}
+.cat-bar-bg{height:9px;background:#e5ecff;border-radius:999px;overflow:hidden}
+.cat-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--pink));border-radius:999px}
+.cat-amount{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap}
 .activity-item{padding:11px 0;border-bottom:1px solid rgba(109,125,179,.12)}
 .activity-item:last-child{border-bottom:0}
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.42);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:999}
@@ -135,7 +139,7 @@ button{cursor:pointer;border:none}
 <div class="quick-card" id="todayBalanceCard"><small>Today Balance</small><h3 id="todayBalance">Rp 0</h3></div>
 </div>
 
-<div class="soft-card" id="chartCard"><h3>Mini Chart Bulan Ini</h3><p class="muted" style="font-size:13px">Pengeluaran per kategori</p><div class="chart-row" id="expenseChart"></div></div>
+<div class="soft-card" id="chartCard"><h3>Ringkasan Bulan Ini</h3><p class="muted" style="font-size:13px">Top pengeluaran per kategori</p><div class="category-chart" id="expenseChart"></div></div>
 
 <div class="soft-card">
 <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3>Target Tabungan</h3><p class="muted" id="mainGoalName">Belum ada target aktif</p></div><button class="mini-btn" onclick="openGoalModal()">Atur</button></div>
@@ -216,6 +220,16 @@ function rupiah(v){return 'Rp '+Number(v||0).toLocaleString('id-ID')}
 function todayString(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value;if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){const p=value.split('/');return `${p[2]}-${p[1]}-${p[0]}`}if(/^\d{2}-\d{2}-\d{4}$/.test(value)){const p=value.split('-');return `${p[2]}-${p[1]}-${p[0]}`}return ''}
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
+function formatDateID(value){
+const d=new Date(String(value||'')+'T00:00:00');
+if(isNaN(d.getTime()))return value||'-';
+return d.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+}
+function formatMonthID(key){
+const d=new Date(String(key||'')+'-01T00:00:00');
+if(isNaN(d.getTime()))return key||'-';
+return d.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+}
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
 function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
 function showLoginError(msg){const el=document.getElementById('loginError');el.innerText=msg;el.style.display='block'}
@@ -486,10 +500,10 @@ chart.innerHTML='';
 const values=Object.values(data);
 if(!values.length){card.style.display='none';return}
 card.style.display='block';
-const max=Math.max(...values);
-Object.keys(data).sort((a,b)=>data[b]-data[a]).slice(0,5).forEach(cat=>{
-const h=Math.max((data[cat]/max)*86,10);
-chart.innerHTML+=`<div style="flex:1;text-align:center"><div class="chart-bar" title="${cat}" style="height:${h}px"></div><small class="muted" style="font-size:10px">${cat.split(' ')[0]}</small></div>`;
+const total=values.reduce((a,b)=>a+b,0);
+Object.keys(data).sort((a,b)=>data[b]-data[a]).slice(0,4).forEach(cat=>{
+const percent=total ? Math.max((data[cat]/total)*100,4) : 0;
+chart.innerHTML+=`<div class="cat-row"><div class="cat-icon">${cat.split(' ')[0]}</div><div><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:5px"><small class="muted">${cat}</small><small class="muted">${percent.toFixed(0)}%</small></div><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${percent}%"></div></div></div><div class="cat-amount">${rupiah(data[cat])}</div></div>`;
 });
 }
 
@@ -497,7 +511,7 @@ function transactionCard(item,showEdit){
 const isIncome=item.type==='income';
 const category=item.category||'📦 Lainnya';
 const index=db.indexOf(item);
-return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${item.date} • ${category}</small></div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">✏️</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">🗑️</button></div>`:''}</div></div>`
+return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${formatDateID(item.date)} • ${category}</small></div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">✏️</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">🗑️</button></div>`:''}</div></div>`
 }
 
 window.renderHistory=function(){
@@ -531,7 +545,7 @@ else grouped[key].expense+=Number(item.nominal||0)
 Object.keys(grouped).sort().reverse().forEach(key=>{
 const data=grouped[key];
 const balance=data.income-data.expense;
-list.innerHTML+=`<div class="month-card" onclick="openMonthlyDetail('${key}')"><h3>${key}</h3><div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(data.income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(balance)}</strong></div><p class="muted" style="margin-top:10px">Tap untuk detail</p></div>`
+list.innerHTML+=`<div class="month-card" onclick="openMonthlyDetail('${key}')"><h3>${formatMonthID(key)}</h3><div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(data.income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(balance)}</strong></div><p class="muted" style="margin-top:10px">Tap untuk detail</p></div>`
 })
 }
 
@@ -547,7 +561,7 @@ return itemKey===key
 const income=currentReportData.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
 const expense=currentReportData.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
 
-document.getElementById('detailTitle').innerText=`Report ${key}`;
+document.getElementById('detailTitle').innerText=`Report ${formatMonthID(key)}`;
 document.getElementById('detailSummary').innerHTML=`<div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>`;
 
 const detailList=document.getElementById('detailList');
