@@ -92,9 +92,37 @@ transition:.35s;
 .hero-btn:hover,.main-btn:hover,.quick-card:hover,.tx-card:hover,.soft-card:hover,.profile-card:hover,.month-card:hover,.goal-card:hover,.nav-btn:hover{transform:translateY(-2px)}.add-btn:hover{transform:scale(1.04)}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
 @media(max-width:390px){#app{padding:16px 14px 106px}.profile h2{font-size:22px}.hero-card{min-height:235px;padding:22px}.plane-img{width:250px;right:-28px;bottom:8px}.hero-card h1{font-size:37px}.quick-card h3{font-size:18px}}
+
+/* === OPTIMIZED POLISH UPDATE === */
+#app{padding:16px 14px 104px}
+.hero-card{min-height:228px;border-radius:30px;padding:22px;box-shadow:0 18px 44px rgba(92,110,210,.15),inset 0 1px 0 rgba(255,255,255,.26)}
+.plane-img{width:275px;opacity:.62;filter:drop-shadow(0 14px 22px rgba(20,40,90,.18))}
+.hero-card h1{font-size:38px;margin:14px 0 20px}
+.hero-btn{padding:12px 15px;border-radius:16px}
+.quick-grid{gap:9px;margin:14px 0}
+.quick-card{background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.62);border-radius:20px;padding:13px 10px;box-shadow:0 10px 24px rgba(80,102,180,.07)}
+.quick-card small{font-size:12px}
+.quick-card h3{font-size:17px}
+.soft-card,.profile-card,.month-card,.goal-card{background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.62);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 12px 28px rgba(80,102,180,.07)}
+.tx-card{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.62);border-radius:20px;padding:12px;gap:10px;box-shadow:0 9px 22px rgba(80,102,180,.07)}
+.tx-left{min-width:0}.tx-icon{width:42px;height:42px;flex:0 0 42px;border-radius:15px;font-size:21px}
+.tx-card h4{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}.tx-card small{font-size:12px}.tx-right{text-align:right;flex:0 0 auto}
+.icon-btn{width:31px;height:31px;border-radius:11px;color:white;font-size:14px;font-weight:700}.edit-btn.icon-btn{background:var(--blue2)}.delete-btn.icon-btn{background:var(--red)}
+.search{background:rgba(255,255,255,.85);backdrop-filter:blur(12px)}
+.mini-chart{display:flex;flex-direction:column;gap:10px;margin-top:12px}.chart-row{display:grid;grid-template-columns:92px 1fr 76px;gap:9px;align-items:center;font-size:12px;color:var(--muted)}.chart-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-track{height:9px;background:#e8efff;border-radius:999px;overflow:hidden}.chart-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--pink));border-radius:999px}.chart-value{text-align:right;color:var(--text);font-weight:700}
+.activity-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.7);border-radius:16px;padding:10px}.activity-dot{width:34px;height:34px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white}.activity-item h4{font-size:13px}.activity-item p{font-size:12px;color:var(--muted);margin-top:2px}
+.bottom-nav{min-height:74px;border-radius:26px;grid-template-columns:1fr 1fr 82px 1fr 1fr}.add-btn{width:68px;height:68px;font-size:34px}
+.modal-bg{opacity:0;transition:.22s}.modal-bg.active{opacity:1}.modal{border-radius:32px 32px 0 0;animation:slideUp .25s ease}
+#loadingOverlay{position:fixed;inset:0;background:rgba(244,248,255,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:500}.loader-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:18px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 45px rgba(77,107,190,.16)}.spinner{width:24px;height:24px;border-radius:50%;border:3px solid #dfe8ff;border-top-color:var(--pink);animation:spin .8s linear infinite}
+@keyframes slideUp{0%{transform:translateY(30px)}100%{transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}
+.remember-row{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin:0 4px 16px}.remember-row input{accent-color:#5d8dff;width:16px;height:16px}
+@media(max-width:390px){.hero-card h1{font-size:34px}.quick-card h3{font-size:15px}.quick-card{padding:12px 9px}.chart-row{grid-template-columns:80px 1fr 68px}.tx-card h4{max-width:118px}}
+
 </style>
 </head>
 <body>
+<div id="loadingOverlay"><div class="loader-card"><div class="spinner"></div><strong id="loadingText">Loading...</strong></div></div>
+
 
 <div id="loginPage">
 <div class="login-card">
@@ -102,13 +130,14 @@ transition:.35s;
 <div class="login-title">Welcome 👋</div>
 <div class="login-sub">Kelola keuangan keluarga jadi lebih mudah</div>
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
-<button class="main-btn" onclick="login()">Masuk Sekarang</button>
+<label class="remember-row"><input type="checkbox" id="rememberLogin" checked> Ingat login selama 7 hari</label>
+<button class="main-btn" id="loginBtn" onclick="login()">Masuk Sekarang</button>
 </div>
 </div>
 
 <div id="app">
 <div class="topbar">
-<div class="profile"><div class="avatar" id="familyIcon">👨‍👩‍👧</div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small>Home Finance</small></div></div>
+<div class="profile"><div class="avatar" id="familyIcon">👨‍👩‍👧</div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="loginAsText">Home Finance</small></div></div>
 <button class="logout" onclick="logout()">Logout</button>
 </div>
 
@@ -138,12 +167,12 @@ transition:.35s;
 <div class="month-row"><span id="mainGoalAmount">Rp 0</span><strong id="mainGoalProgress">0%</strong></div>
 </div>
 
-<div class="soft-card"><h3>Finance Insight</h3><p class="muted" id="insightText" style="margin-top:10px">Belum ada data transaksi.</p></div>
+<div class="soft-card"><h3>Finance Insight</h3><p class="muted" id="insightText" style="margin-top:10px">Belum ada data transaksi.</p><div id="miniChart" class="mini-chart"></div></div>
 <div class="section-title"><h3>Transaksi Terakhir</h3><button onclick="showPage('riwayat',navRiwayat)">Lihat Semua ›</button></div>
 <div id="recentList" class="list"></div>
 </section>
 
-<section id="riwayat" class="page"><div class="section-title"><h3>Riwayat Transaksi</h3></div><input class="search" id="historySearch" placeholder="Cari transaksi..." oninput="renderHistory()"><div id="historyList" class="list"></div></section>
+<section id="riwayat" class="page"><div class="section-title"><h3>Riwayat Transaksi</h3></div><input class="search" id="historySearch" placeholder="Cari transaksi / tanggal..." oninput="renderHistory()"><div id="historyList" class="list"></div></section>
 <section id="report" class="page"><div class="section-title"><h3>Monthly Report</h3></div><div id="monthlyList"></div></section>
 
 <section id="profil" class="page">
@@ -151,6 +180,7 @@ transition:.35s;
 <div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon">👨‍👩‍👧</div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
 <div class="profile-card"><h3>PIN Lokal</h3><p class="muted">PIN tersimpan di perangkat ini.</p><input class="form-field" id="pinInput" type="password" placeholder="PIN baru minimal 4 digit"><button class="modal-btn save-btn" onclick="savePin()">Simpan PIN</button></div>
 <div class="profile-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Savings Goals</h3><button class="mini-btn" onclick="openGoalModal()">Tambah</button></div><div id="goalsList" class="list" style="margin-top:14px"></div></div>
+<div class="profile-card"><h3>Activity Log</h3><p class="muted">Aktivitas terakhir keluarga.</p><div id="activityList" class="list" style="margin-top:12px"></div></div>
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
 </section>
 
@@ -179,7 +209,7 @@ transition:.35s;
 </select>
 <select class="form-field" id="type"><option value="income">Income (+)</option><option value="expense">Expense (-)</option></select>
 <input class="form-field" type="text" id="date" placeholder="YYYY-MM-DD" inputmode="numeric">
-<button class="modal-btn save-btn" onclick="saveTransaction()">Save Transaction</button>
+<button class="modal-btn save-btn" id="saveTxBtn" onclick="saveTransaction()">Save Transaction</button>
 <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
 </div></div>
 
@@ -197,37 +227,61 @@ transition:.35s;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyDyp9xh0IRzpahTg82BXsxXQLtgvdqJJwc",authDomain:"home-finance-9219a.firebaseapp.com",projectId:"home-finance-9219a",storageBucket:"home-finance-9219a.firebasestorage.app",messagingSenderId:"774004827415",appId:"1:774004827415:web:d771bff53b2d38827c0352"};
 const app=initializeApp(firebaseConfig);
 const dbFirestore=getFirestore(app);
 
-let db=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',balanceVisible=true;
+let db=[],logs=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',balanceVisible=true,currentUser='';
+const SESSION_DAYS=7;
 
 function rupiah(v){return 'Rp '+Number(v||0).toLocaleString('id-ID')}
 function todayString(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value;if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){const p=value.split('/');return `${p[2]}-${p[1]}-${p[0]}`}if(/^\d{2}-\d{2}-\d{4}$/.test(value)){const p=value.split('-');return `${p[2]}-${p[1]}-${p[0]}`}return ''}
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
+function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
+function getSavedUser(){const sessionUser=sessionStorage.getItem('hf_user');if(sessionUser)return sessionUser;const user=localStorage.getItem('hf_user');const until=Number(localStorage.getItem('hf_login_until')||0);if(user&&until>Date.now())return user;if(user&&until&&until<=Date.now()){localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}return ''}
+function saveSession(user,remember){sessionStorage.setItem('hf_user',user);if(remember){localStorage.setItem('hf_user',user);localStorage.setItem('hf_login_until',String(Date.now()+SESSION_DAYS*24*60*60*1000))}else{localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}}
+async function verifyUser(username){const q=query(collection(dbFirestore,'users'),where('username','==',username),where('active','==',true),limit(1));const snap=await getDocs(q);return !snap.empty}
+async function addActivityLog(action,data={}){try{await addDoc(collection(dbFirestore,'activity_logs'),{action,user:currentUser||'unknown',data,time:new Date().toISOString()})}catch(err){console.error('Gagal simpan log:',err)}}
+async function loadActivityLogs(){logs=[];try{const snap=await getDocs(collection(dbFirestore,'activity_logs'));snap.forEach(d=>logs.push({id:d.id,...d.data()}));logs.sort((a,b)=>new Date(b.time)-new Date(a.time));renderActivityLogs()}catch(err){console.error('Gagal load activity:',err)}}
 
 window.toggleBalance=function(){balanceVisible=!balanceVisible;document.getElementById('eyeBtn').innerText=balanceVisible?'👁️':'🙈';renderDashboard()}
 
-window.login=function(){
+window.login=async function(){
 const user=document.getElementById('username').value.trim().toLowerCase();
 if(!user)return alert('Masukkan username');
-if(user!=='angga'&&user!=='nanda')return alert('Username tidak terdaftar');
+const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerText='Mengecek...';setLoading(true,'Login...');
+try{
+const ok=await verifyUser(user);
+if(!ok)return alert('Username tidak valid / tidak aktif');
 const savedPin=localStorage.getItem('hf_pin');
 if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin)return alert('PIN salah')}
-localStorage.setItem('hf_user',user);
-startApp()
+currentUser=user;
+saveSession(user,document.getElementById('rememberLogin').checked);
+await addActivityLog('login',{});
+await startApp()
+}catch(err){console.error(err);alert('Gagal login')}finally{btn.disabled=false;btn.innerText='Masuk Sekarang';setLoading(false)}
 };
 
-window.logout=function(){localStorage.removeItem('hf_user');location.reload()}
+window.logout=function(){sessionStorage.removeItem('hf_user');localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until');location.reload()}
 
-function startApp(){
-const user=localStorage.getItem('hf_user');
-if(user){document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='block';loadLocalSettings();loadDatabase()}
+async function startApp(){
+const user=getSavedUser();
+if(!user)return;
+setLoading(true,'Memuat data...');
+try{
+const ok=await verifyUser(user);
+if(!ok){logout();return}
+currentUser=user;
+document.getElementById('loginPage').style.display='none';
+document.getElementById('app').style.display='block';
+loadLocalSettings();
+await loadDatabase();
+await loadActivityLogs()
+}catch(e){console.error(e);alert('Gagal membuka aplikasi')}finally{setLoading(false)}
 }
 startApp();
 
@@ -235,6 +289,7 @@ function loadLocalSettings(){
 const familyName=localStorage.getItem('hf_family_name')||'Family Winata';
 const icon=localStorage.getItem('hf_family_icon')||'👨‍👩‍👧';
 document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
+document.getElementById('loginAsText').innerText=`Login sebagai ${currentUser}`;
 document.getElementById('profileName').innerText=familyName;
 document.getElementById('familyNameInput').value=familyName;
 document.getElementById('familyIconInput').value=icon;
@@ -245,14 +300,13 @@ goals=JSON.parse(localStorage.getItem('hf_goals')||'[]');
 renderGoals()
 }
 
-window.saveProfile=function(){
+window.saveProfile=async function(){
 const name=document.getElementById('familyNameInput').value.trim()||'Family Winata';
 const icon=document.getElementById('familyIconInput').value.trim()||'👨‍👩‍👧';
 localStorage.setItem('hf_family_name',name);
 localStorage.setItem('hf_family_icon',icon);
 loadLocalSettings();
-alert('Profil tersimpan')
-}
+await addActivityLog('update_profile',{name,icon});await loadActivityLogs();alert('Profil tersimpan')}
 
 window.savePin=function(){
 const pin=document.getElementById('pinInput').value.trim();
@@ -281,7 +335,20 @@ window.openModal=function(forceType){
 document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
 if(forceType)document.getElementById('type').value=forceType;
 if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
-if(!document.getElementById('date').value)document.getElementById('date').value=todayString();
+if(!document.getElementById('date').value)
+function renderActivityLogs(){
+const list=document.getElementById('activityList');
+if(!list)return;
+list.innerHTML='';
+logs.slice(0,8).forEach(log=>{
+const d=new Date(log.time);
+const label={login:'login',add_income:'tambah income',add_expense:'tambah expense',edit_transaction:'edit transaksi',delete_transaction:'hapus transaksi',add_goal:'tambah goal',delete_goal:'hapus goal',update_profile:'update profil'}[log.action]||log.action;
+list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div><div><h4>${log.user||'unknown'} ${label}</h4><p>${isNaN(d.getTime())?'':d.toLocaleString('id-ID')} ${log.data?.description?'• '+log.data.description:''}</p></div></div>`
+});
+if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
+}
+
+document.getElementById('date').value=todayString();
 document.getElementById('transactionModal').classList.add('active')
 }
 
@@ -304,13 +371,25 @@ const type=document.getElementById('type').value;
 const date=normalizeDate(document.getElementById('date').value);
 if(!nominal||!description||!date)return alert('Isi semua field. Tanggal gunakan format YYYY-MM-DD');
 if(!isValidDateString(date))return alert('Tanggal tidak valid');
-const payload={nominal:parseInt(nominal),description,category,type,date};
+const now=new Date().toISOString();
+let payload={nominal:parseInt(nominal),description,category,type,date,updatedBy:currentUser,updatedAt:now};
+if(editIndex===null){payload.createdBy=currentUser;payload.createdAt=now}
+const btn=document.getElementById('saveTxBtn');
+btn.disabled=true;btn.innerText='Menyimpan...';setLoading(true,'Menyimpan...');
 try{
-if(editIndex!==null)await updateDoc(doc(dbFirestore,'transactions',db[editIndex].id),payload);
-else await addDoc(collection(dbFirestore,'transactions'),payload);
+if(editIndex!==null){
+const before=db[editIndex];
+await updateDoc(doc(dbFirestore,'transactions',before.id),payload);
+await addActivityLog('edit_transaction',{id:before.id,before,after:payload})
+}else{
+const saved=await addDoc(collection(dbFirestore,'transactions'),payload);
+await addActivityLog(type==='income'?'add_income':'add_expense',{id:saved.id,...payload})
+}
 closeModal();
-await loadDatabase()
+await loadDatabase();
+await loadActivityLogs()
 }catch(err){console.error(err);alert('Gagal save transaksi. Cek koneksi atau Firebase Rules.')}
+finally{btn.disabled=false;btn.innerText='Save Transaction';setLoading(false)}
 }
 
 window.editTransaction=function(index){
@@ -327,7 +406,14 @@ openModal()
 
 window.deleteTransaction=async function(index){
 if(!confirm('Hapus transaksi ini?'))return;
-try{await deleteDoc(doc(dbFirestore,'transactions',db[index].id));await loadDatabase()}catch(err){console.error(err);alert('Gagal hapus transaksi')}
+setLoading(true,'Menghapus...');
+try{
+const deleted=db[index];
+await addActivityLog('delete_transaction',deleted);
+await deleteDoc(doc(dbFirestore,'transactions',deleted.id));
+await loadDatabase();
+await loadActivityLogs()
+}catch(err){console.error(err);alert('Gagal hapus transaksi')}finally{setLoading(false)}
 }
 
 window.showPage=function(id,el){
@@ -338,8 +424,8 @@ if(el&&el.classList.contains('nav-btn'))el.classList.add('active')
 }
 
 function renderDashboard(){
-let income=0,expense=0,todayOjekIncome=0,todayExpense=0,categoryExpense={};
-const today=todayString();
+let income=0,expense=0,todayOjekIncome=0,todayExpense=0,categoryExpense={},monthExpense={};
+const today=todayString();const thisMonth=today.slice(0,7);
 
 db.forEach(item=>{
 const amount=Number(item.nominal||0);
@@ -352,6 +438,7 @@ expense+=amount;
 if(item.date===today){todayExpense+=amount}
 const cat=item.category||'📦 Lainnya';
 categoryExpense[cat]=(categoryExpense[cat]||0)+amount;
+if(String(item.date||'').startsWith(thisMonth))monthExpense[cat]=(monthExpense[cat]||0)+amount;
 }
 });
 
@@ -383,6 +470,7 @@ if(topCategory)insight+=` Pengeluaran terbesar: ${topCategory} (${rupiah(categor
 }
 
 document.getElementById('insightText').innerText=insight;
+renderMiniChart(monthExpense);
 
 const recent=document.getElementById('recentList');
 recent.innerHTML='';
@@ -390,18 +478,30 @@ db.slice().reverse().slice(0,4).forEach(item=>recent.innerHTML+=transactionCard(
 renderMainGoal(balance)
 }
 
+function renderMiniChart(data){
+const el=document.getElementById('miniChart');if(!el)return;el.innerHTML='';
+const rows=Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,4);
+if(rows.length===0){el.innerHTML='<p class="muted" style="font-size:13px">Belum ada grafik pengeluaran bulan ini.</p>';return}
+const max=Math.max(...rows.map(r=>r[1]));
+rows.forEach(([cat,val])=>{const pct=max?Math.max(6,val/max*100):0;el.innerHTML+=`<div class="chart-row"><span class="chart-label">${cat}</span><div class="chart-track"><div class="chart-fill" style="width:${pct}%"></div></div><span class="chart-value">${rupiah(val)}</span></div>`})
+}
+
 function transactionCard(item,showEdit){
 const isIncome=item.type==='income';
 const category=item.category||'📦 Lainnya';
 const index=db.indexOf(item);
-return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${item.date} • ${category}</small></div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn" onclick="editTransaction(${index})">Edit</button><button class="delete-btn" onclick="deleteTransaction(${index})">Delete</button></div>`:''}</div></div>`
+return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${item.date} • ${category}${item.createdBy?' • '+item.createdBy:''}</small></div></div><div class="tx-right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="icon-btn edit-btn" title="Edit" onclick="editTransaction(${index})">✏️</button><button class="icon-btn delete-btn" title="Delete" onclick="deleteTransaction(${index})">🗑️</button></div>`:''}</div></div>`
 }
 
 window.renderHistory=function(){
 const list=document.getElementById('historyList');
 list.innerHTML='';
-const keyword=(document.getElementById('historySearch').value||'').toLowerCase();
-db.slice().reverse().filter(item=>String(item.description||'').toLowerCase().includes(keyword)||String(item.category||'').toLowerCase().includes(keyword)||String(item.type||'').toLowerCase().includes(keyword)).forEach(item=>list.innerHTML+=transactionCard(item,true))
+const keyword=(document.getElementById('historySearch').value||'').toLowerCase().trim();
+db.slice().reverse().filter(item=>{
+const hay=[item.description,item.category,item.type,item.date,item.createdBy,item.updatedBy].map(x=>String(x||'').toLowerCase()).join(' ');
+return hay.includes(keyword)
+}).forEach(item=>list.innerHTML+=transactionCard(item,true));
+if(!list.innerHTML)list.innerHTML='<div class="soft-card"><p class="muted">Tidak ada transaksi yang cocok.</p></div>'
 }
 
 function renderMonthly(){
@@ -477,24 +577,19 @@ document.getElementById('goalAmountReal').value='';
 document.getElementById('goalDate').value=''
 }
 
-window.saveGoal=function(){
+window.saveGoal=async function(){
 const name=document.getElementById('goalName').value.trim();
 const amount=Number(document.getElementById('goalAmountReal').value);
 const date=normalizeDate(document.getElementById('goalDate').value);
 if(!name||!amount||!isValidDateString(date))return alert('Isi goal lengkap. Tanggal YYYY-MM-DD');
 goals.push({id:Date.now(),name,amount,date});
 localStorage.setItem('hf_goals',JSON.stringify(goals));
-closeGoalModal();
-renderGoals();
-renderDashboard()
-}
+await addActivityLog('add_goal',{name,amount,date});closeGoalModal();renderGoals();renderDashboard();await loadActivityLogs()}
 
-window.deleteGoal=function(id){
+window.deleteGoal=async function(id){const deletedGoal=goals.find(g=>g.id===id);
 goals=goals.filter(goal=>goal.id!==id);
 localStorage.setItem('hf_goals',JSON.stringify(goals));
-renderGoals();
-renderDashboard()
-}
+await addActivityLog('delete_goal',deletedGoal||{});renderGoals();renderDashboard();await loadActivityLogs()}
 
 function renderGoals(){
 const list=document.getElementById('goalsList');
@@ -521,6 +616,19 @@ document.getElementById('mainGoalName').innerText=`${goal.name} • ${goal.date}
 document.getElementById('mainGoalAmount').innerText=rupiah(goal.amount);
 document.getElementById('mainGoalFill').style.width=progress+'%';
 document.getElementById('mainGoalProgress').innerText=progress.toFixed(0)+'%'
+}
+
+
+function renderActivityLogs(){
+const list=document.getElementById('activityList');
+if(!list)return;
+list.innerHTML='';
+logs.slice(0,8).forEach(log=>{
+const d=new Date(log.time);
+const label={login:'login',add_income:'tambah income',add_expense:'tambah expense',edit_transaction:'edit transaksi',delete_transaction:'hapus transaksi',add_goal:'tambah goal',delete_goal:'hapus goal',update_profile:'update profil'}[log.action]||log.action;
+list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div><div><h4>${log.user||'unknown'} ${label}</h4><p>${isNaN(d.getTime())?'':d.toLocaleString('id-ID')} ${log.data?.description?'• '+log.data.description:''}</p></div></div>`
+});
+if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
 }
 
 document.getElementById('date').value=todayString();
