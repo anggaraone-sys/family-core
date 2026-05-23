@@ -113,9 +113,9 @@ transition:.35s;
 .activity-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.7);border-radius:16px;padding:10px}.activity-dot{width:34px;height:34px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white}.activity-item h4{font-size:13px}.activity-item p{font-size:12px;color:var(--muted);margin-top:2px}
 .bottom-nav{min-height:74px;border-radius:26px;grid-template-columns:1fr 1fr 82px 1fr 1fr}.add-btn{width:68px;height:68px;font-size:34px}
 .modal-bg{opacity:0;transition:.22s}.modal-bg.active{opacity:1}.modal{border-radius:32px 32px 0 0;animation:slideUp .25s ease}
-#loadingOverlay{position:fixed;inset:0;background:rgba(244,248,255,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:500}.loader-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:18px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 45px rgba(77,107,190,.16)}.spinner{width:24px;height:24px;border-radius:50%;border:3px solid #dfe8ff;border-top-color:var(--pink);animation:spin .8s linear infinite}
+#loadingOverlay{position:fixed;inset:0;background:rgba(244,248,255,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:500;pointer-events:none}#loadingOverlay.active{display:flex;pointer-events:auto}.loader-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:18px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 45px rgba(77,107,190,.16)}.spinner{width:24px;height:24px;border-radius:50%;border:3px solid #dfe8ff;border-top-color:var(--pink);animation:spin .8s linear infinite}
 @keyframes slideUp{0%{transform:translateY(30px)}100%{transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}
-.login-note{color:var(--muted);font-size:12px;margin:-4px 4px 14px}.login-error{display:none;background:#fff0f5;color:var(--red);border-radius:14px;padding:10px 12px;margin:0 0 12px;font-size:13px;font-weight:600}
+.login-card,.input-wrap,#username,#loginBtn{position:relative;z-index:10;pointer-events:auto}.login-note{color:var(--muted);font-size:12px;margin:-4px 4px 14px}.login-error{display:none;background:#fff0f5;color:var(--red);border-radius:14px;padding:10px 12px;margin:0 0 12px;font-size:13px;font-weight:600}
 @media(max-width:390px){.hero-card h1{font-size:34px}.quick-card h3{font-size:15px}.quick-card{padding:12px 9px}.chart-row{grid-template-columns:80px 1fr 68px}.tx-card h4{max-width:118px}}
 
 </style>
@@ -132,7 +132,7 @@ transition:.35s;
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
 <p class="login-note">Masukkan username yang sudah terdaftar di Firebase.</p>
 <div id="loginError" class="login-error"></div>
-<button class="main-btn" id="loginBtn" onclick="login()">Masuk Sekarang</button>
+<button class="main-btn" id="loginBtn" type="button">Masuk Sekarang</button>
 </div>
 </div>
 
@@ -243,7 +243,7 @@ function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
 function showLoginError(message){const box=document.getElementById('loginError');if(!box)return;box.innerText=message;box.style.display=message?'block':'none'}
-function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
+function setLoading(show,text='Loading...'){const textEl=document.getElementById('loadingText');const overlay=document.getElementById('loadingOverlay');if(textEl)textEl.innerText=text;if(!overlay)return;if(show)overlay.classList.add('active');else overlay.classList.remove('active')}
 function getSavedUser(){const sessionUser=sessionStorage.getItem('hf_user');if(sessionUser)return sessionUser;const user=localStorage.getItem('hf_user');const until=Number(localStorage.getItem('hf_login_until')||0);if(user&&until>Date.now())return user;if(user&&until&&until<=Date.now()){localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}return ''}
 function saveSession(user){sessionStorage.setItem('hf_user',user);localStorage.setItem('hf_user',user);localStorage.setItem('hf_login_until',String(Date.now()+SESSION_DAYS*24*60*60*1000))}
 function clearSession(){sessionStorage.removeItem('hf_user');localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}
@@ -251,7 +251,7 @@ async function verifyUser(username){
 const clean=String(username||'').trim().toLowerCase();
 if(!clean)return {ok:false,reason:'Masukkan username'};
 try{
-const snap=await getDocs(collection(dbFirestore,'users'));
+const snap=await Promise.race([getDocs(collection(dbFirestore,'users')),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),12000))]);
 let found=false;
 let active=false;
 snap.forEach(docSnap=>{
@@ -266,7 +266,7 @@ return {ok:true};
 console.error('LOGIN_FIREBASE_ERROR',err);
 let reason='Gagal cek username ke Firebase';
 if(err.code==='permission-denied')reason='Firebase Rules belum mengizinkan membaca collection users';
-if(err.code==='unavailable')reason='Koneksi ke Firebase gagal. Cek internet.';
+if(err.code==='unavailable')reason='Koneksi ke Firebase gagal. Cek internet.';if(String(err.message||'').includes('timeout'))reason='Login timeout. Cek koneksi internet / Firebase Rules.';
 return {ok:false,reason};
 }
 }
@@ -375,7 +375,9 @@ list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div>
 if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
 }
 
-document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+window.__LOGIN_READY=true;
+const loginBtnEl=document.getElementById('loginBtn');if(loginBtnEl){loginBtnEl.addEventListener('click',()=>window.login())}
+document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')window.login()});
 document.getElementById('date').value=todayString();
 document.getElementById('transactionModal').classList.add('active')
 }
@@ -661,6 +663,18 @@ if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
 
 document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.getElementById('date').value=todayString();
+</script>
+
+<script>
+window.addEventListener('load',()=>{
+  const btn=document.getElementById('loginBtn');
+  const err=document.getElementById('loginError');
+  if(btn && !window.__LOGIN_READY){
+    btn.addEventListener('click',()=>{
+      if(err){err.style.display='block';err.innerText='Script login belum siap. Cek koneksi internet atau Firebase CDN.';}
+    });
+  }
+});
 </script>
 </body>
 </html>
