@@ -241,6 +241,9 @@ return d.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
 }
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
 function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
+function setText(id,value){const el=document.getElementById(id);if(el)el.innerText=value}
+function setDisplay(id,value){const el=document.getElementById(id);if(el)el.style.display=value}
+function toggleClass(id,cls,on){const el=document.getElementById(id);if(el)el.classList.toggle(cls,on)}
 function showLoginError(msg){const el=document.getElementById('loginError');el.innerText=msg;el.style.display='block'}
 function clearLoginError(){document.getElementById('loginError').style.display='none'}
 function sessionValid(){const u=localStorage.getItem('hf_user');const exp=Number(localStorage.getItem('hf_session_exp')||0);return u && Date.now()<exp}
@@ -357,8 +360,16 @@ setLoading(true,'Load data...');
 const querySnapshot=await getDocs(collection(dbFirestore,'transactions'));
 querySnapshot.forEach(docSnap=>db.push({id:docSnap.id,...docSnap.data()}));
 db.sort((a,b)=>new Date(a.date)-new Date(b.date));
-renderAll()
-}catch(err){console.error(err);alert('Gagal load data Firebase')}
+try{
+renderAll();
+}catch(renderErr){
+console.error('Render error:',renderErr);
+alert('Data berhasil load, tapi ada error tampilan. Pakai file fix terbaru ini.');
+}
+}catch(err){
+console.error('Firestore load error:',err);
+alert('Gagal load data Firebase. Cek Rules untuk transactions: allow read, write.');
+}
 finally{setLoading(false)}
 }
 
@@ -469,21 +480,21 @@ if(itemMonth===monthKey)monthExpense[cat]=(monthExpense[cat]||0)+amount;
 const balance=income-expense;
 const todayBalance=todayOjekIncome-todayExpense;
 
-document.getElementById('balance').innerText=displayBalance(balance);
-document.getElementById('heroIncome').innerText=rupiah(income);
-document.getElementById('heroExpense').innerText=rupiah(expense);
-document.getElementById('todayIncome').innerText=rupiah(todayOjekIncome);
-document.getElementById('todayExpense').innerText=rupiah(todayExpense);
-document.getElementById('todayBalance').innerText=rupiah(todayBalance);
+setText('balance',displayBalance(balance));
+setText('heroIncome',rupiah(income));
+setText('heroExpense',rupiah(expense));
+setText('todayIncome',rupiah(todayOjekIncome));
+setText('todayExpense',rupiah(todayExpense));
+setText('todayBalance',rupiah(todayBalance));
 
 const hasTodayIncome = todayOjekIncome > 0;
 const hasTodayExpense = todayExpense > 0;
 const hasTodayData = hasTodayIncome || hasTodayExpense;
 
-document.getElementById('todayStats').classList.toggle('is-hidden', !hasTodayData);
-document.getElementById('incomeTodayCard').style.display = hasTodayIncome ? 'block' : 'none';
-document.getElementById('expenseTodayCard').style.display = hasTodayExpense ? 'block' : 'none';
-document.getElementById('todayBalanceCard').style.display = hasTodayData ? 'block' : 'none';
+toggleClass('todayStats','is-hidden',!hasTodayData);
+setDisplay('incomeTodayCard',hasTodayIncome?'block':'none');
+setDisplay('expenseTodayCard',hasTodayExpense?'block':'none');
+setDisplay('todayBalanceCard',hasTodayData?'block':'none');
 
 const topCategory=Object.keys(categoryExpense).sort((a,b)=>categoryExpense[b]-categoryExpense[a])[0];
 
@@ -493,7 +504,7 @@ insight=balance>=0?`Bagus! Keluarga masih surplus ${rupiah(balance)}.`:`Perhatia
 if(topCategory)insight+=` Pengeluaran terbesar: ${topCategory} (${rupiah(categoryExpense[topCategory])}).`;
 }
 
-document.getElementById('insightText').innerText=insight;
+setText('insightText',insight);
 
 const recent=document.getElementById('recentList');
 recent.innerHTML='';
@@ -510,6 +521,7 @@ renderMiniChart(monthExpense);
 function renderMiniChart(data){
 const chart=document.getElementById('expenseChart');
 const card=document.getElementById('chartCard');
+if(!chart||!card)return;
 chart.innerHTML='';
 const values=Object.values(data);
 if(!values.length){card.style.display='none';return}
@@ -646,18 +658,18 @@ function renderMainGoal(balance){
 const goal=goals[0];
 
 if(!goal){
-document.getElementById('mainGoalName').innerText='Belum ada target aktif';
-document.getElementById('mainGoalAmount').innerText='Rp 0';
-document.getElementById('mainGoalFill').style.width='0%';
-document.getElementById('mainGoalProgress').innerText='0%';
+setText('mainGoalName','Belum ada target aktif');
+setText('mainGoalAmount','Rp 0');
+const mgf0=document.getElementById('mainGoalFill');if(mgf0)mgf0.style.width='0%';
+setText('mainGoalProgress','0%');
 return
 }
 
 const progress=Math.max(0,Math.min(balance/goal.amount*100,100));
-document.getElementById('mainGoalName').innerText=`${goal.name} • ${goal.date}`;
-document.getElementById('mainGoalAmount').innerText=rupiah(goal.amount);
-document.getElementById('mainGoalFill').style.width=progress+'%';
-document.getElementById('mainGoalProgress').innerText=progress.toFixed(0)+'%'
+setText('mainGoalName',`${goal.name} • ${formatDateID(goal.date)}`);
+setText('mainGoalAmount',rupiah(goal.amount));
+const mgf=document.getElementById('mainGoalFill');if(mgf)mgf.style.width=progress+'%';
+setText('mainGoalProgress',progress.toFixed(0)+'%')
 }
 
 document.getElementById('date').value=todayString();
