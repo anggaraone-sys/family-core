@@ -251,17 +251,22 @@ async function verifyUser(username){
 const clean=String(username||'').trim().toLowerCase();
 if(!clean)return {ok:false,reason:'Masukkan username'};
 try{
-const q=query(collection(dbFirestore,'users'),where('username','==',clean),limit(1));
-const snap=await getDocs(q);
-if(snap.empty)return {ok:false,reason:'Username tidak ditemukan di Firebase users'};
+const snap=await getDocs(collection(dbFirestore,'users'));
+let found=false;
 let active=false;
-snap.forEach(docSnap=>{active=docSnap.data().active===true});
-if(!active)return {ok:false,reason:'Username belum aktif. Pastikan field active bertipe boolean dan bernilai true'};
+snap.forEach(docSnap=>{
+const data=docSnap.data()||{};
+const dbUsername=String(data.username||'').trim().toLowerCase();
+if(dbUsername===clean){found=true;active=data.active===true;}
+});
+if(!found)return {ok:false,reason:'Username tidak ditemukan di Firebase users'};
+if(!active)return {ok:false,reason:'Username belum aktif. Field active harus boolean true'};
 return {ok:true};
 }catch(err){
-console.error(err);
+console.error('LOGIN_FIREBASE_ERROR',err);
 let reason='Gagal cek username ke Firebase';
 if(err.code==='permission-denied')reason='Firebase Rules belum mengizinkan membaca collection users';
+if(err.code==='unavailable')reason='Koneksi ke Firebase gagal. Cek internet.';
 return {ok:false,reason};
 }
 }
@@ -272,6 +277,7 @@ window.toggleBalance=function(){balanceVisible=!balanceVisible;document.getEleme
 
 window.login=async function(){
 const user=document.getElementById('username').value.trim().toLowerCase();
+console.log('Login clicked:',user);
 showLoginError('');
 if(!user){showLoginError('Masukkan username');return}
 const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerText='Mengecek...';setLoading(true,'Login...');
