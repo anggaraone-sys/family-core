@@ -31,6 +31,8 @@ button{cursor:pointer;border:none}
 .input-wrap{background:white;border-radius:20px;padding:15px;margin-bottom:16px;box-shadow:0 8px 22px rgba(67,98,170,.07)}
 .input-wrap input{width:100%;border:none;outline:none;font-size:15px;background:transparent;color:var(--text)}
 .main-btn{width:100%;padding:16px;border-radius:22px;background:linear-gradient(90deg,var(--blue),var(--pink));color:white;font-size:15px;font-weight:700;box-shadow:0 14px 32px rgba(255,79,184,.20);transition:.25s}
+.main-btn:disabled{opacity:.65;cursor:not-allowed}
+.login-error{display:none;margin:14px 0 0;background:#ffeaf1;color:#ff4f82;padding:14px 16px;border-radius:17px;font-weight:650;line-height:1.35}
 #app{display:none;max-width:480px;margin:auto;min-height:100vh;padding:18px 16px 108px}
 .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}
 .profile{display:flex;align-items:center;gap:12px}
@@ -39,90 +41,62 @@ button{cursor:pointer;border:none}
 .profile small{color:var(--muted);font-size:14px}
 .logout{background:white;padding:11px 15px;border-radius:17px;color:var(--pink);font-weight:700;box-shadow:0 8px 22px rgba(77,107,190,.08)}
 .page{display:none}.page.active{display:block;animation:fadeUp .32s ease}
-
-.hero-card{
-position:relative;
-overflow:hidden;
-min-height:242px;
-border-radius:32px;
-padding:24px;
-color:white;
-background:linear-gradient(135deg,rgba(45,183,255,.70),rgba(255,79,184,.50));
-box-shadow:0 20px 50px rgba(92,110,210,.16),inset 0 1px 0 rgba(255,255,255,.25);
-transition:.35s;
-}
+.hero-card{position:relative;overflow:hidden;min-height:225px;border-radius:30px;padding:22px;color:white;background:linear-gradient(135deg,rgba(45,183,255,.70),rgba(255,79,184,.50));box-shadow:0 18px 44px rgba(92,110,210,.14),inset 0 1px 0 rgba(255,255,255,.25);transition:.35s}
 .hero-card:before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.10);top:-90px;right:-70px;filter:blur(12px)}
 .hero-card:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.05));pointer-events:none}
-.plane-img{position:absolute;right:-22px;bottom:10px;width:285px;max-width:74%;opacity:.60;z-index:1;filter:drop-shadow(0 16px 25px rgba(20,40,90,.20));pointer-events:none}
+.plane-img{position:absolute;right:-22px;bottom:10px;width:275px;max-width:74%;opacity:.64;z-index:1;filter:drop-shadow(0 16px 25px rgba(20,40,90,.18));pointer-events:none}
 .hero-balance-head{display:flex;align-items:center;gap:10px;position:relative;z-index:2}
-.hero-card small{font-size:15px;font-weight:600;position:relative;z-index:2}
+.hero-card small{font-size:14px;font-weight:600;position:relative;z-index:2}
 .eye-btn{background:rgba(255,255,255,.22);color:white;border-radius:999px;padding:7px 11px;font-weight:700}
-.hero-card h1{font-size:42px;margin:14px 0 22px;letter-spacing:-1.5px;font-weight:700;text-shadow:0 8px 24px rgba(0,0,0,.14);position:relative;z-index:2}
-.hero-actions{display:flex;gap:11px;flex-wrap:wrap;position:relative;z-index:2}
-.hero-btn{background:rgba(255,255,255,.22);backdrop-filter:blur(10px);color:white;padding:13px 17px;border-radius:17px;font-weight:700;transition:.25s}
-
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
-.quick-card{background:rgba(255,255,255,.84);backdrop-filter:blur(12px);border-radius:22px;padding:15px 12px;box-shadow:0 12px 28px rgba(80,102,180,.08);transition:.25s}
-.quick-card small{color:var(--muted);font-size:13px;font-weight:500}
-.quick-card h3{margin-top:9px;font-size:19px;font-weight:700;line-height:1.25;letter-spacing:-.2px}
-.soft-card,.profile-card,.month-card,.goal-card{background:rgba(255,255,255,.84);backdrop-filter:blur(12px);border-radius:28px;padding:19px;margin-bottom:16px;box-shadow:0 14px 32px rgba(80,102,180,.08);transition:.25s}
-.progress{height:11px;background:#dfe8ff;border-radius:20px;overflow:hidden;margin-top:13px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--pink))}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px}
-.section-title h3{font-size:19px;font-weight:700}
+.hero-card h1{font-size:38px;margin:14px 0 20px;letter-spacing:-1.3px;font-weight:700;text-shadow:0 8px 24px rgba(0,0,0,.14);position:relative;z-index:2}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:2}
+.hero-btn{background:rgba(255,255,255,.22);backdrop-filter:blur(10px);color:white;padding:12px 15px;border-radius:16px;font-weight:700;transition:.25s}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0}
+.quick-card{background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border-radius:20px;padding:13px 10px;box-shadow:0 10px 22px rgba(80,102,180,.07);transition:.25s;border:1px solid rgba(255,255,255,.65)}
+.quick-card small{color:var(--muted);font-size:12px;font-weight:500}
+.quick-card h3{margin-top:8px;font-size:17px;font-weight:680;line-height:1.25;letter-spacing:-.2px}
+.soft-card,.profile-card,.month-card,.goal-card{background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-radius:24px;padding:17px;margin-bottom:14px;box-shadow:0 12px 28px rgba(80,102,180,.07);transition:.25s;border:1px solid rgba(255,255,255,.6)}
+.progress{height:10px;background:#dfe8ff;border-radius:20px;overflow:hidden;margin-top:12px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--pink))}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:16px 0 11px}
+.section-title h3{font-size:18px;font-weight:700}
 .section-title button{background:none;color:var(--blue2);font-weight:700}
-.list{display:flex;flex-direction:column;gap:11px}
-.tx-card{background:rgba(255,255,255,.86);border-radius:22px;padding:15px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 11px 26px rgba(80,102,180,.08);transition:.25s}
-.tx-left{display:flex;align-items:center;gap:11px}.tx-icon{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white;font-size:23px;box-shadow:0 9px 22px rgba(93,141,255,.20)}
-.tx-card h4{font-size:15px;font-weight:650}.tx-card small,.muted{color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:9px}
+.tx-card{background:rgba(255,255,255,.78);backdrop-filter:blur(12px);border-radius:20px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:9px;box-shadow:0 9px 22px rgba(80,102,180,.07);transition:.25s;border:1px solid rgba(255,255,255,.6)}
+.tx-left{display:flex;align-items:center;gap:10px;min-width:0}
+.tx-icon{width:42px;height:42px;border-radius:15px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white;font-size:21px;box-shadow:0 8px 20px rgba(93,141,255,.18);flex:0 0 auto}
+.tx-card h4{font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:145px}
+.tx-card small,.muted{color:var(--muted)}
 .amount-income{color:var(--green);font-weight:700}.amount-expense{color:var(--red);font-weight:700}
-.action-row{display:flex;gap:6px;margin-top:8px;justify-content:flex-end}
-.edit-btn,.delete-btn,.mini-btn{padding:8px 10px;border-radius:10px;color:white;font-size:12px;font-weight:700}
+.action-row{display:flex;gap:5px;margin-top:7px;justify-content:flex-end}
+.edit-btn,.delete-btn,.mini-btn{padding:7px 9px;border-radius:10px;color:white;font-size:12px;font-weight:700}
+.icon-btn{width:34px;height:34px;border-radius:12px;font-size:15px;display:inline-flex;align-items:center;justify-content:center}
 .edit-btn,.mini-btn{background:var(--blue2)}.delete-btn{background:var(--red)}
-.search{width:100%;padding:15px;border:none;border-radius:18px;margin-bottom:15px;outline:none;background:white;color:var(--text);box-shadow:0 10px 26px rgba(80,102,180,.07);transition:.25s}
-.month-card{cursor:pointer}.month-row{display:flex;justify-content:space-between;margin-top:9px;color:var(--muted)}.month-row strong{color:var(--text);font-weight:700}
-.form-field{width:100%;padding:15px;border:none;outline:none;border-radius:17px;background:#f2f6ff;color:var(--text);margin-top:13px;transition:.25s;box-shadow:inset 0 0 0 1px rgba(93,141,255,.06)}
+.search{width:100%;padding:14px;border:none;border-radius:17px;margin-bottom:13px;outline:none;background:rgba(255,255,255,.78);backdrop-filter:blur(12px);color:var(--text);box-shadow:0 9px 22px rgba(80,102,180,.07);transition:.25s}
+.month-card{cursor:pointer}.month-row{display:flex;justify-content:space-between;margin-top:8px;color:var(--muted)}.month-row strong{color:var(--text);font-weight:700}
+.form-field{width:100%;padding:14px;border:none;outline:none;border-radius:16px;background:#f2f6ff;color:var(--text);margin-top:12px;transition:.25s;box-shadow:inset 0 0 0 1px rgba(93,141,255,.06)}
 .form-field:focus,.search:focus{background:white;box-shadow:0 0 0 4px rgba(93,141,255,.12);transform:translateY(-1px)}
-.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 30px);max-width:450px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-radius:28px;display:grid;grid-template-columns:1fr 1fr 84px 1fr 1fr;align-items:center;min-height:76px;box-shadow:0 20px 44px rgba(77,107,190,.14);border:1px solid rgba(255,255,255,.65);z-index:100}
-.nav-btn{background:none;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:12px;font-weight:700;transition:.25s}.nav-btn span{font-size:21px}.nav-btn.active{color:var(--blue2)}
-.add-btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;border:7px solid #f5f8ff;font-size:36px;margin-top:-34px;box-shadow:0 15px 34px rgba(255,79,184,.27);transition:.25s}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 30px);max-width:450px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-radius:27px;display:grid;grid-template-columns:1fr 1fr 80px 1fr 1fr;align-items:center;min-height:74px;box-shadow:0 18px 40px rgba(77,107,190,.13);border:1px solid rgba(255,255,255,.65);z-index:100}
+.nav-btn{background:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:12px;font-weight:700;transition:.25s}.nav-btn span{font-size:20px}.nav-btn.active{color:var(--blue2)}
+.add-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;border:7px solid #f5f8ff;font-size:34px;margin-top:-34px;box-shadow:0 14px 30px rgba(255,79,184,.24);transition:.25s}
 .modal-bg{position:fixed;inset:0;background:rgba(25,42,90,.25);backdrop-filter:blur(12px);display:none;align-items:flex-end;z-index:200}.modal-bg.active{display:flex}
-.modal{width:100%;max-width:500px;background:white;border-radius:34px 34px 0 0;padding:23px 18px 28px;margin:auto;max-height:88vh;overflow:auto}
-.modal h2{margin-bottom:16px;font-size:22px;font-weight:700}.floating-close{position:sticky;top:0;float:right;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;font-size:20px;font-weight:700;box-shadow:0 10px 25px rgba(80,102,180,.22);z-index:5}
-.modal-btn{width:100%;padding:15px;border-radius:17px;margin-top:10px;font-weight:700}.save-btn{background:linear-gradient(90deg,var(--blue),var(--pink));color:white}.cancel-btn{background:#eef4ff;color:var(--text)}
+.modal{width:100%;max-width:500px;background:white;border-radius:32px 32px 0 0;padding:22px 17px 27px;margin:auto;max-height:88vh;overflow:auto;animation:slideUp .22s ease}
+.modal h2{margin-bottom:15px;font-size:21px;font-weight:700}.floating-close{position:sticky;top:0;float:right;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;font-size:20px;font-weight:700;box-shadow:0 10px 25px rgba(80,102,180,.22);z-index:5}
+.modal-btn{width:100%;padding:14px;border-radius:16px;margin-top:10px;font-weight:700}.save-btn{background:linear-gradient(90deg,var(--blue),var(--pink));color:white}.cancel-btn{background:#eef4ff;color:var(--text)}
+.chart-row{display:flex;align-items:flex-end;gap:8px;height:92px;margin-top:12px}
+.chart-bar{flex:1;background:linear-gradient(180deg,var(--pink),var(--blue));border-radius:12px 12px 6px 6px;min-height:8px;opacity:.85}
+.activity-item{padding:11px 0;border-bottom:1px solid rgba(109,125,179,.12)}
+.activity-item:last-child{border-bottom:0}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.42);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:999}
+.loading-box{background:white;padding:16px 20px;border-radius:18px;box-shadow:0 12px 32px rgba(80,102,180,.14);font-weight:700;color:var(--text)}
 .hero-btn:hover,.main-btn:hover,.quick-card:hover,.tx-card:hover,.soft-card:hover,.profile-card:hover,.month-card:hover,.goal-card:hover,.nav-btn:hover{transform:translateY(-2px)}.add-btn:hover{transform:scale(1.04)}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
-@media(max-width:390px){#app{padding:16px 14px 106px}.profile h2{font-size:22px}.hero-card{min-height:235px;padding:22px}.plane-img{width:250px;right:-28px;bottom:8px}.hero-card h1{font-size:37px}.quick-card h3{font-size:18px}}
-
-/* === OPTIMIZED POLISH UPDATE === */
-#app{padding:16px 14px 104px}
-.hero-card{min-height:228px;border-radius:30px;padding:22px;box-shadow:0 18px 44px rgba(92,110,210,.15),inset 0 1px 0 rgba(255,255,255,.26)}
-.plane-img{width:275px;opacity:.62;filter:drop-shadow(0 14px 22px rgba(20,40,90,.18))}
-.hero-card h1{font-size:38px;margin:14px 0 20px}
-.hero-btn{padding:12px 15px;border-radius:16px}
-.quick-grid{gap:9px;margin:14px 0}
-.quick-card{background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.62);border-radius:20px;padding:13px 10px;box-shadow:0 10px 24px rgba(80,102,180,.07)}
-.quick-card small{font-size:12px}
-.quick-card h3{font-size:17px}
-.soft-card,.profile-card,.month-card,.goal-card{background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.62);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:0 12px 28px rgba(80,102,180,.07)}
-.tx-card{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.62);border-radius:20px;padding:12px;gap:10px;box-shadow:0 9px 22px rgba(80,102,180,.07)}
-.tx-left{min-width:0}.tx-icon{width:42px;height:42px;flex:0 0 42px;border-radius:15px;font-size:21px}
-.tx-card h4{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}.tx-card small{font-size:12px}.tx-right{text-align:right;flex:0 0 auto}
-.icon-btn{width:31px;height:31px;border-radius:11px;color:white;font-size:14px;font-weight:700}.edit-btn.icon-btn{background:var(--blue2)}.delete-btn.icon-btn{background:var(--red)}
-.search{background:rgba(255,255,255,.85);backdrop-filter:blur(12px)}
-.mini-chart{display:flex;flex-direction:column;gap:10px;margin-top:12px}.chart-row{display:grid;grid-template-columns:92px 1fr 76px;gap:9px;align-items:center;font-size:12px;color:var(--muted)}.chart-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-track{height:9px;background:#e8efff;border-radius:999px;overflow:hidden}.chart-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--pink));border-radius:999px}.chart-value{text-align:right;color:var(--text);font-weight:700}
-.activity-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.7);border-radius:16px;padding:10px}.activity-dot{width:34px;height:34px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--pink));display:flex;align-items:center;justify-content:center;color:white}.activity-item h4{font-size:13px}.activity-item p{font-size:12px;color:var(--muted);margin-top:2px}
-.bottom-nav{min-height:74px;border-radius:26px;grid-template-columns:1fr 1fr 82px 1fr 1fr}.add-btn{width:68px;height:68px;font-size:34px}
-.modal-bg{opacity:0;transition:.22s}.modal-bg.active{opacity:1}.modal{border-radius:32px 32px 0 0;animation:slideUp .25s ease}
-#loadingOverlay{position:fixed;inset:0;background:rgba(244,248,255,.62);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:500;pointer-events:none}#loadingOverlay.active{display:flex;pointer-events:auto}.loader-card{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.72);border-radius:22px;padding:18px 20px;display:flex;gap:12px;align-items:center;box-shadow:0 18px 45px rgba(77,107,190,.16)}.spinner{width:24px;height:24px;border-radius:50%;border:3px solid #dfe8ff;border-top-color:var(--pink);animation:spin .8s linear infinite}
-@keyframes slideUp{0%{transform:translateY(30px)}100%{transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}
-.login-card,.input-wrap,#username,#loginBtn{position:relative;z-index:10;pointer-events:auto}.login-note{color:var(--muted);font-size:12px;margin:-4px 4px 14px}.login-error{display:none;background:#fff0f5;color:var(--red);border-radius:14px;padding:10px 12px;margin:0 0 12px;font-size:13px;font-weight:600}
-@media(max-width:390px){.hero-card h1{font-size:34px}.quick-card h3{font-size:15px}.quick-card{padding:12px 9px}.chart-row{grid-template-columns:80px 1fr 68px}.tx-card h4{max-width:118px}}
-
+@keyframes slideUp{0%{transform:translateY(20px);opacity:.7}100%{transform:translateY(0);opacity:1}}
+@media(max-width:390px){#app{padding:16px 14px 106px}.profile h2{font-size:21px}.hero-card{min-height:220px;padding:20px}.plane-img{width:240px;right:-28px;bottom:8px}.hero-card h1{font-size:34px}.quick-card h3{font-size:16px}.quick-card small{font-size:11px}.tx-card h4{max-width:115px}}
 </style>
 </head>
 <body>
-<div id="loadingOverlay"><div class="loader-card"><div class="spinner"></div><strong id="loadingText">Loading...</strong></div></div>
 
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-box" id="loadingText">Loading...</div></div>
 
 <div id="loginPage">
 <div class="login-card">
@@ -130,15 +104,14 @@ transition:.35s;
 <div class="login-title">Welcome 👋</div>
 <div class="login-sub">Kelola keuangan keluarga jadi lebih mudah</div>
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
-<p class="login-note">Masukkan username yang sudah terdaftar di Firebase.</p>
-<div id="loginError" class="login-error"></div>
-<button class="main-btn" id="loginBtn" type="button">Masuk Sekarang</button>
+<button class="main-btn" id="loginBtn">Masuk Sekarang</button>
+<div class="login-error" id="loginError"></div>
 </div>
 </div>
 
 <div id="app">
 <div class="topbar">
-<div class="profile"><div class="avatar" id="familyIcon">👨‍👩‍👧</div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="loginAsText">Home Finance</small></div></div>
+<div class="profile"><div class="avatar" id="familyIcon">👨‍👩‍👧</div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="userLabel">Home Finance</small></div></div>
 <button class="logout" onclick="logout()">Logout</button>
 </div>
 
@@ -162,13 +135,15 @@ transition:.35s;
 <div class="quick-card" id="todayBalanceCard"><small>Today Balance</small><h3 id="todayBalance">Rp 0</h3></div>
 </div>
 
+<div class="soft-card" id="chartCard"><h3>Mini Chart Bulan Ini</h3><p class="muted" style="font-size:13px">Pengeluaran per kategori</p><div class="chart-row" id="expenseChart"></div></div>
+
 <div class="soft-card">
 <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3>Target Tabungan</h3><p class="muted" id="mainGoalName">Belum ada target aktif</p></div><button class="mini-btn" onclick="openGoalModal()">Atur</button></div>
 <div class="progress"><div class="progress-fill" id="mainGoalFill"></div></div>
 <div class="month-row"><span id="mainGoalAmount">Rp 0</span><strong id="mainGoalProgress">0%</strong></div>
 </div>
 
-<div class="soft-card"><h3>Finance Insight</h3><p class="muted" id="insightText" style="margin-top:10px">Belum ada data transaksi.</p><div id="miniChart" class="mini-chart"></div></div>
+<div class="soft-card"><h3>Finance Insight</h3><p class="muted" id="insightText" style="margin-top:10px">Belum ada data transaksi.</p></div>
 <div class="section-title"><h3>Transaksi Terakhir</h3><button onclick="showPage('riwayat',navRiwayat)">Lihat Semua ›</button></div>
 <div id="recentList" class="list"></div>
 </section>
@@ -180,8 +155,8 @@ transition:.35s;
 <div class="section-title"><h3>Profil</h3></div>
 <div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon">👨‍👩‍👧</div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
 <div class="profile-card"><h3>PIN Lokal</h3><p class="muted">PIN tersimpan di perangkat ini.</p><input class="form-field" id="pinInput" type="password" placeholder="PIN baru minimal 4 digit"><button class="modal-btn save-btn" onclick="savePin()">Simpan PIN</button></div>
+<div class="profile-card"><h3>Activity Log</h3><div id="activityList" style="margin-top:10px"></div></div>
 <div class="profile-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Savings Goals</h3><button class="mini-btn" onclick="openGoalModal()">Tambah</button></div><div id="goalsList" class="list" style="margin-top:14px"></div></div>
-<div class="profile-card"><h3>Activity Log</h3><p class="muted">Aktivitas terakhir keluarga.</p><div id="activityList" class="list" style="margin-top:12px"></div></div>
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
 </section>
 
@@ -210,7 +185,7 @@ transition:.35s;
 </select>
 <select class="form-field" id="type"><option value="income">Income (+)</option><option value="expense">Expense (-)</option></select>
 <input class="form-field" type="text" id="date" placeholder="YYYY-MM-DD" inputmode="numeric">
-<button class="modal-btn save-btn" id="saveTxBtn" onclick="saveTransaction()">Save Transaction</button>
+<button class="modal-btn save-btn" onclick="saveTransaction()">Save Transaction</button>
 <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
 </div></div>
 
@@ -228,13 +203,13 @@ transition:.35s;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,orderBy,limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyDyp9xh0IRzpahTg82BXsxXQLtgvdqJJwc",authDomain:"home-finance-9219a.firebaseapp.com",projectId:"home-finance-9219a",storageBucket:"home-finance-9219a.firebasestorage.app",messagingSenderId:"774004827415",appId:"1:774004827415:web:d771bff53b2d38827c0352"};
 const app=initializeApp(firebaseConfig);
 const dbFirestore=getFirestore(app);
 
-let db=[],logs=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',balanceVisible=true,currentUser='';
+let db=[],goals=[],logs=[],editIndex=null,currentReportData=[],currentReportKey='',balanceVisible=true,currentUser='';
 const SESSION_DAYS=7;
 
 function rupiah(v){return 'Rp '+Number(v||0).toLocaleString('id-ID')}
@@ -242,73 +217,54 @@ function todayString(){const d=new Date();return `${d.getFullYear()}-${String(d.
 function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value;if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){const p=value.split('/');return `${p[2]}-${p[1]}-${p[0]}`}if(/^\d{2}-\d{2}-\d{4}$/.test(value)){const p=value.split('-');return `${p[2]}-${p[1]}-${p[0]}`}return ''}
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
-function showLoginError(message){const box=document.getElementById('loginError');if(!box)return;box.innerText=message;box.style.display=message?'block':'none'}
-function setLoading(show,text='Loading...'){const textEl=document.getElementById('loadingText');const overlay=document.getElementById('loadingOverlay');if(textEl)textEl.innerText=text;if(!overlay)return;if(show)overlay.classList.add('active');else overlay.classList.remove('active')}
-function getSavedUser(){const sessionUser=sessionStorage.getItem('hf_user');if(sessionUser)return sessionUser;const user=localStorage.getItem('hf_user');const until=Number(localStorage.getItem('hf_login_until')||0);if(user&&until>Date.now())return user;if(user&&until&&until<=Date.now()){localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}return ''}
-function saveSession(user){sessionStorage.setItem('hf_user',user);localStorage.setItem('hf_user',user);localStorage.setItem('hf_login_until',String(Date.now()+SESSION_DAYS*24*60*60*1000))}
-function clearSession(){sessionStorage.removeItem('hf_user');localStorage.removeItem('hf_user');localStorage.removeItem('hf_login_until')}
-async function verifyUser(username){
-const clean=String(username||'').trim().toLowerCase();
-if(!clean)return {ok:false,reason:'Masukkan username'};
-try{
-const snap=await Promise.race([getDocs(collection(dbFirestore,'users')),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),12000))]);
-let found=false;
-let active=false;
-snap.forEach(docSnap=>{
-const data=docSnap.data()||{};
-const dbUsername=String(data.username||'').trim().toLowerCase();
-if(dbUsername===clean){found=true;active=data.active===true;}
-});
-if(!found)return {ok:false,reason:'Username tidak ditemukan di Firebase users'};
-if(!active)return {ok:false,reason:'Username belum aktif. Field active harus boolean true'};
-return {ok:true};
-}catch(err){
-console.error('LOGIN_FIREBASE_ERROR',err);
-let reason='Gagal cek username ke Firebase';
-if(err.code==='permission-denied')reason='Firebase Rules belum mengizinkan membaca collection users';
-if(err.code==='unavailable')reason='Koneksi ke Firebase gagal. Cek internet.';if(String(err.message||'').includes('timeout'))reason='Login timeout. Cek koneksi internet / Firebase Rules.';
-return {ok:false,reason};
-}
-}
-async function addActivityLog(action,data={}){try{await addDoc(collection(dbFirestore,'activity_logs'),{action,user:currentUser||'unknown',data,time:new Date().toISOString()})}catch(err){console.error('Gagal simpan log:',err)}}
-async function loadActivityLogs(){logs=[];try{const snap=await getDocs(collection(dbFirestore,'activity_logs'));snap.forEach(d=>logs.push({id:d.id,...d.data()}));logs.sort((a,b)=>new Date(b.time)-new Date(a.time));renderActivityLogs()}catch(err){console.error('Gagal load activity:',err)}}
+function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
+function showLoginError(msg){const el=document.getElementById('loginError');el.innerText=msg;el.style.display='block'}
+function clearLoginError(){document.getElementById('loginError').style.display='none'}
+function sessionValid(){const u=localStorage.getItem('hf_user');const exp=Number(localStorage.getItem('hf_session_exp')||0);return u && Date.now()<exp}
+function setSession(user){localStorage.setItem('hf_user',user);localStorage.setItem('hf_session_exp',String(Date.now()+SESSION_DAYS*24*60*60*1000));currentUser=user}
+function clearSession(){localStorage.removeItem('hf_user');localStorage.removeItem('hf_session_exp');currentUser=''}
 
 window.toggleBalance=function(){balanceVisible=!balanceVisible;document.getElementById('eyeBtn').innerText=balanceVisible?'👁️':'🙈';renderDashboard()}
 
+async function validateUser(username){
+const q=query(collection(dbFirestore,'users'),where('username','==',username),where('active','==',true));
+const snap=await getDocs(q);
+return !snap.empty;
+}
+
 window.login=async function(){
+clearLoginError();
 const user=document.getElementById('username').value.trim().toLowerCase();
-console.log('Login clicked:',user);
-showLoginError('');
-if(!user){showLoginError('Masukkan username');return}
-const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerText='Mengecek...';setLoading(true,'Login...');
+if(!user)return showLoginError('Masukkan username.');
 try{
-const result=await verifyUser(user);
-if(!result.ok){showLoginError(result.reason);return}
+setLoading(true,'Cek login...');
+const ok=await validateUser(user);
+if(!ok){setLoading(false);return showLoginError('Username tidak terdaftar atau belum aktif di Firebase.')}
 const savedPin=localStorage.getItem('hf_pin');
-if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin){showLoginError('PIN salah');return}}
-currentUser=user;
-saveSession(user);
-await addActivityLog('login',{});
-await startApp()
-}catch(err){console.error(err);showLoginError('Gagal login. Cek koneksi atau Firebase Rules.')}finally{btn.disabled=false;btn.innerText='Masuk Sekarang';setLoading(false)}
+if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin){setLoading(false);return showLoginError('PIN salah.')}}
+setSession(user);
+await startApp();
+}catch(err){
+console.error(err);
+showLoginError('Gagal login. Cek Firestore Rules untuk collection users.');
+}finally{setLoading(false)}
 };
+
+document.getElementById('loginBtn').addEventListener('click',()=>window.login());
+document.getElementById('username').addEventListener('keydown',(e)=>{if(e.key==='Enter')window.login()});
 
 window.logout=function(){clearSession();location.reload()}
 
 async function startApp(){
-const user=getSavedUser();
-if(!user)return;
-setLoading(true,'Memuat data...');
-try{
-const result=await verifyUser(user);
-if(!result.ok){clearSession();showLoginError(result.reason);return}
-currentUser=user;
+if(sessionValid()){
+currentUser=localStorage.getItem('hf_user');
 document.getElementById('loginPage').style.display='none';
 document.getElementById('app').style.display='block';
+document.getElementById('userLabel').innerText=`Login sebagai ${currentUser}`;
 loadLocalSettings();
 await loadDatabase();
-await loadActivityLogs()
-}catch(e){console.error(e);clearSession();showLoginError('Gagal membuka aplikasi. Cek koneksi atau Firebase Rules.')}finally{setLoading(false)}
+await loadActivityLogs();
+}
 }
 startApp();
 
@@ -316,7 +272,6 @@ function loadLocalSettings(){
 const familyName=localStorage.getItem('hf_family_name')||'Family Winata';
 const icon=localStorage.getItem('hf_family_icon')||'👨‍👩‍👧';
 document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
-document.getElementById('loginAsText').innerText=`Login sebagai ${currentUser}`;
 document.getElementById('profileName').innerText=familyName;
 document.getElementById('familyNameInput').value=familyName;
 document.getElementById('familyIconInput').value=icon;
@@ -327,13 +282,14 @@ goals=JSON.parse(localStorage.getItem('hf_goals')||'[]');
 renderGoals()
 }
 
-window.saveProfile=async function(){
+window.saveProfile=function(){
 const name=document.getElementById('familyNameInput').value.trim()||'Family Winata';
 const icon=document.getElementById('familyIconInput').value.trim()||'👨‍👩‍👧';
 localStorage.setItem('hf_family_name',name);
 localStorage.setItem('hf_family_icon',icon);
 loadLocalSettings();
-await addActivityLog('update_profile',{name,icon});await loadActivityLogs();alert('Profil tersimpan')}
+alert('Profil tersimpan')
+}
 
 window.savePin=function(){
 const pin=document.getElementById('pinInput').value.trim();
@@ -343,14 +299,44 @@ document.getElementById('pinInput').value='';
 alert('PIN tersimpan di perangkat ini')
 }
 
+async function addActivityLog(action,data={}){
+try{
+await addDoc(collection(dbFirestore,'activity_logs'),{action,user:currentUser||'unknown',data,time:new Date().toISOString()});
+}catch(err){console.error('Gagal simpan activity log',err)}
+}
+
+async function loadActivityLogs(){
+logs=[];
+try{
+const q=query(collection(dbFirestore,'activity_logs'),orderBy('time','desc'),limit(15));
+const snap=await getDocs(q);
+snap.forEach(d=>logs.push({id:d.id,...d.data()}));
+renderActivityLogs();
+}catch(err){console.error('Gagal load activity logs',err)}
+}
+
+function renderActivityLogs(){
+const el=document.getElementById('activityList');
+if(!el)return;
+if(!logs.length){el.innerHTML='<p class="muted">Belum ada aktivitas.</p>';return}
+el.innerHTML='';
+logs.forEach(log=>{
+const label=log.action==='add_transaction'?'menambah transaksi':log.action==='edit_transaction'?'mengedit transaksi':log.action==='delete_transaction'?'menghapus transaksi':'melakukan aktivitas';
+const d=log.data||{};
+el.innerHTML+=`<div class="activity-item"><strong>${log.user||'User'}</strong> ${label}<br><small class="muted">${d.description||''} ${d.nominal?rupiah(d.nominal):''} • ${String(log.time||'').slice(0,16).replace('T',' ')}</small></div>`;
+});
+}
+
 async function loadDatabase(){
 db=[];
 try{
+setLoading(true,'Load data...');
 const querySnapshot=await getDocs(collection(dbFirestore,'transactions'));
 querySnapshot.forEach(docSnap=>db.push({id:docSnap.id,...docSnap.data()}));
 db.sort((a,b)=>new Date(a.date)-new Date(b.date));
 renderAll()
 }catch(err){console.error(err);alert('Gagal load data Firebase')}
+finally{setLoading(false)}
 }
 
 function renderAll(){renderDashboard();renderHistory();renderMonthly();renderGoals()}
@@ -362,23 +348,7 @@ window.openModal=function(forceType){
 document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
 if(forceType)document.getElementById('type').value=forceType;
 if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
-if(!document.getElementById('date').value)
-function renderActivityLogs(){
-const list=document.getElementById('activityList');
-if(!list)return;
-list.innerHTML='';
-logs.slice(0,8).forEach(log=>{
-const d=new Date(log.time);
-const label={login:'login',add_income:'tambah income',add_expense:'tambah expense',edit_transaction:'edit transaksi',delete_transaction:'hapus transaksi',add_goal:'tambah goal',delete_goal:'hapus goal',update_profile:'update profil'}[log.action]||log.action;
-list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div><div><h4>${log.user||'unknown'} ${label}</h4><p>${isNaN(d.getTime())?'':d.toLocaleString('id-ID')} ${log.data?.description?'• '+log.data.description:''}</p></div></div>`
-});
-if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
-}
-
-window.__LOGIN_READY=true;
-const loginBtnEl=document.getElementById('loginBtn');if(loginBtnEl){loginBtnEl.addEventListener('click',()=>window.login())}
-document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')window.login()});
-document.getElementById('date').value=todayString();
+if(!document.getElementById('date').value)document.getElementById('date').value=todayString();
 document.getElementById('transactionModal').classList.add('active')
 }
 
@@ -401,25 +371,24 @@ const type=document.getElementById('type').value;
 const date=normalizeDate(document.getElementById('date').value);
 if(!nominal||!description||!date)return alert('Isi semua field. Tanggal gunakan format YYYY-MM-DD');
 if(!isValidDateString(date))return alert('Tanggal tidak valid');
-const now=new Date().toISOString();
-let payload={nominal:parseInt(nominal),description,category,type,date,updatedBy:currentUser,updatedAt:now};
-if(editIndex===null){payload.createdBy=currentUser;payload.createdAt=now}
-const btn=document.getElementById('saveTxBtn');
-btn.disabled=true;btn.innerText='Menyimpan...';setLoading(true,'Menyimpan...');
+const payload={nominal:parseInt(nominal),description,category,type,date,updatedBy:currentUser,updatedAt:new Date().toISOString()};
 try{
+setLoading(true,'Simpan...');
 if(editIndex!==null){
-const before=db[editIndex];
-await updateDoc(doc(dbFirestore,'transactions',before.id),payload);
-await addActivityLog('edit_transaction',{id:before.id,before,after:payload})
+const old=db[editIndex];
+await updateDoc(doc(dbFirestore,'transactions',old.id),payload);
+await addActivityLog('edit_transaction',{id:old.id,...payload});
 }else{
+payload.createdBy=currentUser;
+payload.createdAt=new Date().toISOString();
 const saved=await addDoc(collection(dbFirestore,'transactions'),payload);
-await addActivityLog(type==='income'?'add_income':'add_expense',{id:saved.id,...payload})
+await addActivityLog('add_transaction',{id:saved.id,...payload});
 }
 closeModal();
 await loadDatabase();
-await loadActivityLogs()
+await loadActivityLogs();
 }catch(err){console.error(err);alert('Gagal save transaksi. Cek koneksi atau Firebase Rules.')}
-finally{btn.disabled=false;btn.innerText='Save Transaction';setLoading(false)}
+finally{setLoading(false)}
 }
 
 window.editTransaction=function(index){
@@ -436,14 +405,15 @@ openModal()
 
 window.deleteTransaction=async function(index){
 if(!confirm('Hapus transaksi ini?'))return;
-setLoading(true,'Menghapus...');
 try{
-const deleted=db[index];
-await addActivityLog('delete_transaction',deleted);
-await deleteDoc(doc(dbFirestore,'transactions',deleted.id));
+setLoading(true,'Hapus...');
+const item=db[index];
+await addActivityLog('delete_transaction',item);
+await deleteDoc(doc(dbFirestore,'transactions',item.id));
 await loadDatabase();
-await loadActivityLogs()
-}catch(err){console.error(err);alert('Gagal hapus transaksi')}finally{setLoading(false)}
+await loadActivityLogs();
+}catch(err){console.error(err);alert('Gagal hapus transaksi')}
+finally{setLoading(false)}
 }
 
 window.showPage=function(id,el){
@@ -455,11 +425,12 @@ if(el&&el.classList.contains('nav-btn'))el.classList.add('active')
 
 function renderDashboard(){
 let income=0,expense=0,todayOjekIncome=0,todayExpense=0,categoryExpense={},monthExpense={};
-const today=todayString();const thisMonth=today.slice(0,7);
+const today=todayString();
+const monthKey=today.slice(0,7);
 
 db.forEach(item=>{
 const amount=Number(item.nominal||0);
-
+const itemMonth=String(item.date||'').slice(0,7);
 if(item.type==='income'){
 income+=amount;
 if(item.date===today && item.category==='🛵 Ojek Apps'){todayOjekIncome+=amount}
@@ -468,7 +439,7 @@ expense+=amount;
 if(item.date===today){todayExpense+=amount}
 const cat=item.category||'📦 Lainnya';
 categoryExpense[cat]=(categoryExpense[cat]||0)+amount;
-if(String(item.date||'').startsWith(thisMonth))monthExpense[cat]=(monthExpense[cat]||0)+amount;
+if(itemMonth===monthKey)monthExpense[cat]=(monthExpense[cat]||0)+amount;
 }
 });
 
@@ -500,27 +471,33 @@ if(topCategory)insight+=` Pengeluaran terbesar: ${topCategory} (${rupiah(categor
 }
 
 document.getElementById('insightText').innerText=insight;
-renderMiniChart(monthExpense);
 
 const recent=document.getElementById('recentList');
 recent.innerHTML='';
 db.slice().reverse().slice(0,4).forEach(item=>recent.innerHTML+=transactionCard(item,false));
-renderMainGoal(balance)
+renderMainGoal(balance);
+renderMiniChart(monthExpense);
 }
 
 function renderMiniChart(data){
-const el=document.getElementById('miniChart');if(!el)return;el.innerHTML='';
-const rows=Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,4);
-if(rows.length===0){el.innerHTML='<p class="muted" style="font-size:13px">Belum ada grafik pengeluaran bulan ini.</p>';return}
-const max=Math.max(...rows.map(r=>r[1]));
-rows.forEach(([cat,val])=>{const pct=max?Math.max(6,val/max*100):0;el.innerHTML+=`<div class="chart-row"><span class="chart-label">${cat}</span><div class="chart-track"><div class="chart-fill" style="width:${pct}%"></div></div><span class="chart-value">${rupiah(val)}</span></div>`})
+const chart=document.getElementById('expenseChart');
+const card=document.getElementById('chartCard');
+chart.innerHTML='';
+const values=Object.values(data);
+if(!values.length){card.style.display='none';return}
+card.style.display='block';
+const max=Math.max(...values);
+Object.keys(data).sort((a,b)=>data[b]-data[a]).slice(0,5).forEach(cat=>{
+const h=Math.max((data[cat]/max)*86,10);
+chart.innerHTML+=`<div style="flex:1;text-align:center"><div class="chart-bar" title="${cat}" style="height:${h}px"></div><small class="muted" style="font-size:10px">${cat.split(' ')[0]}</small></div>`;
+});
 }
 
 function transactionCard(item,showEdit){
 const isIncome=item.type==='income';
 const category=item.category||'📦 Lainnya';
 const index=db.indexOf(item);
-return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${item.date} • ${category}${item.createdBy?' • '+item.createdBy:''}</small></div></div><div class="tx-right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="icon-btn edit-btn" title="Edit" onclick="editTransaction(${index})">✏️</button><button class="icon-btn delete-btn" title="Delete" onclick="deleteTransaction(${index})">🗑️</button></div>`:''}</div></div>`
+return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${category.split(' ')[0]}</div><div><h4>${item.description}</h4><small>${item.date} • ${category}</small></div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">✏️</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">🗑️</button></div>`:''}</div></div>`
 }
 
 window.renderHistory=function(){
@@ -528,10 +505,12 @@ const list=document.getElementById('historyList');
 list.innerHTML='';
 const keyword=(document.getElementById('historySearch').value||'').toLowerCase().trim();
 db.slice().reverse().filter(item=>{
-const hay=[item.description,item.category,item.type,item.date,item.createdBy,item.updatedBy].map(x=>String(x||'').toLowerCase()).join(' ');
-return hay.includes(keyword)
-}).forEach(item=>list.innerHTML+=transactionCard(item,true));
-if(!list.innerHTML)list.innerHTML='<div class="soft-card"><p class="muted">Tidak ada transaksi yang cocok.</p></div>'
+const description=String(item.description||'').toLowerCase();
+const category=String(item.category||'').toLowerCase();
+const type=String(item.type||'').toLowerCase();
+const date=String(item.date||'').toLowerCase();
+return description.includes(keyword)||category.includes(keyword)||type.includes(keyword)||date.includes(keyword);
+}).forEach(item=>list.innerHTML+=transactionCard(item,true))
 }
 
 function renderMonthly(){
@@ -607,19 +586,24 @@ document.getElementById('goalAmountReal').value='';
 document.getElementById('goalDate').value=''
 }
 
-window.saveGoal=async function(){
+window.saveGoal=function(){
 const name=document.getElementById('goalName').value.trim();
 const amount=Number(document.getElementById('goalAmountReal').value);
 const date=normalizeDate(document.getElementById('goalDate').value);
 if(!name||!amount||!isValidDateString(date))return alert('Isi goal lengkap. Tanggal YYYY-MM-DD');
 goals.push({id:Date.now(),name,amount,date});
 localStorage.setItem('hf_goals',JSON.stringify(goals));
-await addActivityLog('add_goal',{name,amount,date});closeGoalModal();renderGoals();renderDashboard();await loadActivityLogs()}
+closeGoalModal();
+renderGoals();
+renderDashboard()
+}
 
-window.deleteGoal=async function(id){const deletedGoal=goals.find(g=>g.id===id);
+window.deleteGoal=function(id){
 goals=goals.filter(goal=>goal.id!==id);
 localStorage.setItem('hf_goals',JSON.stringify(goals));
-await addActivityLog('delete_goal',deletedGoal||{});renderGoals();renderDashboard();await loadActivityLogs()}
+renderGoals();
+renderDashboard()
+}
 
 function renderGoals(){
 const list=document.getElementById('goalsList');
@@ -648,33 +632,7 @@ document.getElementById('mainGoalFill').style.width=progress+'%';
 document.getElementById('mainGoalProgress').innerText=progress.toFixed(0)+'%'
 }
 
-
-function renderActivityLogs(){
-const list=document.getElementById('activityList');
-if(!list)return;
-list.innerHTML='';
-logs.slice(0,8).forEach(log=>{
-const d=new Date(log.time);
-const label={login:'login',add_income:'tambah income',add_expense:'tambah expense',edit_transaction:'edit transaksi',delete_transaction:'hapus transaksi',add_goal:'tambah goal',delete_goal:'hapus goal',update_profile:'update profil'}[log.action]||log.action;
-list.innerHTML+=`<div class="activity-item"><div class="activity-dot">📝</div><div><h4>${log.user||'unknown'} ${label}</h4><p>${isNaN(d.getTime())?'':d.toLocaleString('id-ID')} ${log.data?.description?'• '+log.data.description:''}</p></div></div>`
-});
-if(!list.innerHTML)list.innerHTML='<p class="muted">Belum ada aktivitas.</p>'
-}
-
-document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.getElementById('date').value=todayString();
-</script>
-
-<script>
-window.addEventListener('load',()=>{
-  const btn=document.getElementById('loginBtn');
-  const err=document.getElementById('loginError');
-  if(btn && !window.__LOGIN_READY){
-    btn.addEventListener('click',()=>{
-      if(err){err.style.display='block';err.innerText='Script login belum siap. Cek koneksi internet atau Firebase CDN.';}
-    });
-  }
-});
 </script>
 </body>
 </html>
