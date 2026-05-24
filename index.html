@@ -110,6 +110,16 @@ button{cursor:pointer;border:none}
 
 
 .tx-user-meta{display:block;margin-top:5px;font-size:11px;color:var(--muted);opacity:.9}
+
+.daily-card{background:rgba(255,255,255,.78);backdrop-filter:blur(12px);border-radius:20px;padding:15px;box-shadow:0 9px 22px rgba(80,102,180,.07);border:1px solid rgba(255,255,255,.6);cursor:pointer;transition:.25s}
+.daily-card:hover{transform:translateY(-2px)}
+.daily-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.daily-head h4{font-size:15px;font-weight:700}
+.daily-head small{color:var(--muted);font-size:12px}
+.daily-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.daily-stat{background:rgba(242,246,255,.8);border-radius:14px;padding:9px 8px}
+.daily-stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.daily-stat strong{font-size:13px}
 </style>
 </head>
 <body>
@@ -164,8 +174,12 @@ button{cursor:pointer;border:none}
 <div id="recentList" class="list"></div>
 </section>
 
-<section id="riwayat" class="page"><div class="section-title"><h3>Riwayat Transaksi</h3></div><input class="search" id="historySearch" placeholder="Cari transaksi / tanggal..." oninput="renderHistory()"><div id="historyList" class="list"></div></section>
-<section id="report" class="page"><div class="section-title"><h3>Monthly Report</h3></div><div id="monthlyList"></div></section>
+<section id="riwayat" class="page">
+<div class="section-title"><h3>Riwayat Harian</h3><small class="muted">Klik hari untuk detail</small></div>
+<input class="search" id="historySearch" placeholder="Cari tanggal / bulan..." oninput="renderHistory()">
+<div id="historyList" class="list"></div>
+</section>
+<section id="report" class="page"><div class="section-title"><h3>Arsip Bulanan</h3></div><div id="monthlyList"></div></section>
 
 <section id="profil" class="page">
 <div class="section-title"><h3>Profil</h3></div>
@@ -216,6 +230,14 @@ button{cursor:pointer;border:none}
 
 <div id="detailModal" class="modal-bg"><div class="modal"><button class="floating-close" onclick="closeDetail()">×</button><h2 id="detailTitle">Monthly Detail</h2><div id="detailSummary"></div><button class="modal-btn save-btn" onclick="exportCSV()">Export CSV / Excel</button><div id="detailList" class="list" style="margin-top:14px"></div><button class="modal-btn cancel-btn" onclick="closeDetail()">Close</button></div></div>
 
+<div id="dailyModal" class="modal-bg"><div class="modal">
+<button class="floating-close" onclick="closeDailyDetail()">×</button>
+<h2 id="dailyTitle">Daily Detail</h2>
+<div id="dailySummary"></div>
+<div id="dailyList" class="list" style="margin-top:14px"></div>
+<button class="modal-btn cancel-btn" onclick="closeDailyDetail()">Close</button>
+</div></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -224,7 +246,7 @@ const firebaseConfig={apiKey:"AIzaSyDyp9xh0IRzpahTg82BXsxXQLtgvdqJJwc",authDomai
 const app=initializeApp(firebaseConfig);
 const dbFirestore=getFirestore(app);
 
-let db=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',balanceVisible=true,currentUser='';
+let db=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',currentDailyData=[],balanceVisible=true,currentUser='';
 const SESSION_DAYS=7;
 
 function rupiah(v){return 'Rp '+Number(v||0).toLocaleString('id-ID')}
@@ -529,14 +551,91 @@ window.renderHistory=function(){
 const list=document.getElementById('historyList');
 list.innerHTML='';
 const keyword=(document.getElementById('historySearch').value||'').toLowerCase().trim();
-db.slice().reverse().filter(item=>{
-const description=String(item.description||'').toLowerCase();
-const category=String(item.category||'').toLowerCase();
-const type=String(item.type||'').toLowerCase();
-const date=String(item.date||'').toLowerCase();
-return description.includes(keyword)||category.includes(keyword)||type.includes(keyword)||date.includes(keyword);
-}).forEach(item=>list.innerHTML+=transactionCard(item,true))
+
+let grouped={};
+db.forEach(item=>{
+const date=String(item.date||'');
+if(!date)return;
+const dateText=formatDateID(date).toLowerCase();
+const monthText=formatMonthID(date.slice(0,7)).toLowerCase();
+
+if(keyword && !date.toLowerCase().includes(keyword) && !dateText.includes(keyword) && !monthText.includes(keyword)){
+return;
 }
+
+if(!grouped[date])grouped[date]={income:0,expense:0,items:[]};
+grouped[date].items.push(item);
+
+if(item.type==='income'){
+grouped[date].income+=Number(item.nominal||0);
+}else{
+grouped[date].expense+=Number(item.nominal||0);
+}
+});
+
+const dates=Object.keys(grouped).sort().reverse();
+
+if(!dates.length){
+list.innerHTML='<div class="empty-state">☁️ Tidak ada riwayat yang cocok</div>';
+return;
+}
+
+dates.forEach(date=>{
+const data=grouped[date];
+const balance=data.income-data.expense;
+
+list.innerHTML+=`<div class="daily-card" onclick="openDailyDetail('${date}')">
+<div class="daily-head">
+<div>
+<h4>${formatDateID(date)}</h4>
+<small>${data.items.length} transaksi</small>
+</div>
+<small>Tap detail ›</small>
+</div>
+<div class="daily-stats">
+<div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div>
+<div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div>
+<div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
+</div>
+</div>`;
+});
+}
+
+window.openDailyDetail=function(date){
+currentDailyData=db.filter(item=>item.date===date);
+
+const income=currentDailyData
+.filter(i=>i.type==='income')
+.reduce((a,b)=>a+Number(b.nominal||0),0);
+
+const expense=currentDailyData
+.filter(i=>i.type==='expense')
+.reduce((a,b)=>a+Number(b.nominal||0),0);
+
+document.getElementById('dailyTitle').innerText=formatDateID(date);
+
+document.getElementById('dailySummary').innerHTML=
+`<div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(income)}</strong></div>
+<div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div>
+<div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>`;
+
+const dailyList=document.getElementById('dailyList');
+dailyList.innerHTML='';
+
+currentDailyData
+.slice()
+.reverse()
+.forEach(item=>{
+dailyList.innerHTML+=transactionCard(item,true);
+});
+
+document.getElementById('dailyModal').classList.add('active');
+}
+
+window.closeDailyDetail=function(){
+document.getElementById('dailyModal').classList.remove('active');
+}
+
 
 function renderMonthly(){
 const list=document.getElementById('monthlyList');
