@@ -490,6 +490,127 @@ height:20px;
 .category-picker{grid-template-columns:1fr}
 }
 
+
+/* === RESPONSIVE DESKTOP DASHBOARD ADDON - UI MOBILE TETAP SAMA === */
+@media(min-width:900px){
+  body{
+    min-height:100vh;
+  }
+
+  #app{
+    max-width:1180px!important;
+    padding:32px 28px 124px!important;
+  }
+
+  .topbar{
+    max-width:980px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  #beranda.page.active{
+    display:grid!important;
+    grid-template-columns:minmax(0,1.18fr) minmax(340px,.82fr);
+    gap:24px;
+    align-items:start;
+    max-width:980px;
+    margin:0 auto;
+  }
+
+  #beranda .hero-card{
+    grid-column:1;
+    grid-row:1 / span 2;
+    min-height:388px!important;
+    margin-bottom:0!important;
+  }
+
+  #beranda .today-section{
+    grid-column:1;
+    grid-row:3;
+    margin:0!important;
+  }
+
+  #beranda .section-title,
+  #beranda #recentList{
+    grid-column:1;
+  }
+
+  #beranda .section-title{
+    margin-top:0!important;
+  }
+
+  #beranda .goal-visual-card{
+    grid-column:2;
+    grid-row:1;
+  }
+
+  #beranda #chartCard{
+    grid-column:2;
+    grid-row:2;
+  }
+
+  #beranda .insight-card{
+    grid-column:2;
+    grid-row:3;
+  }
+
+  .hero-card h1{
+    font-size:48px!important;
+  }
+
+  .hero-summary{
+    max-width:58%!important;
+  }
+
+  .plane-img{
+    width:395px!important;
+    max-width:70%!important;
+    right:-38px!important;
+    bottom:42px!important;
+  }
+
+  .bottom-nav{
+    max-width:560px!important;
+  }
+
+  .modal-bg{
+    align-items:center!important;
+  }
+
+  .modal{
+    border-radius:34px!important;
+    max-width:540px!important;
+    max-height:86vh!important;
+  }
+
+  #riwayat.page.active,
+  #report.page.active,
+  #profil.page.active{
+    max-width:760px;
+    margin:0 auto;
+  }
+}
+
+@media(min-width:1200px){
+  #app{
+    max-width:1240px!important;
+  }
+
+  #beranda.page.active{
+    max-width:1080px;
+    grid-template-columns:minmax(0,1.25fr) minmax(360px,.8fr);
+  }
+
+  .topbar{
+    max-width:1080px;
+  }
+
+  .plane-img{
+    width:430px!important;
+    right:-42px!important;
+  }
+}
+
 </style>
 </head>
 <body>
