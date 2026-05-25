@@ -424,7 +424,7 @@ font-size:0!important;
 
 <div id="loginPage">
 <div class="login-card">
-<div class="logo-wrap"><div class="logo-icon" id="loginFamilyIcon"><img src="logo.png" alt="logo"></div><div><h1>Home Finance</h1><p>Family Finance Tracker</p></div></div>
+<div class="logo-wrap"><div class="logo-icon" id="loginFamilyIcon"><img src="family.png" alt="family logo"></div><div><h1>Home Finance</h1><p>Family Finance Tracker</p></div></div>
 <div class="login-title">Welcome 👋</div>
 <div class="login-sub">Kelola keuangan keluarga jadi lebih mudah</div>
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
@@ -435,7 +435,7 @@ font-size:0!important;
 
 <div id="app">
 <div class="topbar">
-<div class="profile"><div class="avatar" id="familyIcon"><img src="logo.png" alt="family"></div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="userLabel">Home Finance</small></div></div>
+<div class="profile"><div class="avatar" id="familyIcon"><img src="family.png" alt="family"></div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="userLabel">Home Finance</small></div></div>
 <button class="logout" onclick="logout()">Logout</button>
 </div>
 
@@ -479,7 +479,7 @@ font-size:0!important;
 
 <section id="profil" class="page">
 <div class="section-title"><h3>Profil</h3></div>
-<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"><img src="logo.png" alt="family"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
+<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"><img src="family.png" alt="family"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
 <div class="profile-card"><h3>PIN Lokal</h3><p class="muted">PIN tersimpan di perangkat ini.</p><input class="form-field" id="pinInput" type="password" placeholder="PIN baru minimal 4 digit"><button class="modal-btn save-btn" onclick="savePin()">Simpan PIN</button></div>
 <div class="profile-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Savings Goals</h3><button class="mini-btn" onclick="openGoalModal()">Tambah</button></div><div id="goalsList" class="list" style="margin-top:14px"></div></div>
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
@@ -698,9 +698,9 @@ document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
 document.getElementById('profileName').innerText=familyName;
 document.getElementById('familyNameInput').value=familyName;
 document.getElementById('familyIconInput').value=icon;
-document.getElementById('familyIcon').innerHTML='<img src="logo.png" alt="family">';
-document.getElementById('profileIcon').innerHTML='<img src="logo.png" alt="family">';
-document.getElementById('loginFamilyIcon').innerHTML='<img src="logo.png" alt="logo">';
+document.getElementById('familyIcon').innerHTML='<img src="family.png" alt="family">';
+document.getElementById('profileIcon').innerHTML='<img src="family.png" alt="family">';
+document.getElementById('loginFamilyIcon').innerHTML='<img src="family.png" alt="family logo">';
 const goalIcon=document.getElementById('goalIconStatic');if(goalIcon)goalIcon.innerHTML=iconSVG('target');
 const heroAdd=document.getElementById('heroAddIcon');if(heroAdd)heroAdd.innerHTML=iconSVG('plus');
 const heroMinus=document.getElementById('heroMinusIcon');if(heroMinus)heroMinus.innerHTML=iconSVG('minus');
