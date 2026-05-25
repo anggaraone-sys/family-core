@@ -4,6 +4,9 @@
 <link rel="icon" type="image/png" href="logo.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Home Finance</title>
 
 <style>
@@ -77,7 +80,16 @@ button{cursor:pointer;border:none}
 .form-field{width:100%;padding:14px;border:none;outline:none;border-radius:16px;background:#f2f6ff;color:var(--text);margin-top:12px;transition:.25s;box-shadow:inset 0 0 0 1px rgba(93,141,255,.06)}
 .form-field:focus,.search:focus{background:white;box-shadow:0 0 0 4px rgba(93,141,255,.12);transform:translateY(-1px)}
 .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 30px);max-width:450px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-radius:27px;display:grid;grid-template-columns:1fr 1fr 80px 1fr 1fr;align-items:center;min-height:74px;box-shadow:0 18px 40px rgba(77,107,190,.13);border:1px solid rgba(255,255,255,.65);z-index:100}
-.nav-btn{background:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:12px;font-weight:700;transition:.25s}.nav-btn span{font-size:20px}.nav-btn.active{color:var(--blue2)}
+.nav-btn{background:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:12px;font-weight:700;transition:.25s}.nav-icon-svg{
+width:26px;
+height:26px;
+stroke:currentColor;
+fill:none;
+stroke-width:2.2;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+.nav-btn span{font-size:20px}.nav-btn.active{color:var(--blue2)}
 .add-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));color:white;border:7px solid #f5f8ff;font-size:34px;margin-top:-34px;box-shadow:0 14px 30px rgba(255,79,184,.24);transition:.25s}
 .modal-bg{position:fixed;inset:0;background:rgba(25,42,90,.25);backdrop-filter:blur(12px);display:none;align-items:flex-end;z-index:200}.modal-bg.active{display:flex}
 .modal{width:100%;max-width:500px;background:white;border-radius:32px 32px 0 0;padding:22px 17px 27px;margin:auto;max-height:88vh;overflow:auto;animation:slideUp .22s ease}
@@ -120,6 +132,253 @@ button{cursor:pointer;border:none}
 .daily-stat{background:rgba(242,246,255,.8);border-radius:14px;padding:9px 8px}
 .daily-stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
 .daily-stat strong{font-size:13px}
+
+/* === FINAL MODERN FINTECH UI OVERRIDE === */
+:root{
+--blue:#4facfe;
+--blue2:#5f7cff;
+--pink:#ff5ac8;
+--purple:#a86bff;
+--cyan:#56ccf2;
+--text:#071b56;
+--muted:#7180b8;
+--green:#16c784;
+--red:#ff5a8c;
+--glass:rgba(255,255,255,.72);
+--shadow-modern:0 18px 50px rgba(91,108,255,.10);
+--shadow-soft:0 10px 35px rgba(91,108,255,.08);
+}
+*{font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif}
+body{
+background:
+radial-gradient(circle at 12% 8%,rgba(86,204,242,.42),transparent 34%),
+radial-gradient(circle at 90% 4%,rgba(255,90,200,.35),transparent 30%),
+linear-gradient(135deg,#eef7ff 0%,#f7f3ff 48%,#fff1f9 100%)!important;
+}
+body:before{
+content:'';
+position:fixed;
+inset:0;
+pointer-events:none;
+background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.05));
+z-index:-1;
+}
+.login-card,.soft-card,.profile-card,.month-card,.goal-card,.daily-card,.tx-card,.today-card,.bottom-nav{
+background:rgba(255,255,255,.70)!important;
+backdrop-filter:blur(20px)!important;
+border:1px solid rgba(255,255,255,.72)!important;
+box-shadow:var(--shadow-modern)!important;
+}
+.login-card{border-radius:34px!important}
+.logo-icon,.avatar{
+background:linear-gradient(135deg,var(--blue),var(--pink))!important;
+border:5px solid rgba(255,255,255,.90)!important;
+box-shadow:0 16px 35px rgba(91,108,255,.16)!important;
+}
+.avatar{width:70px!important;height:70px!important;font-size:31px!important}
+.profile h2{font-weight:800!important;letter-spacing:-.7px!important}
+.profile small{font-weight:600!important;color:var(--muted)!important}
+.logout{
+background:rgba(255,255,255,.68)!important;
+backdrop-filter:blur(18px)!important;
+border-radius:22px!important;
+border:1px solid rgba(255,255,255,.75)!important;
+box-shadow:var(--shadow-soft)!important;
+}
+.hero-card{
+min-height:312px!important;
+border-radius:38px!important;
+padding:28px 26px!important;
+background:
+radial-gradient(circle at 75% 28%,rgba(255,255,255,.16),transparent 20%),
+linear-gradient(135deg,#66b9ff 0%,#7b7dff 46%,#db6dff 100%)!important;
+box-shadow:0 24px 60px rgba(91,108,255,.18), inset 0 1px 0 rgba(255,255,255,.28)!important;
+border:1px solid rgba(255,255,255,.25)!important;
+margin-bottom:22px!important;
+}
+.hero-card:before{
+width:320px!important;height:320px!important;right:-110px!important;top:-120px!important;
+background:rgba(255,255,255,.10)!important;
+filter:blur(14px)!important;
+}
+.plane-img{
+right:-26px!important;
+bottom:36px!important;
+width:305px!important;
+max-width:66%!important;
+opacity:.76!important;
+z-index:1!important;
+filter:drop-shadow(0 22px 32px rgba(0,0,0,.12))!important;
+animation:floatPlane 5.5s ease-in-out infinite!important;
+}
+.hero-card h1{
+font-size:44px!important;
+margin:22px 0 20px!important;
+font-weight:800!important;
+letter-spacing:-1.6px!important;
+max-width:78%!important;
+}
+.hero-balance-head{gap:12px!important}
+.eye-btn{
+width:52px!important;height:44px!important;
+border-radius:999px!important;
+background:rgba(255,255,255,.18)!important;
+backdrop-filter:blur(12px)!important;
+border:1px solid rgba(255,255,255,.22)!important;
+}
+.hero-summary{
+display:flex!important;
+flex-direction:column!important;
+gap:10px!important;
+margin:0 0 26px!important;
+max-width:64%!important;
+}
+.hero-pill{
+display:flex!important;
+align-items:center!important;
+justify-content:space-between!important;
+gap:14px!important;
+background:rgba(255,255,255,.17)!important;
+backdrop-filter:blur(14px)!important;
+border:1px solid rgba(255,255,255,.26)!important;
+padding:10px 14px!important;
+border-radius:999px!important;
+font-size:13px!important;
+font-weight:800!important;
+box-shadow:0 12px 26px rgba(30,60,120,.08)!important;
+}
+.hero-pill span{display:flex!important;align-items:center!important;gap:8px!important;white-space:nowrap!important}
+.pill-icon{
+width:30px;height:30px;border-radius:50%;
+display:inline-flex;align-items:center;justify-content:center;
+background:rgba(255,255,255,.24);
+font-style:normal;
+}
+.income-icon{color:#16c784}
+.expense-icon{color:#ff5a8c}
+.hero-actions{
+gap:14px!important;
+margin-top:4px!important;
+}
+.hero-btn{
+display:flex!important;align-items:center!important;gap:10px!important;
+background:rgba(255,255,255,.16)!important;
+backdrop-filter:blur(16px)!important;
+border:1px solid rgba(255,255,255,.22)!important;
+border-radius:22px!important;
+padding:14px 18px!important;
+box-shadow:0 14px 30px rgba(91,108,255,.10)!important;
+font-weight:800!important;
+}
+.btn-icon{
+width:34px;height:34px;border-radius:12px;
+display:inline-flex;align-items:center;justify-content:center;
+background:rgba(255,255,255,.72);
+color:var(--blue2);
+font-size:22px;
+font-weight:800;
+}
+.soft-card,.profile-card,.month-card,.goal-card{
+border-radius:30px!important;
+padding:20px!important;
+margin-bottom:20px!important;
+}
+.goal-head{
+display:grid;
+grid-template-columns:58px 1fr auto;
+gap:14px;
+align-items:center;
+}
+.goal-big-icon{
+width:58px;height:58px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+font-size:28px;
+background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+box-shadow:0 14px 30px rgba(91,108,255,.16);
+border:2px solid rgba(255,255,255,.70);
+}
+.progress{
+height:12px!important;
+border-radius:999px!important;
+background:#e2e9ff!important;
+}
+.progress-fill{
+background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink))!important;
+border-radius:999px!important;
+}
+.cat-icon,.tx-icon{
+background:linear-gradient(135deg,var(--blue),var(--pink))!important;
+box-shadow:0 12px 24px rgba(91,108,255,.14)!important;
+}
+.cat-bar-fill{
+background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink))!important;
+}
+.bottom-nav{
+bottom:20px!important;
+border-radius:40px!important;
+min-height:84px!important;
+grid-template-columns:1fr 1fr 92px 1fr 1fr!important;
+}
+.nav-btn{font-weight:800!important}
+.nav-icon-svg{
+width:26px;
+height:26px;
+stroke:currentColor;
+fill:none;
+stroke-width:2.2;
+stroke-linecap:round;
+stroke-linejoin:round;
+}
+.nav-btn span{
+width:36px;height:36px;border-radius:14px;
+display:flex;align-items:center;justify-content:center;
+}
+.nav-btn.active span{
+background:rgba(95,124,255,.10);
+box-shadow:inset 0 0 0 1px rgba(95,124,255,.08);
+}
+.add-btn{
+width:82px!important;height:82px!important;
+border-radius:50%!important;
+background:linear-gradient(135deg,var(--blue),var(--pink))!important;
+border:8px solid rgba(255,255,255,.82)!important;
+font-size:42px!important;
+margin-top:-42px!important;
+box-shadow:0 22px 44px rgba(255,90,200,.26)!important;
+}
+.insight-card p{font-size:13px!important;line-height:1.55!important}
+.modal{
+background:rgba(255,255,255,.92)!important;
+backdrop-filter:blur(18px)!important;
+border:1px solid rgba(255,255,255,.85)!important;
+}
+@keyframes floatPlane{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media(max-width:430px){
+#app{padding:20px 16px 116px!important}
+.avatar{width:64px!important;height:64px!important;font-size:29px!important}
+.profile h2{font-size:23px!important}
+.hero-card{min-height:300px!important;padding:24px!important}
+.hero-card h1{font-size:38px!important;max-width:84%!important;margin:20px 0 18px!important}
+.plane-img{width:270px!important;right:-34px!important;bottom:46px!important;max-width:67%!important;opacity:.70!important}
+.hero-summary{max-width:72%!important;margin-bottom:24px!important}
+.hero-pill{font-size:12px!important;padding:9px 12px!important}
+.pill-icon{width:28px;height:28px}
+.hero-actions{gap:12px!important}
+.hero-btn{padding:13px 15px!important}
+.today-section{grid-template-columns:1fr 1fr!important}
+.bottom-nav{bottom:16px!important;min-height:80px!important;grid-template-columns:1fr 1fr 86px 1fr 1fr!important}
+.add-btn{width:78px!important;height:78px!important;margin-top:-40px!important}
+}
+@media(max-width:380px){
+.profile h2{font-size:20px!important}
+.profile small{font-size:12px!important}
+.hero-card{min-height:292px!important}
+.hero-card h1{font-size:34px!important}
+.plane-img{width:245px!important;right:-40px!important;bottom:48px!important}
+.hero-summary{max-width:82%!important}
+.hero-pill{font-size:11px!important}
+}
+
 </style>
 </head>
 <body>
@@ -149,10 +408,10 @@ button{cursor:pointer;border:none}
 <div class="hero-balance-head"><small>Total Balance</small><button class="eye-btn" id="eyeBtn" onclick="toggleBalance()">👁️</button></div>
 <h1 id="balance">Rp 0</h1>
 <div class="hero-summary">
-<div class="hero-pill"><span>Income</span><strong id="heroIncome">Rp 0</strong></div>
-<div class="hero-pill"><span>Expense</span><strong id="heroExpense">Rp 0</strong></div>
+<div class="hero-pill"><span><b class="pill-icon income-icon">↑</b>Income</span><strong id="heroIncome">Rp 0</strong></div>
+<div class="hero-pill"><span><b class="pill-icon expense-icon">↓</b>Expense</span><strong id="heroExpense">Rp 0</strong></div>
 </div>
-<div class="hero-actions"><button class="hero-btn" onclick="openModal('income')">➕ Tambah</button><button class="hero-btn" onclick="openModal('expense')">➖ Kurang</button></div>
+<div class="hero-actions"><button class="hero-btn" onclick="openModal('income')"><span class="btn-icon">＋</span> Tambah</button><button class="hero-btn" onclick="openModal('expense')"><span class="btn-icon">−</span> Kurang</button></div>
 </div>
 
 <div class="today-section is-hidden" id="todayStats">
@@ -161,8 +420,8 @@ button{cursor:pointer;border:none}
 <div class="today-card" id="todayBalanceCard"><small>📊 Today Balance</small><h3 id="todayBalance">Rp 0</h3></div>
 </div>
 
-<div class="soft-card">
-<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3>Target Tabungan</h3><p class="muted" id="mainGoalName">Belum ada target aktif</p></div><button class="mini-btn" onclick="openGoalModal()">Atur</button></div>
+<div class="soft-card goal-visual-card">
+<div class="goal-head"><div class="goal-big-icon">🎯</div><div><h3>Target Tabungan</h3><p class="muted" id="mainGoalName">Belum ada target aktif</p></div><button class="mini-btn" onclick="openGoalModal()">Atur</button></div>
 <div class="progress"><div class="progress-fill" id="mainGoalFill"></div></div>
 <div class="month-row"><span id="mainGoalAmount">Rp 0</span><strong id="mainGoalProgress">0%</strong></div>
 </div>
@@ -189,13 +448,51 @@ button{cursor:pointer;border:none}
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
 </section>
 
+
 <div class="bottom-nav">
-<button id="navBeranda" class="nav-btn active" onclick="showPage('beranda',this)"><span>🏠</span>Beranda</button>
-<button id="navRiwayat" class="nav-btn" onclick="showPage('riwayat',this)"><span>📋</span>Riwayat</button>
+
+<button id="navBeranda" class="nav-btn active" onclick="showPage('beranda',this)">
+<span>
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M3 10L12 3L21 10V20H14V14H10V20H3V10Z"/>
+</svg>
+</span>
+Beranda
+</button>
+
+<button id="navRiwayat" class="nav-btn" onclick="showPage('riwayat',this)">
+<span>
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M8 6H21M8 12H21M8 18H21"/>
+<path d="M3 6H3.01M3 12H3.01M3 18H3.01"/>
+</svg>
+</span>
+Riwayat
+</button>
+
 <button class="add-btn" onclick="openModal()">＋</button>
-<button id="navReport" class="nav-btn" onclick="showPage('report',this)"><span>📊</span>Report</button>
-<button id="navProfil" class="nav-btn" onclick="showPage('profil',this)"><span>👤</span>Profil</button>
-</div>
+
+<button id="navReport" class="nav-btn" onclick="showPage('report',this)">
+<span>
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M5 20V10"/>
+<path d="M12 20V4"/>
+<path d="M19 20V14"/>
+</svg>
+</span>
+Report
+</button>
+
+<button id="navProfil" class="nav-btn" onclick="showPage('profil',this)">
+<span>
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M20 21C20 17.686 16.418 15 12 15C7.582 15 4 17.686 4 21"/>
+<circle cx="12" cy="7" r="4"/>
+</svg>
+</span>
+Profil
+</button>
+
 </div>
 
 <div id="transactionModal" class="modal-bg"><div class="modal">
