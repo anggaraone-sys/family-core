@@ -370,6 +370,52 @@ border:1px solid rgba(255,255,255,.85)!important;
 .btn-icon .app-svg{width:22px;height:22px}
 .icon-btn .app-svg{width:17px;height:17px;color:white}
 .floating-close .app-svg{width:18px;height:18px;color:white}
+
+/* === FORCE SVG NAV + LOGO IMAGE FIX === */
+.logo-icon img,.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:inherit;
+display:block;
+}
+.nav-icon-wrap{
+width:36px!important;
+height:36px!important;
+border-radius:14px!important;
+display:flex!important;
+align-items:center!important;
+justify-content:center!important;
+font-size:0!important;
+line-height:0!important;
+}
+.nav-icon-svg{
+width:25px!important;
+height:25px!important;
+stroke:currentColor!important;
+fill:none!important;
+stroke-width:2.25!important;
+stroke-linecap:round!important;
+stroke-linejoin:round!important;
+display:block!important;
+}
+.fab-svg{
+width:36px!important;
+height:36px!important;
+stroke:white!important;
+fill:none!important;
+stroke-width:2.7!important;
+stroke-linecap:round!important;
+stroke-linejoin:round!important;
+display:block!important;
+}
+.add-btn{
+display:flex!important;
+align-items:center!important;
+justify-content:center!important;
+font-size:0!important;
+}
+
 </style>
 </head>
 <body>
@@ -378,7 +424,7 @@ border:1px solid rgba(255,255,255,.85)!important;
 
 <div id="loginPage">
 <div class="login-card">
-<div class="logo-wrap"><div class="logo-icon" id="loginFamilyIcon"></div><div><h1>Home Finance</h1><p>Family Finance Tracker</p></div></div>
+<div class="logo-wrap"><div class="logo-icon" id="loginFamilyIcon"><img src="logo.png" alt="logo"></div><div><h1>Home Finance</h1><p>Family Finance Tracker</p></div></div>
 <div class="login-title">Welcome 👋</div>
 <div class="login-sub">Kelola keuangan keluarga jadi lebih mudah</div>
 <div class="input-wrap"><input type="text" id="username" placeholder="Username"></div>
@@ -389,7 +435,7 @@ border:1px solid rgba(255,255,255,.85)!important;
 
 <div id="app">
 <div class="topbar">
-<div class="profile"><div class="avatar" id="familyIcon"></div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="userLabel">Home Finance</small></div></div>
+<div class="profile"><div class="avatar" id="familyIcon"><img src="logo.png" alt="family"></div><div><h2 id="familyTitle">Hi Family Winata 👋</h2><small id="userLabel">Home Finance</small></div></div>
 <button class="logout" onclick="logout()">Logout</button>
 </div>
 
@@ -433,19 +479,61 @@ border:1px solid rgba(255,255,255,.85)!important;
 
 <section id="profil" class="page">
 <div class="section-title"><h3>Profil</h3></div>
-<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
+<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"><img src="logo.png" alt="family"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
 <div class="profile-card"><h3>PIN Lokal</h3><p class="muted">PIN tersimpan di perangkat ini.</p><input class="form-field" id="pinInput" type="password" placeholder="PIN baru minimal 4 digit"><button class="modal-btn save-btn" onclick="savePin()">Simpan PIN</button></div>
 <div class="profile-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Savings Goals</h3><button class="mini-btn" onclick="openGoalModal()">Tambah</button></div><div id="goalsList" class="list" style="margin-top:14px"></div></div>
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
 </section>
 
+
 <div class="bottom-nav">
-<button id="navBeranda" class="nav-btn active" onclick="showPage('beranda',this)"><span>🏠</span>Beranda</button>
-<button id="navRiwayat" class="nav-btn" onclick="showPage('riwayat',this)"><span>📋</span>Riwayat</button>
-<button class="add-btn" onclick="openModal()" id="fabAddBtn"></button>
-<button id="navReport" class="nav-btn" onclick="showPage('report',this)"><span>📊</span>Report</button>
-<button id="navProfil" class="nav-btn" onclick="showPage('profil',this)"><span>👤</span>Profil</button>
-</div>
+
+<button id="navBeranda" class="nav-btn active" onclick="showPage('beranda',this)">
+<span class="nav-icon-wrap">
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3V10.5Z"/>
+</svg>
+</span>
+Beranda
+</button>
+
+<button id="navRiwayat" class="nav-btn" onclick="showPage('riwayat',this)">
+<span class="nav-icon-wrap">
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M8 6h13M8 12h13M8 18h13"/>
+<path d="M3 6h.01M3 12h.01M3 18h.01"/>
+</svg>
+</span>
+Riwayat
+</button>
+
+<button class="add-btn" onclick="openModal()" id="fabAddBtn">
+<svg class="fab-svg" viewBox="0 0 24 24">
+<path d="M12 5v14M5 12h14"/>
+</svg>
+</button>
+
+<button id="navReport" class="nav-btn" onclick="showPage('report',this)">
+<span class="nav-icon-wrap">
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M5 20V10"/>
+<path d="M12 20V4"/>
+<path d="M19 20V14"/>
+</svg>
+</span>
+Report
+</button>
+
+<button id="navProfil" class="nav-btn" onclick="showPage('profil',this)">
+<span class="nav-icon-wrap">
+<svg class="nav-icon-svg" viewBox="0 0 24 24">
+<path d="M20 21c0-3.3-3.6-6-8-6s-8 2.7-8 6"/>
+<circle cx="12" cy="7" r="4"/>
+</svg>
+</span>
+Profil
+</button>
+
 </div>
 
 <div id="transactionModal" class="modal-bg"><div class="modal">
@@ -610,13 +698,13 @@ document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
 document.getElementById('profileName').innerText=familyName;
 document.getElementById('familyNameInput').value=familyName;
 document.getElementById('familyIconInput').value=icon;
-document.getElementById('familyIcon').innerHTML=iconSVG('family');
-document.getElementById('profileIcon').innerHTML=iconSVG('family');
-document.getElementById('loginFamilyIcon').innerHTML=iconSVG('family');
+document.getElementById('familyIcon').innerHTML='<img src="logo.png" alt="family">';
+document.getElementById('profileIcon').innerHTML='<img src="logo.png" alt="family">';
+document.getElementById('loginFamilyIcon').innerHTML='<img src="logo.png" alt="logo">';
 const goalIcon=document.getElementById('goalIconStatic');if(goalIcon)goalIcon.innerHTML=iconSVG('target');
 const heroAdd=document.getElementById('heroAddIcon');if(heroAdd)heroAdd.innerHTML=iconSVG('plus');
 const heroMinus=document.getElementById('heroMinusIcon');if(heroMinus)heroMinus.innerHTML=iconSVG('minus');
-const fab=document.getElementById('fabAddBtn');if(fab)fab.innerHTML=iconSVG('plus');
+
 const eye=document.getElementById('eyeBtn');if(eye)eye.innerHTML=balanceVisible?iconSVG('eye'):iconSVG('eyeOff');
 const cd=document.getElementById('closeDetailIcon');if(cd)cd.innerHTML=iconSVG('close');
 const cday=document.getElementById('closeDailyIcon');if(cday)cday.innerHTML=iconSVG('close');
