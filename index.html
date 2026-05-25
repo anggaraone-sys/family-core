@@ -416,6 +416,80 @@ justify-content:center!important;
 font-size:0!important;
 }
 
+
+/* === FAMILY LOGO + MODAL FORM + SVG CATEGORY PICKER FIX === */
+.logo-icon img,.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:inherit;
+display:block;
+}
+.hidden-select{display:none!important}
+.modal{
+padding:26px 18px calc(42px + env(safe-area-inset-bottom))!important;
+max-height:84vh!important;
+overflow:auto!important;
+}
+#transactionModal .modal,#goalModal .modal{
+padding-bottom:calc(48px + env(safe-area-inset-bottom))!important;
+}
+.modal .form-field{
+margin-top:14px!important;
+min-height:52px!important;
+border-radius:18px!important;
+background:rgba(242,246,255,.88)!important;
+border:1px solid rgba(93,141,255,.10)!important;
+box-shadow:inset 0 0 0 1px rgba(93,141,255,.04)!important;
+}
+.modal-btn{
+min-height:52px!important;
+margin-top:12px!important;
+}
+.category-picker{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+margin-top:14px;
+}
+.category-chip{
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px 12px;
+border-radius:18px;
+background:rgba(242,246,255,.88);
+border:1px solid rgba(93,141,255,.10);
+color:var(--text);
+font-weight:800;
+font-size:13px;
+transition:.2s ease;
+}
+.category-chip.active{
+background:linear-gradient(135deg,rgba(79,172,254,.18),rgba(255,90,200,.18));
+box-shadow:0 10px 24px rgba(91,108,255,.10);
+border-color:rgba(95,124,255,.28);
+}
+.category-chip-icon{
+width:36px;
+height:36px;
+border-radius:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,var(--blue),var(--pink));
+color:white;
+box-shadow:0 10px 20px rgba(91,108,255,.14);
+flex:0 0 auto;
+}
+.category-chip-icon .app-svg{
+width:20px;
+height:20px;
+}
+@media(max-width:380px){
+.category-picker{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -479,7 +553,7 @@ font-size:0!important;
 
 <section id="profil" class="page">
 <div class="section-title"><h3>Profil</h3></div>
-<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"><img src="family.png" alt="family"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><input class="form-field" id="familyIconInput" placeholder="Icon keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
+<div class="profile-card"><div class="profile"><div class="avatar" id="profileIcon"><img src="family.png" alt="family"></div><div><h3 id="profileName">Family Winata</h3><p class="muted">Profil keluarga</p></div></div><input class="form-field" id="familyNameInput" placeholder="Nama keluarga"><button class="modal-btn save-btn" onclick="saveProfile()">Simpan Profil</button></div>
 <div class="profile-card"><h3>PIN Lokal</h3><p class="muted">PIN tersimpan di perangkat ini.</p><input class="form-field" id="pinInput" type="password" placeholder="PIN baru minimal 4 digit"><button class="modal-btn save-btn" onclick="savePin()">Simpan PIN</button></div>
 <div class="profile-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Savings Goals</h3><button class="mini-btn" onclick="openGoalModal()">Tambah</button></div><div id="goalsList" class="list" style="margin-top:14px"></div></div>
 <div class="profile-card"><h3>Export Data</h3><p class="muted">Download semua transaksi dalam CSV.</p><button class="modal-btn save-btn" onclick="exportAllCSV()">Export Semua CSV</button></div>
@@ -541,7 +615,7 @@ Profil
 <input class="form-field" type="text" id="displayNominal" placeholder="Nominal" inputmode="numeric" oninput="formatNominal(this)">
 <input type="hidden" id="realNominal">
 <input class="form-field" type="text" id="description" placeholder="Keterangan">
-<select class="form-field" id="category">
+<select class="form-field hidden-select" id="category">
 <option value="🛵 Ojek Apps">Ojek Apps</option>
 <option value="🍔 Food">Food</option>
 <option value="🚗 Transport">Transport</option>
@@ -550,6 +624,7 @@ Profil
 <option value="💼 Gaji">Gaji</option>
 <option value="📦 Lainnya">Lainnya</option>
 </select>
+<div class="category-picker" id="categoryPicker"></div>
 <select class="form-field" id="type"><option value="income">Income (+)</option><option value="expense">Expense (-)</option></select>
 <input class="form-field" type="text" id="date" placeholder="YYYY-MM-DD" inputmode="numeric">
 <button class="modal-btn save-btn" onclick="saveTransaction()">Save Transaction</button>
@@ -623,6 +698,35 @@ return 'box';
 function cleanCategory(cat){
 return String(cat||'Lainnya').replace(/^[^\wA-Za-zÀ-ÿ]+\s*/,'').trim()||'Lainnya';
 }
+
+const categoryList=[
+{value:'🛵 Ojek Apps',label:'Ojek Apps'},
+{value:'🍔 Food',label:'Food'},
+{value:'🚗 Transport',label:'Transport'},
+{value:'🏠 Rumah',label:'Rumah'},
+{value:'🎮 Hiburan',label:'Hiburan'},
+{value:'💼 Gaji',label:'Gaji'},
+{value:'📦 Lainnya',label:'Lainnya'}
+];
+
+function renderCategoryPicker(){
+const picker=document.getElementById('categoryPicker');
+const select=document.getElementById('category');
+if(!picker||!select)return;
+picker.innerHTML='';
+categoryList.forEach(cat=>{
+const btn=document.createElement('button');
+btn.type='button';
+btn.className='category-chip'+(select.value===cat.value?' active':'');
+btn.innerHTML=`<span class="category-chip-icon">${iconSVG(categoryKey(cat.value))}</span><span>${cat.label}</span>`;
+btn.onclick=()=>{
+select.value=cat.value;
+renderCategoryPicker();
+};
+picker.appendChild(btn);
+});
+}
+
 function todayString(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function normalizeDate(value){value=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value;if(/^\d{2}\/\d{2}\/\d{4}$/.test(value)){const p=value.split('/');return `${p[2]}-${p[1]}-${p[0]}`}if(/^\d{2}-\d{2}-\d{4}$/.test(value)){const p=value.split('-');return `${p[2]}-${p[1]}-${p[0]}`}return ''}
 function isValidDateString(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;return !isNaN(new Date(value+'T00:00:00').getTime())}
@@ -697,10 +801,10 @@ const icon=localStorage.getItem('hf_family_icon')||'👨‍👩‍👧';
 document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
 document.getElementById('profileName').innerText=familyName;
 document.getElementById('familyNameInput').value=familyName;
-document.getElementById('familyIconInput').value=icon;
-document.getElementById('familyIcon').innerHTML='<img src="family.png" alt="family">';
-document.getElementById('profileIcon').innerHTML='<img src="family.png" alt="family">';
-document.getElementById('loginFamilyIcon').innerHTML='<img src="family.png" alt="family logo">';
+
+document.getElementById('familyIcon').innerHTML='<img src="logo.png" alt="family">';
+document.getElementById('profileIcon').innerHTML='<img src="logo.png" alt="family">';
+document.getElementById('loginFamilyIcon').innerHTML='<img src="logo.png" alt="logo">';
 const goalIcon=document.getElementById('goalIconStatic');if(goalIcon)goalIcon.innerHTML=iconSVG('target');
 const heroAdd=document.getElementById('heroAddIcon');if(heroAdd)heroAdd.innerHTML=iconSVG('plus');
 const heroMinus=document.getElementById('heroMinusIcon');if(heroMinus)heroMinus.innerHTML=iconSVG('minus');
@@ -714,9 +818,9 @@ renderGoals()
 
 window.saveProfile=function(){
 const name=document.getElementById('familyNameInput').value.trim()||'Family Winata';
-const icon=document.getElementById('familyIconInput').value.trim()||'👨‍👩‍👧';
+const icon='family.png';
 localStorage.setItem('hf_family_name',name);
-localStorage.setItem('hf_family_icon',icon);
+localStorage.setItem('hf_family_icon','family.png');
 loadLocalSettings();
 alert('Profil tersimpan')
 }
@@ -758,7 +862,9 @@ window.openModal=function(forceType){
 document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
 if(forceType)document.getElementById('type').value=forceType;
 if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
+renderCategoryPicker();
 if(!document.getElementById('date').value)document.getElementById('date').value=todayString();
+renderCategoryPicker();
 document.getElementById('transactionModal').classList.add('active')
 }
 
@@ -769,6 +875,7 @@ document.getElementById('displayNominal').value='';
 document.getElementById('realNominal').value='';
 document.getElementById('description').value='';
 document.getElementById('category').value='🛵 Ojek Apps';
+renderCategoryPicker();
 document.getElementById('type').value='income';
 document.getElementById('date').value=todayString()
 }
