@@ -611,6 +611,77 @@ height:20px;
   }
 }
 
+
+/* === FINAL ASSET STRUCTURE ===
+logo.png   = favicon browser
+family.png = avatar/logo aplikasi
+plane.png  = hero illustration
+*/
+.logo-icon img,.avatar img{
+width:100%!important;
+height:100%!important;
+object-fit:cover!important;
+border-radius:inherit!important;
+display:block!important;
+}
+
+/* === PLANE VISIBILITY OPTIMIZATION === */
+.hero-card{
+overflow:hidden!important;
+}
+.plane-img{
+width:330px!important;
+max-width:70%!important;
+right:-10px!important;
+bottom:44px!important;
+opacity:.82!important;
+z-index:1!important;
+filter:drop-shadow(0 22px 34px rgba(0,0,0,.14))!important;
+object-fit:contain!important;
+}
+.hero-summary,.hero-actions,.hero-card h1,.hero-balance-head{
+z-index:3!important;
+}
+@media(max-width:430px){
+.plane-img{
+width:250px!important;
+max-width:62%!important;
+right:-18px!important;
+bottom:62px!important;
+opacity:.76!important;
+}
+.hero-summary{
+max-width:72%!important;
+}
+}
+@media(max-width:380px){
+.plane-img{
+width:225px!important;
+right:-18px!important;
+bottom:66px!important;
+opacity:.74!important;
+}
+}
+@media(min-width:900px){
+.plane-img{
+width:410px!important;
+max-width:62%!important;
+right:-18px!important;
+bottom:50px!important;
+opacity:.82!important;
+}
+.hero-summary{
+max-width:60%!important;
+}
+}
+@media(min-width:1200px){
+.plane-img{
+width:450px!important;
+right:-8px!important;
+bottom:48px!important;
+}
+}
+
 </style>
 </head>
 <body>
@@ -921,11 +992,14 @@ const familyName=localStorage.getItem('hf_family_name')||'Family Winata';
 const icon=localStorage.getItem('hf_family_icon')||'👨‍👩‍👧';
 document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
 document.getElementById('profileName').innerText=familyName;
+document.getElementById('familyIcon').innerHTML='<img src="family.png" alt="family">';
+document.getElementById('profileIcon').innerHTML='<img src="family.png" alt="family">';
+document.getElementById('loginFamilyIcon').innerHTML='<img src="family.png" alt="family logo">';
 document.getElementById('familyNameInput').value=familyName;
 
-document.getElementById('familyIcon').innerHTML='<img src="logo.png" alt="family">';
-document.getElementById('profileIcon').innerHTML='<img src="logo.png" alt="family">';
-document.getElementById('loginFamilyIcon').innerHTML='<img src="logo.png" alt="logo">';
+
+
+
 const goalIcon=document.getElementById('goalIconStatic');if(goalIcon)goalIcon.innerHTML=iconSVG('target');
 const heroAdd=document.getElementById('heroAddIcon');if(heroAdd)heroAdd.innerHTML=iconSVG('plus');
 const heroMinus=document.getElementById('heroMinusIcon');if(heroMinus)heroMinus.innerHTML=iconSVG('minus');
