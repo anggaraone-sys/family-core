@@ -1240,15 +1240,7 @@ window.openModal=function(forceType){
 document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
 if(forceType)document.getElementById('type').value=forceType;
 if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
-renderCategoryPicker();
-if(!document.getElementById('date').value)const receiptInput=document.getElementById('receiptInput');
-if(receiptInput){
-receiptInput.addEventListener('change',e=>{
-const file=e.target.files&&e.target.files[0];
-if(file)scanReceipt(file);
-});
-}
-document.getElementById('date').value=todayString();
+if(!document.getElementById('date').value)document.getElementById('date').value=todayString();
 renderCategoryPicker();
 document.getElementById('transactionModal').classList.add('active')
 }
