@@ -1175,20 +1175,32 @@ window.formatGoalAmount=function(el){const value=el.value.replace(/\D/g,'');docu
 
 window.openModal=function(forceType){
 document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
-if(forceType)document.getElementById('type').value=forceType;
-if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
-renderCategoryPicker();
-if(!document.getElementById('date').value)const receiptAIInput=document.getElementById('receiptAIInput');
+
+if(forceType){
+document.getElementById('type').value=forceType;
+}
+
+if(forceType==='income' && editIndex===null){
+document.getElementById('category').value='🛵 Ojek Apps';
+}
+
+if(!document.getElementById('date').value){
+
+const receiptAIInput=document.getElementById('receiptAIInput');
 if(receiptAIInput){
 receiptAIInput.addEventListener('change',e=>{
 const file=e.target.files&&e.target.files[0];
-if(file)scanReceiptAI(file);
+if(file){
+scanReceiptAI(file);
+}
 });
 }
 
 document.getElementById('date').value=todayString();
+}
+
 renderCategoryPicker();
-document.getElementById('transactionModal').classList.add('active')
+document.getElementById('transactionModal').classList.add('active');
 }
 
 window.closeModal=function(){
@@ -1534,13 +1546,6 @@ const mgf=document.getElementById('mainGoalFill');if(mgf)mgf.style.width=progres
 setText('mainGoalProgress',progress.toFixed(0)+'%')
 }
 
-const receiptAIInput=document.getElementById('receiptAIInput');
-if(receiptAIInput){
-receiptAIInput.addEventListener('change',e=>{
-const file=e.target.files&&e.target.files[0];
-if(file)scanReceiptAI(file);
-});
-}
 
 document.getElementById('date').value=todayString();
 </script>
