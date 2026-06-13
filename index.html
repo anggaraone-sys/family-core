@@ -694,6 +694,55 @@ bottom:48px!important;
 .receipt-preview-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(113,128,184,.12)}
 .receipt-preview-row:last-child{border-bottom:none}
 
+
+/* === SCAN PREVIEW + LOADING ENHANCEMENT === */
+.receipt-preview-wrap{
+margin-top:12px;
+border-radius:18px;
+overflow:hidden;
+background:rgba(255,255,255,.65);
+border:1px solid rgba(93,141,255,.14);
+box-shadow:0 10px 24px rgba(91,108,255,.08);
+max-height:220px;
+}
+.receipt-preview-wrap img{
+width:100%;
+display:block;
+object-fit:cover;
+max-height:220px;
+}
+.scan-progress{
+margin-top:12px;
+padding:12px;
+border-radius:16px;
+background:rgba(255,255,255,.72);
+display:flex;
+align-items:center;
+gap:10px;
+color:var(--text);
+font-size:13px;
+font-weight:800;
+}
+.scan-spinner{
+width:20px;
+height:20px;
+border-radius:50%;
+border:3px solid rgba(95,124,255,.18);
+border-top-color:var(--blue2);
+animation:scanSpin .8s linear infinite;
+}
+.scan-save-btn{
+width:100%;
+min-height:50px;
+border-radius:18px;
+margin-top:12px;
+background:linear-gradient(135deg,var(--blue),var(--pink));
+color:white;
+font-weight:800;
+box-shadow:0 14px 30px rgba(255,90,200,.18);
+}
+@keyframes scanSpin{to{transform:rotate(360deg)}}
+
 </style>
 </head>
 <body>
@@ -818,13 +867,31 @@ Profil
 <h2 id="modalTitle">Tambah Transaksi</h2>
 
 <div class="scan-box">
-  <input type="file" id="receiptAIInput" accept="image/*" capture="environment" hidden>
-  <button type="button" class="scan-btn" onclick="document.getElementById('receiptAIInput').click()">
-    <span class="scan-icon">📷</span>
-    <span>Scan Struk AI</span>
-  </button>
-  <div id="scanAIStatus" class="ocr-status">Foto tidak disimpan. Hanya dipakai untuk scan.</div>
-  <div id="scanAIResult" class="ocr-result" style="display:none"></div>
+<input type="file" id="receiptAIInput" accept="image/*" capture="environment" hidden>
+
+<button type="button" class="scan-btn" onclick="document.getElementById('receiptAIInput').click()">
+<span class="scan-icon">📷</span>
+<span>Pilih Foto Struk</span>
+</button>
+
+<div class="receipt-preview-wrap" id="receiptPreviewWrap" style="display:none">
+<img id="receiptPreview" alt="Preview struk">
+</div>
+
+<div class="scan-progress" id="scanProgress" style="display:none">
+<div class="scan-spinner"></div>
+<span id="scanProgressText">AI sedang membaca struk...</span>
+</div>
+
+<div id="scanAIStatus" class="ocr-status">
+Foto tidak disimpan. Hanya dipakai untuk scan.
+</div>
+
+<div id="scanAIResult" class="ocr-result" style="display:none"></div>
+
+<button type="button" id="saveScanBtn" class="scan-save-btn" onclick="saveTransaction()" style="display:none">
+Simpan Hasil Scan
+</button>
 </div>
 
 <input class="form-field" type="text" id="displayNominal" placeholder="Nominal" inputmode="numeric" oninput="formatNominal(this)">
@@ -981,6 +1048,28 @@ const words=normalizeSearchText(keyword).split(/\s+/).filter(Boolean);
 const haystack=getSearchText(item);
 return words.every(word=>haystack.includes(word));
 }
+function setScanLoading(show,text='AI sedang membaca struk...'){
+const box=document.getElementById('scanProgress');
+const txt=document.getElementById('scanProgressText');
+if(txt)txt.innerText=text;
+if(box)box.style.display=show?'flex':'none';
+}
+
+function setReceiptPreview(file){
+const wrap=document.getElementById('receiptPreviewWrap');
+const img=document.getElementById('receiptPreview');
+if(!wrap||!img)return;
+if(!file){
+wrap.style.display='none';
+img.removeAttribute('src');
+return;
+}
+const url=URL.createObjectURL(file);
+img.onload=()=>URL.revokeObjectURL(url);
+img.src=url;
+wrap.style.display='block';
+}
+
 function setScanStatus(text){
 const el=document.getElementById('scanAIStatus');
 if(el)el.innerText=text;
@@ -1029,8 +1118,10 @@ async function scanReceiptAI(file){
 if(!file)return;
 try{
 setLoading(true,'Scan struk AI...');
+setScanLoading(true,'AI sedang membaca struk...');
 setScanStatus('Mengirim foto ke AI...');
 setScanResult(null);
+const saveBtnStart=document.getElementById('saveScanBtn');if(saveBtnStart)saveBtnStart.style.display='none';
 const imageBase64=await fileToBase64(file);
 const response=await fetch(SCAN_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imageBase64,mimeType:file.type||'image/jpeg'})});
 const raw=await response.text();
@@ -1045,12 +1136,13 @@ document.getElementById('displayNominal').value=rupiahPlain(receipt.total);
 }
 window.lastReceiptData={receiptStore:receipt.store,receiptItems:receipt.items,receiptText:receipt.receiptText,receiptTotal:receipt.total};
 setScanResult({store:receipt.store,items:receipt.items,total:receipt.total});
-setScanStatus('Scan selesai. Foto tidak disimpan.');
+setScanStatus('Scan selesai. Cek hasilnya, lalu klik Simpan Hasil Scan.');
+const saveBtn=document.getElementById('saveScanBtn');if(saveBtn)saveBtn.style.display='block';
 }catch(err){
 console.error(err);
 setScanStatus('Gagal scan struk. Coba foto lebih jelas.');
 alert('Gagal scan struk AI: '+err.message);
-}finally{setLoading(false)}
+}finally{setScanLoading(false);setLoading(false)}
 }
 
 function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
@@ -1086,7 +1178,7 @@ await startApp();
 }catch(err){
 console.error(err);
 showLoginError('Gagal login. Cek Firestore Rules untuk collection users.');
-}finally{setLoading(false)}
+}finally{setScanLoading(false);setLoading(false)}
 };
 
 document.getElementById('loginBtn').addEventListener('click',()=>window.login());
@@ -1191,6 +1283,7 @@ if(receiptAIInput){
 receiptAIInput.addEventListener('change',e=>{
 const file=e.target.files&&e.target.files[0];
 if(file){
+setReceiptPreview(file);
 scanReceiptAI(file);
 }
 });
@@ -1217,6 +1310,9 @@ window.lastReceiptData=null;
 setScanStatus('Foto tidak disimpan. Hanya dipakai untuk scan.');
 setScanResult(null);
 const rai=document.getElementById('receiptAIInput');if(rai)rai.value='';
+setReceiptPreview(null);
+setScanLoading(false);
+const saveBtn=document.getElementById('saveScanBtn');if(saveBtn)saveBtn.style.display='none';
 }
 
 window.saveTransaction=async function(){
