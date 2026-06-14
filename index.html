@@ -683,20 +683,23 @@ bottom:48px!important;
 }
 
 
-/* === DIRECT GEMINI RECEIPT SCAN === */
+/* === GEMINI AI RECEIPT SCAN === */
 .scan-box{margin-top:12px;padding:12px;border-radius:20px;background:rgba(242,246,255,.78);border:1px dashed rgba(93,141,255,.25)}
 .scan-btn{width:100%;min-height:52px;border-radius:18px;background:linear-gradient(135deg,rgba(79,172,254,.18),rgba(255,90,200,.18));color:var(--text);font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(93,141,255,.18)}
 .scan-icon{width:34px;height:34px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--blue),var(--pink));color:white}
-.receipt-preview-wrap{margin-top:12px;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.65);border:1px solid rgba(93,141,255,.14);box-shadow:0 10px 24px rgba(91,108,255,.08);max-height:220px}
-.receipt-preview-wrap img{width:100%;display:block;object-fit:cover;max-height:220px}
-.scan-progress{margin-top:12px;padding:12px;border-radius:16px;background:rgba(255,255,255,.72);display:flex;align-items:center;gap:10px;color:var(--text);font-size:13px;font-weight:800}
-.scan-spinner{width:20px;height:20px;border-radius:50%;border:3px solid rgba(95,124,255,.18);border-top-color:var(--blue2);animation:scanSpin .8s linear infinite}
 .ocr-status{margin-top:9px;font-size:12px;color:var(--muted);line-height:1.45}
 .ocr-result{margin-top:10px;padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.72);font-size:12px;color:var(--muted);line-height:1.55}
 .ocr-result strong{color:var(--text)}
 .receipt-items-preview{margin-top:8px;display:flex;flex-direction:column;gap:6px}
 .receipt-preview-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(113,128,184,.12)}
 .receipt-preview-row:last-child{border-bottom:none}
+
+
+/* === SCAN PREVIEW FINAL APPS SCRIPT === */
+.receipt-preview-wrap{margin-top:12px;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.65);border:1px solid rgba(93,141,255,.14);box-shadow:0 10px 24px rgba(91,108,255,.08);max-height:220px}
+.receipt-preview-wrap img{width:100%;display:block;object-fit:cover;max-height:220px}
+.scan-progress{margin-top:12px;padding:12px;border-radius:16px;background:rgba(255,255,255,.72);display:flex;align-items:center;gap:10px;color:var(--text);font-size:13px;font-weight:800}
+.scan-spinner{width:20px;height:20px;border-radius:50%;border:3px solid rgba(95,124,255,.18);border-top-color:var(--blue2);animation:scanSpin .8s linear infinite}
 @keyframes scanSpin{to{transform:rotate(360deg)}}
 
 </style>
@@ -823,14 +826,15 @@ Profil
 <h2 id="modalTitle">Tambah Transaksi</h2>
 
 <div class="scan-box">
-<input type="file" id="receiptAIInput" accept="image/*" capture="environment" hidden>
-<button type="button" class="scan-btn" onclick="document.getElementById('receiptAIInput').click()">
-<span class="scan-icon">📷</span><span>Scan Struk AI</span>
-</button>
-<div class="receipt-preview-wrap" id="receiptPreviewWrap" style="display:none"><img id="receiptPreview" alt="Preview struk"></div>
+  <input type="file" id="receiptAIInput" accept="image/*" capture="environment" hidden>
+  <button type="button" class="scan-btn" onclick="document.getElementById('receiptAIInput').click()">
+    <span class="scan-icon">📷</span>
+    <span>Scan Struk AI</span>
+  </button>
+  <div class="receipt-preview-wrap" id="receiptPreviewWrap" style="display:none"><img id="receiptPreview" alt="Preview struk"></div>
 <div class="scan-progress" id="scanProgress" style="display:none"><div class="scan-spinner"></div><span id="scanProgressText">AI sedang membaca struk...</span></div>
 <div id="scanAIStatus" class="ocr-status">Foto tidak disimpan. Hanya dipakai untuk scan.</div>
-<div id="scanAIResult" class="ocr-result" style="display:none"></div>
+  <div id="scanAIResult" class="ocr-result" style="display:none"></div>
 </div>
 
 <input class="form-field" type="text" id="displayNominal" placeholder="Nominal" inputmode="numeric" oninput="formatNominal(this)">
@@ -884,8 +888,7 @@ const dbFirestore=getFirestore(app);
 let db=[],goals=[],editIndex=null,currentReportData=[],currentReportKey='',currentDailyData=[],balanceVisible=true,currentUser='';
 const SESSION_DAYS=7;
 
-const GEMINI_API_KEY='AQ.Ab8RN6LG5zOntXnupA74gX98jg63bBS5U8DHaJLGK3bCZCS-6w';
-const GEMINI_MODEL='gemini-2.5-flash';
+const SCAN_WORKER_URL='https://script.google.com/macros/s/AKfycbxze-dPSxyiRxOQcW1FIeJnhDvbziuSpbSFQSFMwLnr81SpSfKZdNLjvAJGhrZtGwp5vg/exec';
 
 function rupiah(v){return 'Rp '+Number(v||0).toLocaleString('id-ID')}
 
@@ -971,7 +974,9 @@ return d.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
 }
 function displayBalance(value){return balanceVisible?rupiah(value):'••••••'}
 
-function normalizeSearchText(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()}
+function normalizeSearchText(value){
+return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
 function getSearchText(item){
 const date=String(item.date||'');
 const dateID=typeof formatDateID==='function'?formatDateID(date):date;
@@ -986,414 +991,179 @@ const words=normalizeSearchText(keyword).split(/\s+/).filter(Boolean);
 const haystack=getSearchText(item);
 return words.every(word=>haystack.includes(word));
 }
-function setScanStatus(text){const el=document.getElementById('scanAIStatus');if(el)el.innerText=text}
+
 function setScanLoading(show,text='AI sedang membaca struk...'){
-const box=document.getElementById('scanProgress');const txt=document.getElementById('scanProgressText');
-if(txt)txt.innerText=text;if(box)box.style.display=show?'flex':'none';
+const box=document.getElementById('scanProgress');
+const txt=document.getElementById('scanProgressText');
+if(txt)txt.innerText=text;
+if(box)box.style.display=show?'flex':'none';
 }
 function setReceiptPreview(file){
-const wrap=document.getElementById('receiptPreviewWrap');const img=document.getElementById('receiptPreview');
+const wrap=document.getElementById('receiptPreviewWrap');
+const img=document.getElementById('receiptPreview');
 if(!wrap||!img)return;
-if(!file){wrap.style.display='none';img.removeAttribute('src');return}
-const url=URL.createObjectURL(file);img.onload=()=>URL.revokeObjectURL(url);img.src=url;wrap.style.display='block';
+if(!file){
+wrap.style.display='none';
+img.removeAttribute('src');
+return;
+}
+const url=URL.createObjectURL(file);
+img.onload=()=>URL.revokeObjectURL(url);
+img.src=url;
+wrap.style.display='block';
+}
+
+function setScanStatus(text){
+const el=document.getElementById('scanAIStatus');
+if(el)el.innerText=text;
 }
 function rupiahPlain(value){return Number(value||0).toLocaleString('id-ID')}
 function setScanResult(data){
-const el=document.getElementById('scanAIResult');if(!el)return;
+const el=document.getElementById('scanAIResult');
+if(!el)return;
 if(!data){el.style.display='none';el.innerHTML='';return}
 const items=Array.isArray(data.items)?data.items:[];
-const rows=items.slice(0,8).map(item=>`<div class="receipt-preview-row"><span>${item.name||'-'}</span><strong>${Number(item.price||0)?rupiah(item.price):'-'}</strong></div>`).join('');
+const rows=items.slice(0,8).map(item=>{
+const name=item.name||'-';
+const price=Number(item.price||0);
+return `<div class="receipt-preview-row"><span>${name}</span><strong>${price?rupiah(price):'-'}</strong></div>`;
+}).join('');
 el.style.display='block';
 el.innerHTML=`<strong>Toko:</strong> ${data.store||'-'}<br><strong>Total:</strong> ${data.total?rupiah(data.total):'-'}<div class="receipt-items-preview">${rows||'<span>Item belum terbaca</span>'}</div>`;
 }
 function fileToBase64(file){
-return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');reader.onerror=reject;reader.readAsDataURL(file)});
+return new Promise((resolve,reject)=>{
+const reader=new FileReader();
+reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');
+reader.onerror=reject;
+reader.readAsDataURL(file);
+});
 }
 function normalizeGeminiReceipt(data){
 const store=String(data.store||data.nama_toko||data.merchant||'Belanja').trim();
 let items=Array.isArray(data.items)?data.items:[];
-items=items.map(item=>({name:String(item.name||item.nama||item.item||'').trim(),qty:Number(item.qty||item.quantity||item.jumlah||1)||1,price:Number(item.price||item.harga||item.amount||item.total||0)||0})).filter(item=>item.name);
+items=items.map(item=>{
+const name=String(item.name||item.nama||item.item||'').trim();
+const qty=Number(item.qty||item.quantity||item.jumlah||1)||1;
+const price=Number(item.price||item.harga||item.amount||item.total||0)||0;
+return {name,qty,price};
+}).filter(item=>item.name);
 const total=Number(data.total||data.grand_total||data.jumlah||0)||0;
-const descriptionItems=items.slice(0,8).map(item=>`${item.name}${item.qty&&item.qty!==1?` x${item.qty}`:''}${item.price?` ${rupiah(item.price)}`:''}`);
+const descriptionItems=items.slice(0,8).map(item=>{
+const qtyText=item.qty&&item.qty!==1?` x${item.qty}`:'';
+const priceText=item.price?` ${rupiah(item.price)}`:'';
+return `${item.name}${qtyText}${priceText}`;
+});
 const description=descriptionItems.length?`${store} - ${descriptionItems.join(', ')}`:`Belanja ${store}`;
 return {store,items,total,description,receiptText:descriptionItems.join(', ')};
 }
-async function scanReceiptAIDirect(file){
+async function scanReceiptAI(file){
 if(!file)return;
-if(!GEMINI_API_KEY||GEMINI_API_KEY==='ISI_API_KEY_GEMINI_BARU_DI_SINI'){alert('Isi dulu GEMINI_API_KEY di index.html.');return}
 try{
-setLoading(true,'Scan struk AI...');setScanLoading(true,'AI sedang membaca struk...');setScanStatus('Mengirim foto ke Gemini...');setScanResult(null);
+setLoading(true,'Scan struk AI...');
+setScanLoading(true,'AI sedang membaca struk...');
+setScanStatus('Mengirim foto ke AI...');
+setScanResult(null);
+
 const imageBase64=await fileToBase64(file);
-const prompt=`Baca struk belanja dari gambar ini.
-Kembalikan JSON valid saja tanpa markdown.
-Format:
-{"store":"nama toko","items":[{"name":"nama barang","qty":1,"price":0}],"total":0}
-Aturan:
-- Ambil nama toko jika terlihat.
-- Ambil hanya daftar barang yang dibeli.
-- Ambil harga item jika terlihat.
-- Ambil jumlah/qty jika terlihat. Jika tidak jelas, isi 1.
-- Ambil total akhir struk.
-- Jangan ambil nomor struk, kasir, pajak, diskon, kembalian, tunai, QRIS.
-- Nama barang dibuat rapi.
-- Kembalikan JSON saja.`;
-const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,{
-method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:file.type||'image/jpeg',data:imageBase64}}]}],generationConfig:{temperature:0.1,responseMimeType:'application/json'}})
+
+const response=await fetch(SCAN_WORKER_URL,{
+method:'POST',
+headers:{'Content-Type':'text/plain;charset=utf-8'},
+body:JSON.stringify({
+imageBase64,
+mimeType:file.type||'image/jpeg'
+})
 });
-const result=await response.json();
-if(!response.ok){console.error(result);throw new Error(result?.error?.message||'Gagal menghubungi Gemini.')}
-const text=result?.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
-let data={};try{data=JSON.parse(text)}catch(e){console.error('Gemini raw:',text);throw new Error('Hasil AI bukan JSON valid.')}
-const receipt=normalizeGeminiReceipt(data);
-if(receipt.description)document.getElementById('description').value=receipt.description;
-if(receipt.total>0){document.getElementById('realNominal').value=receipt.total;document.getElementById('displayNominal').value=rupiahPlain(receipt.total)}
-window.lastReceiptData={receiptStore:receipt.store,receiptItems:receipt.items,receiptText:receipt.receiptText,receiptTotal:receipt.total};
-setScanResult({store:receipt.store,items:receipt.items,total:receipt.total});
-setScanStatus('Scan selesai. Foto tidak disimpan.');
-}catch(err){console.error(err);setScanStatus('Gagal scan struk. Coba foto lebih jelas.');alert('Gagal scan struk AI: '+err.message)}
-finally{setScanLoading(false);setLoading(false)}
-}
 
-function setLoading(show,text='Loading...'){document.getElementById('loadingText').innerText=text;document.getElementById('loadingOverlay').style.display=show?'flex':'none'}
-function setText(id,value){const el=document.getElementById(id);if(el)el.innerText=value}
-function setDisplay(id,value){const el=document.getElementById(id);if(el)el.style.display=value}
-function toggleClass(id,cls,on){const el=document.getElementById(id);if(el)el.classList.toggle(cls,on)}
-function showLoginError(msg){const el=document.getElementById('loginError');el.innerText=msg;el.style.display='block'}
-function clearLoginError(){document.getElementById('loginError').style.display='none'}
-function sessionValid(){const u=localStorage.getItem('hf_user');const exp=Number(localStorage.getItem('hf_session_exp')||0);return u && Date.now()<exp}
-function setSession(user){localStorage.setItem('hf_user',user);localStorage.setItem('hf_session_exp',String(Date.now()+SESSION_DAYS*24*60*60*1000));currentUser=user}
-function clearSession(){localStorage.removeItem('hf_user');localStorage.removeItem('hf_session_exp');currentUser=''}
+const raw=await response.text();
 
-window.toggleBalance=function(){balanceVisible=!balanceVisible;document.getElementById('eyeBtn').innerHTML=balanceVisible?iconSVG('eye'):iconSVG('eyeOff');renderDashboard()}
-
-async function validateUser(username){
-const q=query(collection(dbFirestore,'users'),where('username','==',username),where('active','==',true));
-const snap=await getDocs(q);
-return !snap.empty;
-}
-
-window.login=async function(){
-clearLoginError();
-const user=document.getElementById('username').value.trim().toLowerCase();
-if(!user)return showLoginError('Masukkan username.');
+let data={};
 try{
-setLoading(true,'Cek login...');
-const ok=await validateUser(user);
-if(!ok){setLoading(false);return showLoginError('Username tidak terdaftar atau belum aktif di Firebase.')}
-const savedPin=localStorage.getItem('hf_pin');
-if(savedPin){const pin=prompt('Masukkan PIN');if(pin!==savedPin){setLoading(false);return showLoginError('PIN salah.')}}
-setSession(user);
-await startApp();
-}catch(err){
-console.error(err);
-showLoginError('Gagal login. Cek Firestore Rules untuk collection users.');
-}finally{setLoading(false)}
+data=JSON.parse(raw);
+}catch(parseErr){
+console.error('Invalid JSON from Apps Script:',raw);
+throw new Error('Hasil AI bukan JSON valid.');
+}
+
+if(data.error){
+console.error(data);
+throw new Error(data.error||'Gagal scan struk.');
+}
+
+const receipt=normalizeGeminiReceipt(data);
+
+if(receipt.description){
+document.getElementById('description').value=receipt.description;
+}
+
+if(receipt.total>0){
+document.getElementById('realNominal').value=receipt.total;
+document.getElementById('displayNominal').value=rupiahPlain(receipt.total);
+}
+
+window.lastReceiptData={
+receiptStore:receipt.store,
+receiptItems:receipt.items,
+receiptText:receipt.receiptText,
+receiptTotal:receipt.total
 };
 
-document.getElementById('loginBtn').addEventListener('click',()=>window.login());
-document.getElementById('username').addEventListener('keydown',(e)=>{if(e.key==='Enter')window.login()});
+setScanResult({
+store:receipt.store,
+items:receipt.items,
+total:receipt.total
+});
 
-window.logout=function(){clearSession();location.reload()}
-
-async function startApp(){
-if(sessionValid()){
-currentUser=localStorage.getItem('hf_user');
-document.getElementById('loginPage').style.display='none';
-document.getElementById('app').style.display='block';
-document.getElementById('userLabel').innerText=`Login sebagai ${currentUser}`;
-loadLocalSettings();
-await loadDatabase();
-
-}
-}
-startApp();
-
-function loadLocalSettings(){
-const familyName=localStorage.getItem('hf_family_name')||'Family Winata';
-const icon=localStorage.getItem('hf_family_icon')||'👨‍👩‍👧';
-document.getElementById('familyTitle').innerText=`Hi ${familyName} 👋`;
-document.getElementById('profileName').innerText=familyName;
-document.getElementById('familyIcon').innerHTML='<img src="family.png" alt="family">';
-document.getElementById('profileIcon').innerHTML='<img src="family.png" alt="family">';
-document.getElementById('loginFamilyIcon').innerHTML='<img src="family.png" alt="family logo">';
-document.getElementById('familyNameInput').value=familyName;
-
-
-
-
-const goalIcon=document.getElementById('goalIconStatic');if(goalIcon)goalIcon.innerHTML=iconSVG('target');
-const heroAdd=document.getElementById('heroAddIcon');if(heroAdd)heroAdd.innerHTML=iconSVG('plus');
-const heroMinus=document.getElementById('heroMinusIcon');if(heroMinus)heroMinus.innerHTML=iconSVG('minus');
-
-const eye=document.getElementById('eyeBtn');if(eye)eye.innerHTML=balanceVisible?iconSVG('eye'):iconSVG('eyeOff');
-const cd=document.getElementById('closeDetailIcon');if(cd)cd.innerHTML=iconSVG('close');
-const cday=document.getElementById('closeDailyIcon');if(cday)cday.innerHTML=iconSVG('close');
-goals=JSON.parse(localStorage.getItem('hf_goals')||'[]');
-renderGoals()
-}
-
-window.saveProfile=function(){
-const name=document.getElementById('familyNameInput').value.trim()||'Family Winata';
-const icon='family.png';
-localStorage.setItem('hf_family_name',name);
-localStorage.setItem('hf_family_icon','family.png');
-loadLocalSettings();
-alert('Profil tersimpan')
-}
-
-window.savePin=function(){
-const pin=document.getElementById('pinInput').value.trim();
-if(pin.length<4)return alert('PIN minimal 4 digit');
-localStorage.setItem('hf_pin',pin);
-document.getElementById('pinInput').value='';
-alert('PIN tersimpan di perangkat ini')
-}
-
-async function loadDatabase(){
-db=[];
-try{
-setLoading(true,'Load data...');
-const querySnapshot=await getDocs(collection(dbFirestore,'transactions'));
-querySnapshot.forEach(docSnap=>db.push({id:docSnap.id,...docSnap.data()}));
-db.sort((a,b)=>new Date(a.date)-new Date(b.date));
-try{
-renderAll();
-}catch(renderErr){
-console.error('Render error:',renderErr);
-alert('Data berhasil load, tapi ada error tampilan. Pakai file fix terbaru ini.');
-}
+setScanStatus('Scan selesai. Foto tidak disimpan.');
 }catch(err){
-console.error('Firestore load error:',err);
-alert('Gagal load data Firebase. Cek Rules untuk transactions: allow read, write.');
+console.error(err);
+setScanStatus('Gagal scan struk. Coba foto lebih jelas.');
+alert('Gagal scan struk AI: '+err.message);
+}finally{
+setScanLoading(false);
+setLoading(false);
 }
-finally{setLoading(false)}
-}
-
-function renderAll(){renderDashboard();renderHistory();renderMonthly();renderGoals()}
-
-window.formatNominal=function(el){const value=el.value.replace(/\D/g,'');document.getElementById('realNominal').value=value;el.value=new Intl.NumberFormat('id-ID').format(value)}
-window.formatGoalAmount=function(el){const value=el.value.replace(/\D/g,'');document.getElementById('goalAmountReal').value=value;el.value=new Intl.NumberFormat('id-ID').format(value)}
-
-window.openModal=function(forceType){
-document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transaksi':'Edit Transaksi';
-if(forceType)document.getElementById('type').value=forceType;
-if(forceType==='income')document.getElementById('category').value='🛵 Ojek Apps';
-renderCategoryPicker();
-if(!document.getElementById('date').value)const receiptAIInput=document.getElementById('receiptAIInput');
-if(receiptAIInput){
-receiptAIInput.addEventListener('change',e=>{
-const file=e.target.files&&e.target.files[0];
-if(file){setReceiptPreview(file);scanReceiptAIDirect(file);}
-});
-}
-
-document.getElementById('date').value=todayString();
-renderCategoryPicker();
-document.getElementById('transactionModal').classList.add('active')
-}
-
-window.closeModal=function(){
-document.getElementById('transactionModal').classList.remove('active');
-editIndex=null;
-document.getElementById('displayNominal').value='';
-document.getElementById('realNominal').value='';
-document.getElementById('description').value='';
-document.getElementById('category').value='🛵 Ojek Apps';
-renderCategoryPicker();
-document.getElementById('type').value='income';
-document.getElementById('date').value=todayString()
-}
-
-window.saveTransaction=async function(){
-const nominal=document.getElementById('realNominal').value;
-const description=document.getElementById('description').value.trim();
-const category=document.getElementById('category').value;
-const type=document.getElementById('type').value;
-const date=normalizeDate(document.getElementById('date').value);
-if(!nominal||!description||!date)return alert('Isi semua field. Tanggal gunakan format YYYY-MM-DD');
-if(!isValidDateString(date))return alert('Tanggal tidak valid');
-const now=new Date().toISOString();
-const receipt=window.lastReceiptData||null;
-const payload={nominal:parseInt(nominal),description,category,type,date,updatedBy:currentUser,updatedAt:now};
-if(receipt){
-payload.receiptStore=receipt.receiptStore||'';
-payload.receiptItems=receipt.receiptItems||[];
-payload.receiptText=receipt.receiptText||'';
-payload.receiptTotal=receipt.receiptTotal||0;
-}
-try{
-setLoading(true,'Simpan...');
-if(editIndex!==null){
-const old=db[editIndex];
-await updateDoc(doc(dbFirestore,'transactions',old.id),payload);
-}else{
-payload.createdBy=currentUser;
-payload.createdAt=now;
-await addDoc(collection(dbFirestore,'transactions'),payload);
-}
-closeModal();
-await loadDatabase();
-
-}catch(err){console.error(err);alert('Gagal save transaksi. Cek koneksi atau Firebase Rules.')}
-finally{setLoading(false)}
-}
-
-window.editTransaction=function(index){
-const dm=document.getElementById('dailyModal');if(dm&&dm.classList.contains('active'))dm.classList.remove('active');
-const item=db[index];
-editIndex=index;
-document.getElementById('realNominal').value=item.nominal;
-document.getElementById('displayNominal').value=new Intl.NumberFormat('id-ID').format(item.nominal);
-document.getElementById('description').value=item.description;
-document.getElementById('category').value=item.category||'📦 Lainnya';
-document.getElementById('type').value=item.type;
-document.getElementById('date').value=normalizeDate(item.date)||todayString();
-openModal()
-}
-
-window.deleteTransaction=async function(index){
-if(!confirm('Hapus transaksi ini?'))return;
-try{
-setLoading(true,'Hapus...');
-const item=db[index];
-await deleteDoc(doc(dbFirestore,'transactions',item.id));
-await loadDatabase();
-
-}catch(err){console.error(err);alert('Gagal hapus transaksi')}
-finally{setLoading(false)}
-}
-
-window.showPage=function(id,el){
-document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-document.querySelectorAll('.nav-btn').forEach(nav=>nav.classList.remove('active'));
-if(el&&el.classList.contains('nav-btn'))el.classList.add('active')
-}
-
-function renderDashboard(){
-let income=0,expense=0,todayOjekIncome=0,todayExpense=0,categoryExpense={},monthExpense={};
-const today=todayString();
-const monthKey=today.slice(0,7);
-
-db.forEach(item=>{
-const amount=Number(item.nominal||0);
-const itemMonth=String(item.date||'').slice(0,7);
-if(item.type==='income'){
-income+=amount;
-if(item.date===today && item.category==='🛵 Ojek Apps'){todayOjekIncome+=amount}
-}else{
-expense+=amount;
-if(item.date===today){todayExpense+=amount}
-const cat=item.category||'📦 Lainnya';
-categoryExpense[cat]=(categoryExpense[cat]||0)+amount;
-if(itemMonth===monthKey)monthExpense[cat]=(monthExpense[cat]||0)+amount;
-}
-});
-
-const balance=income-expense;
-const todayBalance=todayOjekIncome-todayExpense;
-
-setText('balance',displayBalance(balance));
-setText('heroIncome',rupiah(income));
-setText('heroExpense',rupiah(expense));
-setText('todayIncome',rupiah(todayOjekIncome));
-setText('todayExpense',rupiah(todayExpense));
-setText('todayBalance',rupiah(todayBalance));
-
-const hasTodayIncome = todayOjekIncome > 0;
-const hasTodayExpense = todayExpense > 0;
-const hasTodayData = hasTodayIncome || hasTodayExpense;
-
-toggleClass('todayStats','is-hidden',!hasTodayData);
-setDisplay('incomeTodayCard',hasTodayIncome?'block':'none');
-setDisplay('expenseTodayCard',hasTodayExpense?'block':'none');
-setDisplay('todayBalanceCard',hasTodayData?'block':'none');
-
-const topCategory=Object.keys(categoryExpense).sort((a,b)=>categoryExpense[b]-categoryExpense[a])[0];
-
-let insight='Belum ada data transaksi.';
-if(db.length>0){
-insight=balance>=0?`Bagus! Keluarga masih surplus ${rupiah(balance)}.`:`Perhatian, pengeluaran lebih besar ${rupiah(Math.abs(balance))}.`;
-if(topCategory)insight+=` Pengeluaran terbesar: ${topCategory} (${rupiah(categoryExpense[topCategory])}).`;
-}
-
-setText('insightText',insight);
-
-const recent=document.getElementById('recentList');
-recent.innerHTML='';
-const todayItems=db.filter(item=>item.date===today).slice().reverse().slice(0,4);
-if(todayItems.length){
-todayItems.forEach(item=>recent.innerHTML+=transactionCard(item,false));
-}else{
-recent.innerHTML='<div class="empty-state">☁️ Belum ada transaksi hari ini</div>';
-}
-renderMainGoal(balance);
-renderMiniChart(monthExpense);
-}
-
-function renderMiniChart(data){
-const chart=document.getElementById('expenseChart');
-const card=document.getElementById('chartCard');
-if(!chart||!card)return;
-chart.innerHTML='';
-const values=Object.values(data||{});
-card.style.display='block';
-if(!values.length){
-chart.innerHTML='<div class="empty-state">Belum ada pengeluaran bulan ini</div>';
-return;
-}
-const total=values.reduce((a,b)=>a+b,0);
-Object.keys(data).sort((a,b)=>data[b]-data[a]).slice(0,4).forEach(cat=>{
-const percent=total ? Math.max((data[cat]/total)*100,4) : 0;
-chart.innerHTML+=`<div class="cat-row"><div class="cat-icon">${iconSVG(categoryKey(cat))}</div><div><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:5px"><small class="muted">${cleanCategory(cat)}</small><small class="muted">${percent.toFixed(0)}%</small></div><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${percent}%"></div></div></div><div class="cat-amount">${rupiah(data[cat])}</div></div>`;
-});
-}
-
-function transactionCard(item,showEdit){
-const isIncome=item.type==='income';
-const category=item.category||'📦 Lainnya';
-const cleanCat=cleanCategory(category);
-const index=db.indexOf(item);
-const createdBy=item.createdBy||item.user||'';
-const updatedBy=item.updatedBy||'';
-let userText='';
-if(updatedBy && createdBy && updatedBy!==createdBy){
-userText=`edit by ${updatedBy}`;
-}else if(updatedBy && !createdBy){
-userText=`edit by ${updatedBy}`;
-}else if(createdBy){
-userText=`by ${createdBy}`;
-}
-return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${iconSVG(categoryKey(category))}</div><div><h4>${item.description}</h4><small>${formatDateID(item.date)} • ${cleanCat}</small>${userText?`<span class="tx-user-meta">${userText}</span>`:''}</div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">${iconSVG('edit')}</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">${iconSVG('trash')}</button></div>`:''}</div></div>`
 }
 
 window.renderHistory=function(){
-const list=document.getElementById('historyList');list.innerHTML='';
+const list=document.getElementById('historyList');
+list.innerHTML='';
 const keyword=(document.getElementById('historySearch').value||'').trim();
 let grouped={};
 db.forEach(item=>{
-const date=String(item.date||'');if(!date)return;if(!itemMatchKeyword(item,keyword))return;
+const date=String(item.date||'');
+if(!date)return;
+if(!itemMatchKeyword(item,keyword))return;
 if(!grouped[date])grouped[date]={income:0,expense:0,items:[]};
 grouped[date].items.push(item);
-if(item.type==='income')grouped[date].income+=Number(item.nominal||0);else grouped[date].expense+=Number(item.nominal||0);
+if(item.type==='income')grouped[date].income+=Number(item.nominal||0);
+else grouped[date].expense+=Number(item.nominal||0);
 });
 const dates=Object.keys(grouped).sort().reverse();
 if(!dates.length){list.innerHTML='<div class="empty-state">☁️ Tidak ada riwayat yang cocok</div>';return}
 dates.forEach(date=>{
-const data=grouped[date];const balance=data.income-data.expense;
+const data=grouped[date];
+const balance=data.income-data.expense;
 const safeKeyword=String(keyword).replace(/'/g,"&#39;").replace(/"/g,"&quot;");
 const info=keyword?`${data.items.length} hasil cocok`:`${data.items.length} transaksi`;
-list.innerHTML+=`<div class="daily-card" onclick="openDailyDetail('${date}','${safeKeyword}')"><div class="daily-head"><div><h4>${formatDateID(date)}</h4><small>${info}</small></div><small>Tap detail ›</small></div><div class="daily-stats"><div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div><div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div><div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div></div></div>`;
+list.innerHTML+=`<div class="daily-card" onclick="openDailyDetail('${date}','${safeKeyword}')">
+<div class="daily-head"><div><h4>${formatDateID(date)}</h4><small>${info}</small></div><small>Tap detail ›</small></div>
+<div class="daily-stats">
+<div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div>
+<div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div>
+<div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
+</div></div>`;
 });
 }
 window.openDailyDetail=function(date,keyword=''){
-currentDailyData=db.filter(item=>item.date===date&&itemMatchKeyword(item,keyword));
+currentDailyData=db.filter(item=>item.date===date && itemMatchKeyword(item,keyword));
 const income=currentDailyData.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
 const expense=currentDailyData.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
 document.getElementById('dailyTitle').innerText=keyword?`${formatDateID(date)} • hasil pencarian`:formatDateID(date);
 document.getElementById('dailySummary').innerHTML=`<div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>`;
-const dailyList=document.getElementById('dailyList');dailyList.innerHTML='';
+const dailyList=document.getElementById('dailyList');
+dailyList.innerHTML='';
 if(!currentDailyData.length)dailyList.innerHTML='<div class="empty-state">☁️ Tidak ada transaksi di hari ini</div>';
 else currentDailyData.slice().reverse().forEach(item=>dailyList.innerHTML+=transactionCard(item,true));
 document.getElementById('dailyModal').classList.add('active');
@@ -1450,8 +1220,8 @@ window.exportCSV=function(){exportRows(currentReportData,`home-finance-${current
 window.exportAllCSV=function(){exportRows(db,'home-finance-all-data.csv')}
 
 function exportRows(rows,filename){
-let csv='Description,Category,Date,Type,Amount,Store,Items,ReceiptTotal\n';
-rows.forEach(item=>csv+=`"${item.description}","${item.category||''}","${item.date}","${item.type}","${item.nominal}","${item.receiptStore||''}","${(item.receiptItems||[]).map(i=>`${i.name||''} ${i.price||''}`).join('; ')}","${item.receiptTotal||''}"\n`);
+let csv='Description,Category,Date,Type,Amount\n';
+rows.forEach(item=>csv+=`"${item.description}","${item.category||''}","${item.date}","${item.type}","${item.nominal}"\n`);
 const blob=new Blob([csv],{type:'text/csv'});
 const url=URL.createObjectURL(blob);
 const a=document.createElement('a');
@@ -1518,6 +1288,18 @@ setText('mainGoalName',`${goal.name} • ${formatDateID(goal.date)}`);
 setText('mainGoalAmount',rupiah(goal.amount));
 const mgf=document.getElementById('mainGoalFill');if(mgf)mgf.style.width=progress+'%';
 setText('mainGoalProgress',progress.toFixed(0)+'%')
+}
+
+
+const receiptAIInput=document.getElementById('receiptAIInput');
+if(receiptAIInput){
+receiptAIInput.addEventListener('change',e=>{
+const file=e.target.files&&e.target.files[0];
+if(file){
+setReceiptPreview(file);
+scanReceiptAI(file);
+}
+});
 }
 
 document.getElementById('date').value=todayString();
