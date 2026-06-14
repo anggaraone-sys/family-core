@@ -702,6 +702,24 @@ bottom:48px!important;
 .scan-spinner{width:20px;height:20px;border-radius:50%;border:3px solid rgba(95,124,255,.18);border-top-color:var(--blue2);animation:scanSpin .8s linear infinite}
 @keyframes scanSpin{to{transform:rotate(360deg)}}
 
+
+/* === LOGIN BUTTON CLICK FIX === */
+.login-btn{
+position:relative!important;
+z-index:50!important;
+pointer-events:auto!important;
+user-select:none!important;
+-webkit-user-select:none!important;
+cursor:pointer!important;
+}
+.login-card{
+position:relative!important;
+z-index:5!important;
+}
+#loginPage{
+pointer-events:auto!important;
+}
+
 </style>
 </head>
 <body>
@@ -1301,6 +1319,34 @@ scanReceiptAI(file);
 }
 });
 }
+
+
+function attachLoginButtonFix(){
+const btn=document.getElementById('loginBtn');
+if(btn){
+btn.onclick=function(e){
+e.preventDefault();
+if(typeof window.login==='function'){
+window.login();
+}else if(typeof login==='function'){
+login();
+}else{
+alert('Fungsi login belum siap. Reload halaman lalu coba lagi.');
+}
+};
+}
+const usernameInput=document.getElementById('username');
+if(usernameInput){
+usernameInput.onkeydown=function(e){
+if(e.key==='Enter'){
+e.preventDefault();
+const btn=document.getElementById('loginBtn');
+if(btn)btn.click();
+}
+};
+}
+}
+attachLoginButtonFix();
 
 document.getElementById('date').value=todayString();
 </script>
