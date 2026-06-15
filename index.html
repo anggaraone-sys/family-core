@@ -856,6 +856,29 @@ gap:6px;
 .tx-card small{max-width:165px}
 }
 
+
+/* === INLINE DAILY DETAIL EXPAND === */
+.daily-card{cursor:pointer}
+.daily-expanded{
+margin-top:12px;
+padding-top:10px;
+border-top:1px solid rgba(113,128,184,.13);
+display:none;
+}
+.daily-card.expanded .daily-expanded{display:block}
+.daily-expanded .tx-card{
+margin-top:10px;
+box-shadow:none;
+background:rgba(255,255,255,.66);
+}
+.daily-expanded-empty{
+padding:12px;
+border-radius:16px;
+background:rgba(242,246,255,.75);
+color:var(--muted);
+font-size:13px;
+}
+
 </style>
 </head>
 <body>
@@ -1467,6 +1490,25 @@ document.getElementById('modalTitle').innerText=editIndex===null?'Tambah Transak
 if(forceType)document.getElementById('type').value=forceType;
 if(forceType==='income' && editIndex===null)document.getElementById('category').value='🛵 Ojek Apps';
 if(!document.getElementById('date').value){
+
+const txDetailModal=document.getElementById('txDetailModal');
+if(txDetailModal){
+txDetailModal.addEventListener('click',function(e){
+if(e.target===txDetailModal){
+closeTxDetail();
+}
+});
+}
+
+const dailyModal=document.getElementById('dailyModal');
+if(dailyModal){
+dailyModal.addEventListener('click',function(e){
+if(e.target===dailyModal){
+closeDailyDetail();
+}
+});
+}
+
 document.getElementById('date').value=todayString();
 }
 renderCategoryPicker();
@@ -1769,7 +1811,7 @@ let grouped={};
 db.forEach(item=>{
 const date=String(item.date||'');
 if(!date)return;
-if(!itemMatchKeyword(item,keyword))return;
+if(typeof itemMatchKeyword==='function' && !itemMatchKeyword(item,keyword))return;
 
 if(!grouped[date])grouped[date]={income:0,expense:0,items:[]};
 grouped[date].items.push(item);
@@ -1788,53 +1830,52 @@ return;
 dates.forEach(date=>{
 const data=grouped[date];
 const balance=data.income-data.expense;
-const safeKeyword=String(keyword).replace(/'/g,"&#39;").replace(/"/g,"&quot;");
 const info=keyword?`${data.items.length} hasil cocok`:`${data.items.length} transaksi`;
 
-list.innerHTML+=`<div class="daily-card" onclick="openDailyDetail('${date}','${safeKeyword}')">
+const detailItems=data.items
+.slice()
+.reverse()
+.map(item=>transactionCard(item,true))
+.join('');
+
+list.innerHTML+=`<div class="daily-card" id="daily-${date}" onclick="toggleDailyInline('${date}')">
 <div class="daily-head">
 <div>
 <h4>${formatDateID(date)}</h4>
 <small>${info}</small>
 </div>
-<small>Tap detail ›</small>
+<small class="daily-toggle-text">Tap detail ›</small>
 </div>
 <div class="daily-stats">
 <div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div>
 <div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div>
 <div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
 </div>
+<div class="daily-expanded" onclick="event.stopPropagation()">
+${detailItems||'<div class="daily-expanded-empty">Tidak ada transaksi</div>'}
+</div>
 </div>`;
 });
 }
 
-window.openDailyDetail=function(date,keyword=''){
-currentDailyData=db.filter(item=>item.date===date && itemMatchKeyword(item,keyword));
+window.toggleDailyInline=function(date){
+const card=document.getElementById('daily-'+date);
+if(!card)return;
 
-const income=currentDailyData.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
-const expense=currentDailyData.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
+const isExpanded=card.classList.contains('expanded');
+card.classList.toggle('expanded');
 
-document.getElementById('dailyTitle').innerText=keyword?`${formatDateID(date)} • hasil pencarian`:formatDateID(date);
-
-document.getElementById('dailySummary').innerHTML=
-`<div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(income)}</strong></div>
-<div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div>
-<div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>`;
-
-const dailyList=document.getElementById('dailyList');
-dailyList.innerHTML='';
-
-if(!currentDailyData.length){
-dailyList.innerHTML='<div class="empty-state">☁️ Tidak ada transaksi di hari ini</div>';
-}else{
-currentDailyData.slice().reverse().forEach(item=>dailyList.innerHTML+=transactionCard(item,true));
+const txt=card.querySelector('.daily-toggle-text');
+if(txt)txt.innerText=isExpanded?'Tap detail ›':'Tutup detail ˄';
 }
 
-document.getElementById('dailyModal').classList.add('active');
+window.openDailyDetail=function(date,keyword=''){
+toggleDailyInline(date);
 }
 
 window.closeDailyDetail=function(){
-document.getElementById('dailyModal').classList.remove('active');
+const modal=document.getElementById('dailyModal');
+if(modal)modal.classList.remove('active');
 }
 
 
