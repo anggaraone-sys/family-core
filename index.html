@@ -781,6 +781,81 @@ border-bottom:1px solid rgba(113,128,184,.12);
 .receipt-preview-row:last-child{border-bottom:none}
 @keyframes scanSpin{to{transform:rotate(360deg)}}
 
+
+/* === TRANSACTION REVIEW DETAIL MODAL === */
+.tx-card{cursor:pointer}
+.tx-card h4{
+max-width:210px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.tx-card small{
+display:block;
+max-width:220px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.tx-user-meta{
+display:block;
+font-size:11px;
+color:var(--muted);
+margin-top:3px;
+}
+.tx-detail-modal .modal{max-width:520px}
+.detail-card{
+background:rgba(255,255,255,.72);
+border:1px solid rgba(93,141,255,.12);
+border-radius:22px;
+padding:14px;
+margin-top:12px;
+}
+.detail-row{
+display:flex;
+justify-content:space-between;
+gap:12px;
+padding:8px 0;
+border-bottom:1px solid rgba(113,128,184,.12);
+font-size:14px;
+}
+.detail-row:last-child{border-bottom:none}
+.detail-row span{color:var(--muted)}
+.detail-row strong{color:var(--text);text-align:right}
+.detail-desc{
+white-space:pre-wrap;
+word-break:break-word;
+line-height:1.55;
+font-size:14px;
+color:var(--text);
+}
+.detail-items{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.detail-item{
+display:flex;
+justify-content:space-between;
+gap:10px;
+padding:10px 0;
+border-bottom:1px solid rgba(113,128,184,.12);
+}
+.detail-item:last-child{border-bottom:none}
+.detail-item-name{font-weight:800;color:var(--text)}
+.detail-item-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.detail-actions{display:flex;gap:10px;margin-top:14px}
+.detail-actions button{
+flex:1;
+min-height:48px;
+border-radius:16px;
+font-weight:800;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+}
+@media(max-width:430px){
+.tx-card h4{max-width:155px}
+.tx-card small{max-width:165px}
+}
+
 </style>
 </head>
 <body>
@@ -899,6 +974,17 @@ Report
 Profil
 </button>
 
+</div>
+
+
+<div id="txDetailModal" class="modal-bg tx-detail-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <h3 id="txDetailTitle">Detail Transaksi</h3>
+      <button class="floating-close" onclick="closeTxDetail()">×</button>
+    </div>
+    <div id="txDetailContent"></div>
+  </div>
 </div>
 
 <div id="transactionModal" class="modal-bg"><div class="modal">
@@ -1550,6 +1636,22 @@ chart.innerHTML+=`<div class="cat-row"><div class="cat-icon">${iconSVG(categoryK
 });
 }
 
+function getShortDescription(item){
+const desc=String(item.description||'Transaksi').trim();
+const store=String(item.receiptStore||'').trim();
+const items=Array.isArray(item.receiptItems)?item.receiptItems:[];
+
+if(store && items.length){
+return `${store} - ${items.length} item`;
+}
+
+if(desc.length>34){
+return desc.slice(0,34).trim()+'...';
+}
+
+return desc;
+}
+
 function transactionCard(item,showEdit){
 const isIncome=item.type==='income';
 const category=item.category||'📦 Lainnya';
@@ -1557,6 +1659,7 @@ const cleanCat=cleanCategory(category);
 const index=db.indexOf(item);
 const createdBy=item.createdBy||item.user||'';
 const updatedBy=item.updatedBy||'';
+
 let userText='';
 if(updatedBy && createdBy && updatedBy!==createdBy){
 userText=`edit by ${updatedBy}`;
@@ -1565,8 +1668,96 @@ userText=`edit by ${updatedBy}`;
 }else if(createdBy){
 userText=`by ${createdBy}`;
 }
-return `<div class="tx-card"><div class="tx-left"><div class="tx-icon">${iconSVG(categoryKey(category))}</div><div><h4>${item.description}</h4><small>${formatDateID(item.date)} • ${cleanCat}</small>${userText?`<span class="tx-user-meta">${userText}</span>`:''}</div></div><div style="text-align:right"><div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>${showEdit?`<div class="action-row"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">${iconSVG('edit')}</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">${iconSVG('trash')}</button></div>`:''}</div></div>`
+
+const shortDesc=getShortDescription(item);
+const titleText=String(item.description||'').replace(/"/g,'&quot;');
+
+return `<div class="tx-card" onclick="openTxDetail(${index})">
+<div class="tx-left">
+<div class="tx-icon">${iconSVG(categoryKey(category))}</div>
+<div>
+<h4 title="${titleText}">${shortDesc}</h4>
+<small>${formatDateID(item.date)} • ${cleanCat}</small>
+${userText?`<span class="tx-user-meta">${userText}</span>`:''}
+</div>
+</div>
+<div style="text-align:right">
+<div class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</div>
+${showEdit?`<div class="action-row" onclick="event.stopPropagation()"><button class="edit-btn icon-btn" onclick="editTransaction(${index})">${iconSVG('edit')}</button><button class="delete-btn icon-btn" onclick="deleteTransaction(${index})">${iconSVG('trash')}</button></div>`:''}
+</div>
+</div>`;
 }
+
+function formatReceiptItems(items){
+if(!Array.isArray(items)||!items.length)return '';
+return `<div class="detail-card"><strong>List Belanja</strong><div class="detail-items">${
+items.map(item=>{
+const name=item.name||'-';
+const qty=Number(item.qty||1)||1;
+const price=Number(item.price||0)||0;
+return `<div class="detail-item">
+<div>
+<div class="detail-item-name">${name}</div>
+<div class="detail-item-meta">Qty: ${qty}</div>
+</div>
+<strong>${price?rupiah(price):'-'}</strong>
+</div>`;
+}).join('')
+}</div></div>`;
+}
+
+window.openTxDetail=function(index){
+const item=db[index];
+if(!item)return;
+
+const isIncome=item.type==='income';
+const items=Array.isArray(item.receiptItems)?item.receiptItems:[];
+const store=item.receiptStore||'-';
+const receiptTotal=Number(item.receiptTotal||0);
+const desc=String(item.description||'-');
+
+document.getElementById('txDetailTitle').innerText=isIncome?'Detail Pemasukan':'Detail Pengeluaran';
+
+let htmlDetail=`
+<div class="detail-card">
+<div class="detail-row"><span>Keterangan</span><strong>${getShortDescription(item)}</strong></div>
+<div class="detail-row"><span>Nominal</span><strong class="${isIncome?'amount-income':'amount-expense'}">${isIncome?'+':'-'} ${rupiah(item.nominal)}</strong></div>
+<div class="detail-row"><span>Tanggal</span><strong>${formatDateID(item.date)}</strong></div>
+<div class="detail-row"><span>Kategori</span><strong>${cleanCategory(item.category)}</strong></div>
+<div class="detail-row"><span>User</span><strong>${item.createdBy||item.user||'-'}</strong></div>
+</div>
+`;
+
+if(item.receiptStore||items.length||receiptTotal){
+htmlDetail+=`
+<div class="detail-card">
+<strong>Detail Struk</strong>
+<div class="detail-row"><span>Toko</span><strong>${store}</strong></div>
+<div class="detail-row"><span>Total Struk</span><strong>${receiptTotal?rupiah(receiptTotal):rupiah(item.nominal)}</strong></div>
+</div>
+`;
+htmlDetail+=formatReceiptItems(items);
+}
+
+htmlDetail+=`
+<div class="detail-card">
+<strong>Keterangan Lengkap</strong>
+<div class="detail-desc">${desc}</div>
+</div>
+<div class="detail-actions">
+<button class="edit-btn" onclick="closeTxDetail();editTransaction(${index})">${iconSVG('edit')} Edit</button>
+<button class="delete-btn" onclick="closeTxDetail();deleteTransaction(${index})">${iconSVG('trash')} Hapus</button>
+</div>
+`;
+
+document.getElementById('txDetailContent').innerHTML=htmlDetail;
+document.getElementById('txDetailModal').classList.add('active');
+}
+
+window.closeTxDetail=function(){
+document.getElementById('txDetailModal').classList.remove('active');
+}
+
 
 window.renderHistory=function(){
 const list=document.getElementById('historyList');
