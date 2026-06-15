@@ -879,6 +879,96 @@ color:var(--muted);
 font-size:13px;
 }
 
+
+/* === SIMPLE MONTHLY ARCHIVE PANEL === */
+.month-archive-panel{
+margin-top:14px;
+border-radius:26px;
+background:rgba(255,255,255,.72);
+border:1px solid rgba(93,141,255,.12);
+box-shadow:0 14px 36px rgba(91,108,255,.08);
+padding:16px;
+display:none;
+}
+.month-archive-panel.active{
+display:block;
+}
+.month-archive-head{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+margin-bottom:12px;
+}
+.month-archive-head h3{
+font-size:20px;
+margin:0;
+}
+.month-archive-head small{
+color:var(--muted);
+}
+.month-archive-close{
+width:42px;
+height:42px;
+border-radius:16px;
+background:linear-gradient(135deg,var(--blue),var(--pink));
+color:white;
+font-weight:900;
+font-size:20px;
+}
+.month-archive-summary{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+margin-bottom:14px;
+}
+.month-archive-summary .daily-stat{
+background:rgba(242,246,255,.72);
+border-radius:18px;
+padding:12px;
+}
+.month-archive-list{
+display:flex;
+flex-direction:column;
+gap:10px;
+max-height:560px;
+overflow:auto;
+padding-right:2px;
+}
+.month-archive-day{
+border-radius:20px;
+background:rgba(242,246,255,.65);
+border:1px solid rgba(93,141,255,.08);
+padding:12px;
+}
+.month-archive-day-head{
+display:flex;
+justify-content:space-between;
+gap:10px;
+align-items:center;
+margin-bottom:8px;
+}
+.month-archive-day-head strong{
+color:var(--text);
+}
+.month-archive-day-head small{
+color:var(--muted);
+}
+.month-archive-panel .tx-card{
+box-shadow:none;
+background:rgba(255,255,255,.72);
+margin-top:8px;
+}
+@media(max-width:430px){
+.month-archive-summary{
+grid-template-columns:1fr;
+}
+.month-archive-list{
+max-height:none;
+overflow:visible;
+}
+}
+
 </style>
 </head>
 <body>
@@ -949,6 +1039,19 @@ font-size:13px;
 </section>
 
 
+
+<div id="monthArchivePanel" class="month-archive-panel">
+  <div class="month-archive-head">
+    <div>
+      <h3 id="monthArchiveTitle">Arsip Bulanan</h3>
+      <small id="monthArchiveSub">Ringkasan transaksi bulan ini</small>
+    </div>
+    <button class="month-archive-close" onclick="closeMonthArchive()">×</button>
+  </div>
+  <div id="monthArchiveSummary" class="month-archive-summary"></div>
+  <div id="monthArchiveList" class="month-archive-list"></div>
+</div>
+
 <div class="bottom-nav">
 
 <button id="navBeranda" class="nav-btn active" onclick="showPage('beranda',this)">
@@ -1014,7 +1117,7 @@ Profil
 <h2 id="modalTitle">Tambah Transaksi</h2>
 
 <div class="scan-box">
-<input type="file" id="receiptAIInput" accept="image/*" capture="environment" hidden>
+<input type="file" id="receiptAIInput" accept="image/*" hidden>
 
 <button type="button" class="scan-btn" id="scanReceiptBtn">
 <span class="scan-icon">📷</span>
@@ -1880,49 +1983,125 @@ if(modal)modal.classList.remove('active');
 
 
 function renderMonthly(){
-const list=document.getElementById('monthlyList');
+const list=document.getElementById('reportList');
 list.innerHTML='';
+
 let grouped={};
 
 db.forEach(item=>{
-const d=new Date(item.date+'T00:00:00');
-if(isNaN(d.getTime()))return;
-const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-if(!grouped[key])grouped[key]={income:0,expense:0,items:[]};
-grouped[key].items.push(item);
-if(item.type==='income')grouped[key].income+=Number(item.nominal||0);
-else grouped[key].expense+=Number(item.nominal||0)
+const month=item.date.slice(0,7);
+if(!grouped[month]){
+grouped[month]={income:0,expense:0,count:0,items:[]};
+}
+
+if(item.type==='income'){
+grouped[month].income+=Number(item.nominal||0);
+}else{
+grouped[month].expense+=Number(item.nominal||0);
+}
+
+grouped[month].count++;
+grouped[month].items.push(item);
 });
 
-Object.keys(grouped).sort().reverse().forEach(key=>{
-const data=grouped[key];
+const months=Object.keys(grouped).sort().reverse();
+
+if(!months.length){
+list.innerHTML='<div class="empty-state">☁️ Belum ada arsip bulanan</div>';
+return;
+}
+
+months.forEach(month=>{
+const data=grouped[month];
 const balance=data.income-data.expense;
-list.innerHTML+=`<div class="month-card" onclick="openMonthlyDetail('${key}')"><h3>${formatMonthID(key)}</h3><div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(data.income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(balance)}</strong></div><p class="muted" style="margin-top:10px">Tap untuk detail</p></div>`
-})
+
+list.innerHTML+=`<div class="daily-card month-card" onclick="openMonthArchive('${month}')">
+<div class="daily-head">
+<div>
+<h4>${formatMonthID(month)}</h4>
+<small>${data.count} transaksi</small>
+</div>
+<small>Lihat arsip ›</small>
+</div>
+<div class="daily-stats">
+<div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div>
+<div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div>
+<div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
+</div>
+</div>`;
+});
 }
 
-window.openMonthlyDetail=function(key){
-currentReportKey=key;
-currentReportData=db.filter(item=>{
-const d=new Date(item.date+'T00:00:00');
-if(isNaN(d.getTime()))return false;
-const itemKey=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-return itemKey===key
+window.openMonthArchive=function(month){
+const panel=document.getElementById('monthArchivePanel');
+const title=document.getElementById('monthArchiveTitle');
+const sub=document.getElementById('monthArchiveSub');
+const summary=document.getElementById('monthArchiveSummary');
+const list=document.getElementById('monthArchiveList');
+
+const rows=db
+.filter(item=>String(item.date||'').startsWith(month))
+.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+
+const income=rows.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
+const expense=rows.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
+const balance=income-expense;
+
+title.innerText=formatMonthID(month);
+sub.innerText=`${rows.length} transaksi dalam arsip bulanan`;
+
+summary.innerHTML=`
+<div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(income)}</strong></div>
+<div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div>
+<div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
+`;
+
+if(!rows.length){
+list.innerHTML='<div class="empty-state">☁️ Belum ada transaksi di bulan ini</div>';
+}else{
+let groupedDays={};
+
+rows.forEach(item=>{
+const date=item.date;
+if(!groupedDays[date])groupedDays[date]=[];
+groupedDays[date].push(item);
 });
 
-const income=currentReportData.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
-const expense=currentReportData.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
+list.innerHTML=Object.keys(groupedDays).sort().reverse().map(date=>{
+const dayRows=groupedDays[date];
+const dayIncome=dayRows.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
+const dayExpense=dayRows.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
 
-document.getElementById('detailTitle').innerText=`Report ${formatMonthID(key)}`;
-document.getElementById('detailSummary').innerHTML=`<div class="month-row"><span>Income</span><strong style="color:#17c36b">${rupiah(income)}</strong></div><div class="month-row"><span>Expense</span><strong style="color:#ff5a8c">${rupiah(expense)}</strong></div><div class="month-row"><span>Balance</span><strong>${rupiah(income-expense)}</strong></div>`;
-
-const detailList=document.getElementById('detailList');
-detailList.innerHTML='';
-currentReportData.slice().reverse().forEach(item=>detailList.innerHTML+=transactionCard(item,false));
-document.getElementById('detailModal').classList.add('active')
+return `<div class="month-archive-day">
+<div class="month-archive-day-head">
+<div>
+<strong>${formatDateID(date)}</strong><br>
+<small>${dayRows.length} transaksi</small>
+</div>
+<small>${rupiah(dayIncome-dayExpense)}</small>
+</div>
+${dayRows.slice().reverse().map(item=>transactionCard(item,true)).join('')}
+</div>`;
+}).join('');
 }
 
-window.closeDetail=function(){document.getElementById('detailModal').classList.remove('active')}
+panel.classList.add('active');
+panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+window.closeMonthArchive=function(){
+const panel=document.getElementById('monthArchivePanel');
+if(panel)panel.classList.remove('active');
+}
+
+window.openMonthlyDetail=function(month){
+openMonthArchive(month);
+}
+
+window.closeMonthlyDetail=function(){
+closeMonthArchive();
+}
+
 
 window.exportCSV=function(){exportRows(currentReportData,`home-finance-${currentReportKey}.csv`)}
 window.exportAllCSV=function(){exportRows(db,'home-finance-all-data.csv')}
