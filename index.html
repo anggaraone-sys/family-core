@@ -704,6 +704,29 @@ justify-content:center;
 gap:10px;
 border:1px solid rgba(93,141,255,.18);
 }
+
+.scan-choice{
+margin-top:10px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+.scan-choice button{
+min-height:46px;
+border-radius:16px;
+background:rgba(255,255,255,.76);
+color:var(--text);
+font-weight:800;
+border:1px solid rgba(93,141,255,.16);
+box-shadow:0 8px 18px rgba(91,108,255,.07);
+}
+.scan-choice button:hover{
+transform:translateY(-1px);
+}
+@media(max-width:360px){
+.scan-choice{grid-template-columns:1fr}
+}
+
 .scan-icon{
 width:34px;
 height:34px;
@@ -1117,12 +1140,19 @@ Profil
 <h2 id="modalTitle">Tambah Transaksi</h2>
 
 <div class="scan-box">
+<input type="file" id="receiptCameraInput" accept="image/*" capture="environment" hidden>
+<input type="file" id="receiptGalleryInput" accept="image/*" hidden>
 <input type="file" id="receiptAIInput" accept="image/*" hidden>
 
 <button type="button" class="scan-btn" id="scanReceiptBtn">
 <span class="scan-icon">📷</span>
 <span>Scan Struk AI</span>
 </button>
+
+<div class="scan-choice" id="scanChoice" style="display:none">
+<button type="button" id="scanCameraBtn">Buka Kamera</button>
+<button type="button" id="scanGalleryBtn">Pilih Galeri</button>
+</div>
 
 <div class="receipt-preview-wrap" id="receiptPreviewWrap" style="display:none">
 <img id="receiptPreview" alt="Preview struk">
@@ -1134,7 +1164,7 @@ Profil
 </div>
 
 <div id="scanAIStatus" class="ocr-status">
-Foto tidak disimpan. Hanya dipakai untuk scan.
+Pilih kamera atau galeri. Foto tidak disimpan, hanya dipakai untuk scan.
 </div>
 
 <div id="scanAIResult" class="ocr-result" style="display:none"></div>
@@ -1292,7 +1322,7 @@ const categoryText=typeof cleanCategory==='function'?cleanCategory(item.category
 return normalizeSearchText([
 date,dateID,monthID,
 item.description,categoryText,item.category,item.type,
-item.receiptStore,receiptItems,item.receiptTotal,item.receiptText,
+item.receiptStore,item.receiptLocation,receiptItems,item.receiptTotal,item.receiptText,
 item.createdBy,item.updatedBy,item.user
 ].join(' '));
 }
@@ -1346,15 +1376,24 @@ return;
 }
 
 const items=Array.isArray(data.items)?data.items:[];
-const rows=items.slice(0,8).map(item=>{
+const rows=items.slice(0,10).map(item=>{
 const name=item.name||'-';
+const qty=Number(item.qty||1)||1;
 const price=Number(item.price||0);
-return `<div class="receipt-preview-row"><span>${name}</span><strong>${price?rupiah(price):'-'}</strong></div>`;
+const meta=[
+qty&&qty!==1?`x${qty}`:'',
+price?rupiah(price):''
+].filter(Boolean).join(' · ');
+return `<div class="receipt-preview-row"><span>${name}</span><strong>${meta||'-'}</strong></div>`;
 }).join('');
+
+const locationLine=data.location
+? `<br><strong>Lokasi:</strong> ${data.location}`
+: '';
 
 el.style.display='block';
 el.innerHTML=`
-<strong>Toko:</strong> ${data.store||'-'}<br>
+<strong>Toko:</strong> ${data.store||'-'}${locationLine}<br>
 <strong>Total:</strong> ${data.total?rupiah(data.total):'-'}
 <div class="receipt-items-preview">${rows||'<span>Item belum terbaca</span>'}</div>
 `;
@@ -1373,29 +1412,40 @@ reader.readAsDataURL(file);
 }
 
 function normalizeGeminiReceipt(data){
-const store=String(data.store||data.nama_toko||data.merchant||'Belanja').trim();
+const store=String(data.store||data.nama_toko||data.merchant||data.toko||'Belanja').trim();
+const location=String(
+data.location||
+data.lokasi||
+data.alamat||
+data.address||
+data.storeLocation||
+data.store_location||
+data.lokasi_toko||
+''
+).trim();
 
 let items=Array.isArray(data.items)?data.items:[];
 items=items.map(item=>{
-const name=String(item.name||item.nama||item.item||'').trim();
-const qty=Number(item.qty||item.quantity||item.jumlah||1)||1;
-const price=Number(item.price||item.harga||item.amount||item.total||0)||0;
+const name=String(item.name||item.nama||item.item||item.nama_barang||'').trim();
+const qty=Number(item.qty||item.quantity||item.jumlah||item.jml||1)||1;
+const price=Number(item.price||item.harga||item.amount||item.total||item.subtotal||0)||0;
 return {name,qty,price};
 }).filter(item=>item.name);
 
-const total=Number(data.total||data.grand_total||data.jumlah||0)||0;
+const total=Number(data.total||data.grand_total||data.jumlah||data.total_akhir||data.total_bayar||0)||0;
 
-const descriptionItems=items.slice(0,8).map(item=>{
+const storeLine=location?`${store} - ${location}`:store;
+const descriptionItems=items.slice(0,10).map(item=>{
 const qtyText=item.qty&&item.qty!==1?` x${item.qty}`:'';
 const priceText=item.price?` ${rupiah(item.price)}`:'';
 return `${item.name}${qtyText}${priceText}`;
 });
 
 const description=descriptionItems.length
-? `${store} - ${descriptionItems.join(', ')}`
-: `Belanja ${store}`;
+? `${storeLine} - ${descriptionItems.join(', ')}`
+: `Belanja ${storeLine}`;
 
-return {store,items,total,description,receiptText:descriptionItems.join(', ')};
+return {store,location,items,total,description,receiptText:descriptionItems.join(', ')};
 }
 
 async function scanReceiptAI(file){
@@ -1414,7 +1464,10 @@ method:'POST',
 headers:{'Content-Type':'text/plain;charset=utf-8'},
 body:JSON.stringify({
 imageBase64,
-mimeType:file.type||'image/jpeg'
+mimeType:file.type||'image/jpeg',
+mode:'receipt',
+fields:['store','location','items','total'],
+instruction:'Ambil nama toko, lokasi/alamat toko jika terlihat, daftar barang beserta qty dan harga, serta total akhir. Kembalikan JSON saja.'
 })
 });
 
@@ -1446,6 +1499,7 @@ document.getElementById('displayNominal').value=rupiahPlain(receipt.total);
 
 window.lastReceiptData={
 receiptStore:receipt.store,
+receiptLocation:receipt.location,
 receiptItems:receipt.items,
 receiptText:receipt.receiptText,
 receiptTotal:receipt.total
@@ -1453,6 +1507,7 @@ receiptTotal:receipt.total
 
 setScanResult({
 store:receipt.store,
+location:receipt.location,
 items:receipt.items,
 total:receipt.total
 });
@@ -1634,6 +1689,9 @@ setScanResult(null);
 setReceiptPreview(null);
 setScanLoading(false);
 const rai=document.getElementById('receiptAIInput');if(rai)rai.value='';
+const rci=document.getElementById('receiptCameraInput');if(rci)rci.value='';
+const rgi=document.getElementById('receiptGalleryInput');if(rgi)rgi.value='';
+const sc=document.getElementById('scanChoice');if(sc)sc.style.display='none';
 }
 
 window.saveTransaction=async function(){
@@ -1649,6 +1707,7 @@ const receipt=window.lastReceiptData||null;
 const payload={nominal:parseInt(nominal),description,category,type,date,updatedBy:currentUser,updatedAt:now};
 if(receipt){
 payload.receiptStore=receipt.receiptStore||'';
+payload.receiptLocation=receipt.receiptLocation||'';
 payload.receiptItems=receipt.receiptItems||[];
 payload.receiptText=receipt.receiptText||'';
 payload.receiptTotal=receipt.receiptTotal||0;
@@ -2191,18 +2250,42 @@ setText('mainGoalProgress',progress.toFixed(0)+'%')
 
 
 const scanReceiptBtn=document.getElementById('scanReceiptBtn');
+const scanChoice=document.getElementById('scanChoice');
+const scanCameraBtn=document.getElementById('scanCameraBtn');
+const scanGalleryBtn=document.getElementById('scanGalleryBtn');
+const receiptCameraInput=document.getElementById('receiptCameraInput');
+const receiptGalleryInput=document.getElementById('receiptGalleryInput');
 const receiptAIInput=document.getElementById('receiptAIInput');
-if(scanReceiptBtn&&receiptAIInput){
-scanReceiptBtn.addEventListener('click',()=>{
-receiptAIInput.click();
-});
-receiptAIInput.addEventListener('change',e=>{
-const file=e.target.files&&e.target.files[0];
-if(file){
+
+function handleReceiptFile(file){
+if(!file)return;
+if(scanChoice)scanChoice.style.display='none';
 setReceiptPreview(file);
 scanReceiptAI(file);
 }
+
+if(scanReceiptBtn){
+scanReceiptBtn.addEventListener('click',()=>{
+if(scanChoice){
+scanChoice.style.display=scanChoice.style.display==='none'||!scanChoice.style.display?'grid':'none';
+}else if(receiptAIInput){
+receiptAIInput.click();
+}
 });
+}
+
+if(scanCameraBtn&&receiptCameraInput){
+scanCameraBtn.addEventListener('click',()=>receiptCameraInput.click());
+receiptCameraInput.addEventListener('change',e=>handleReceiptFile(e.target.files&&e.target.files[0]));
+}
+
+if(scanGalleryBtn&&receiptGalleryInput){
+scanGalleryBtn.addEventListener('click',()=>receiptGalleryInput.click());
+receiptGalleryInput.addEventListener('change',e=>handleReceiptFile(e.target.files&&e.target.files[0]));
+}
+
+if(receiptAIInput){
+receiptAIInput.addEventListener('change',e=>handleReceiptFile(e.target.files&&e.target.files[0]));
 }
 
 document.getElementById('date').value=todayString();
