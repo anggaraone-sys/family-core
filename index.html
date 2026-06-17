@@ -992,6 +992,37 @@ overflow:visible;
 }
 }
 
+
+/* === REPORT + RIWAYAT OPTIMIZATION === */
+.month-card-head{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+}
+.month-download-btn{
+min-height:38px;
+padding:0 14px;
+border-radius:14px;
+background:linear-gradient(135deg,var(--blue),var(--pink));
+color:white;
+font-weight:800;
+box-shadow:0 10px 22px rgba(91,108,255,.14);
+}
+.month-export-detail{
+grid-column:1/-1;
+margin-top:4px!important;
+}
+@media(max-width:430px){
+.month-card-head{
+align-items:center;
+}
+.month-download-btn{
+font-size:12px;
+padding:0 12px;
+}
+}
+
 </style>
 </head>
 <body>
@@ -1047,7 +1078,7 @@ overflow:visible;
 </section>
 
 <section id="riwayat" class="page">
-<div class="section-title"><h3>Riwayat Harian</h3><small class="muted">Klik hari untuk detail</small></div>
+<div class="section-title"><h3>Riwayat Bulan Ini</h3><small class="muted">Bulan lain cek Report</small></div>
 <input class="search" id="historySearch" placeholder="Cari tanggal, keterangan, kategori, toko, item, user..." oninput="renderHistory()">
 <div id="historyList" class="list"></div>
 </section>
@@ -1667,6 +1698,20 @@ closeDailyDetail();
 });
 }
 
+
+document.addEventListener('click',function(e){
+const panel=document.getElementById('monthArchivePanel');
+if(!panel || !panel.classList.contains('active'))return;
+
+const isInsidePanel=panel.contains(e.target);
+const isMonthCard=e.target.closest && e.target.closest('.month-card');
+const isModal=e.target.closest && e.target.closest('.modal-bg,.bottom-nav,.tx-detail-modal');
+
+if(!isInsidePanel && !isMonthCard && !isModal){
+closeMonthArchive();
+}
+});
+
 document.getElementById('date').value=todayString();
 }
 renderCategoryPicker();
@@ -1965,74 +2010,97 @@ document.getElementById('txDetailModal').classList.remove('active');
 
 window.renderHistory=function(){
 const list=document.getElementById('historyList');
-list.innerHTML='';
-const keyword=(document.getElementById('historySearch').value||'').trim();
+if(!list)return;
 
+list.innerHTML='';
+
+const keyword=(document.getElementById('historySearch')?.value||'').trim();
+const currentMonth=todayString().slice(0,7);
 let grouped={};
 
 db.forEach(item=>{
 const date=String(item.date||'');
-if(!date)return;
-if(typeof itemMatchKeyword==='function' && !itemMatchKeyword(item,keyword))return;
+if(!date || !date.startsWith(currentMonth))return;
+if(!itemMatchKeyword(item,keyword))return;
 
-if(!grouped[date])grouped[date]={income:0,expense:0,items:[]};
+if(!grouped[date]){
+grouped[date]={income:0,expense:0,items:[]};
+}
+
 grouped[date].items.push(item);
 
-if(item.type==='income')grouped[date].income+=Number(item.nominal||0);
-else grouped[date].expense+=Number(item.nominal||0);
+if(item.type==='income'){
+grouped[date].income+=Number(item.nominal||0);
+}else{
+grouped[date].expense+=Number(item.nominal||0);
+}
 });
 
 const dates=Object.keys(grouped).sort().reverse();
 
 if(!dates.length){
-list.innerHTML='<div class="empty-state">☁️ Tidak ada riwayat yang cocok</div>';
+list.innerHTML=`<div class="empty-state">☁️ Belum ada riwayat di ${formatMonthID(currentMonth)}. Arsip bulan lain cek di Report.</div>`;
 return;
 }
 
 dates.forEach(date=>{
 const data=grouped[date];
 const balance=data.income-data.expense;
+const safeKeyword=String(keyword).replace(/'/g,"&#39;").replace(/"/g,"&quot;");
 const info=keyword?`${data.items.length} hasil cocok`:`${data.items.length} transaksi`;
 
-const detailItems=data.items
-.slice()
-.reverse()
-.map(item=>transactionCard(item,true))
-.join('');
-
-list.innerHTML+=`<div class="daily-card" id="daily-${date}" onclick="toggleDailyInline('${date}')">
+list.innerHTML+=`<div class="daily-card" onclick="toggleDailyInline('${date}','${safeKeyword}',this)">
 <div class="daily-head">
 <div>
 <h4>${formatDateID(date)}</h4>
 <small>${info}</small>
 </div>
-<small class="daily-toggle-text">Tap detail ›</small>
+<small>Tap detail ›</small>
 </div>
 <div class="daily-stats">
 <div class="daily-stat"><small>Income</small><strong style="color:#17c36b">${rupiah(data.income)}</strong></div>
 <div class="daily-stat"><small>Expense</small><strong style="color:#ff5a8c">${rupiah(data.expense)}</strong></div>
 <div class="daily-stat"><small>Balance</small><strong>${rupiah(balance)}</strong></div>
 </div>
-<div class="daily-expanded" onclick="event.stopPropagation()">
-${detailItems||'<div class="daily-expanded-empty">Tidak ada transaksi</div>'}
-</div>
+<div class="daily-expanded" id="daily-inline-${date}"></div>
 </div>`;
 });
 }
 
-window.toggleDailyInline=function(date){
-const card=document.getElementById('daily-'+date);
+window.toggleDailyInline=function(date,keyword='',cardEl=null){
+const card=cardEl || document.querySelector(`#daily-inline-${date}`)?.closest('.daily-card');
 if(!card)return;
 
-const isExpanded=card.classList.contains('expanded');
-card.classList.toggle('expanded');
+const target=card.querySelector(`#daily-inline-${date}`);
+if(!target)return;
 
-const txt=card.querySelector('.daily-toggle-text');
-if(txt)txt.innerText=isExpanded?'Tap detail ›':'Tutup detail ˄';
+const alreadyOpen=card.classList.contains('expanded');
+
+document.querySelectorAll('.daily-card.expanded').forEach(el=>{
+if(el!==card)el.classList.remove('expanded');
+});
+
+if(alreadyOpen){
+card.classList.remove('expanded');
+return;
+}
+
+const rows=db
+.filter(item=>item.date===date && itemMatchKeyword(item,keyword))
+.slice()
+.reverse();
+
+if(!rows.length){
+target.innerHTML='<div class="daily-expanded-empty">Tidak ada detail transaksi.</div>';
+}else{
+target.innerHTML=rows.map(item=>transactionCard(item,true)).join('');
+}
+
+card.classList.add('expanded');
 }
 
 window.openDailyDetail=function(date,keyword=''){
-toggleDailyInline(date);
+toggleDailyInline(date,keyword);
 }
 
 window.closeDailyDetail=function(){
@@ -2040,6 +2108,34 @@ const modal=document.getElementById('dailyModal');
 if(modal)modal.classList.remove('active');
 }
 
+
+
+window.exportMonthCSV=function(month){
+const rows=db.filter(item=>String(item.date||'').startsWith(month));
+if(!rows.length){
+alert('Tidak ada data untuk export.');
+return;
+}
+
+let csv='Description,Category,Date,Type,Amount,Store,StoreLocation,Items,ReceiptTotal,User\n';
+
+rows.forEach(item=>{
+const items=Array.isArray(item.receiptItems)
+? item.receiptItems.map(i=>`${i.name||''} x${i.qty||1} ${i.price||''}`).join('; ')
+: '';
+const safe=(v)=>String(v??'').replace(/"/g,'""');
+
+csv+=`"${safe(item.description)}","${safe(item.category)}","${safe(item.date)}","${safe(item.type)}","${safe(item.nominal)}","${safe(item.receiptStore)}","${safe(item.receiptStoreLocation||item.storeLocation)}","${safe(items)}","${safe(item.receiptTotal)}","${safe(item.createdBy||item.updatedBy||item.user)}"\n`;
+});
+
+const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');
+a.href=url;
+a.download=`home-finance-${month}.csv`;
+a.click();
+URL.revokeObjectURL(url);
+}
 
 function renderMonthly(){
 const list=document.getElementById('monthlyList') || document.getElementById('reportList');
