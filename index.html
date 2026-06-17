@@ -1574,7 +1574,7 @@ try{
 renderAll();
 }catch(renderErr){
 console.error('Render error:',renderErr);
-alert('Data berhasil load, tapi ada error tampilan. Pakai file fix terbaru ini.');
+console.error('Render error:', renderErr);
 }
 }catch(err){
 console.error('Firestore load error:',err);
@@ -1983,13 +1983,19 @@ if(modal)modal.classList.remove('active');
 
 
 function renderMonthly(){
-const list=document.getElementById('reportList');
+const list=document.getElementById('monthlyList') || document.getElementById('reportList');
+if(!list){
+console.error('monthlyList/reportList tidak ditemukan');
+return;
+}
 list.innerHTML='';
 
 let grouped={};
 
 db.forEach(item=>{
-const month=item.date.slice(0,7);
+const date=String(item.date||'');
+if(date.length<7)return;
+const month=date.slice(0,7);
 if(!grouped[month]){
 grouped[month]={income:0,expense:0,count:0,items:[]};
 }
@@ -2039,9 +2045,14 @@ const sub=document.getElementById('monthArchiveSub');
 const summary=document.getElementById('monthArchiveSummary');
 const list=document.getElementById('monthArchiveList');
 
+if(!panel||!title||!sub||!summary||!list){
+console.error('Elemen arsip bulanan tidak lengkap');
+return;
+}
+
 const rows=db
 .filter(item=>String(item.date||'').startsWith(month))
-.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
 
 const income=rows.filter(i=>i.type==='income').reduce((a,b)=>a+Number(b.nominal||0),0);
 const expense=rows.filter(i=>i.type==='expense').reduce((a,b)=>a+Number(b.nominal||0),0);
@@ -2062,7 +2073,8 @@ list.innerHTML='<div class="empty-state">☁️ Belum ada transaksi di bulan ini
 let groupedDays={};
 
 rows.forEach(item=>{
-const date=item.date;
+const date=String(item.date||'');
+if(!date)return;
 if(!groupedDays[date])groupedDays[date]=[];
 groupedDays[date].push(item);
 });
